@@ -4,11 +4,11 @@ Computational Cancer Analysis Library
 Authors:
     Huwate (Kwat) Yeerna (Medetgul-Ernar)
         kwat.medetgul.ernar@gmail.com
-        Computational Cancer Analysis Laboratory, UCSD Cancer Center
+        Computational Cancer Analysis Laboratory, UCSD Moore's Cancer Center
 
     Pablo Tamayo
         ptamayo@ucsd.edu
-        Computational Cancer Analysis Laboratory, UCSD Cancer Center
+        Computational Cancer Analysis Laboratory, UCSD Moore's Cancer Center
 """
 
 from os.path import join
@@ -20,13 +20,12 @@ from pandas import DataFrame, Index, Series, concat
 from seaborn import distplot, rugplot
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
-from ..mathematics.equation import define_x_coordinates_for_reflection
-from ..helper.d1 import normalize_1d
-from ..helper.d2 import split_dataframe
-from ..helper.file import establish_filepath
-from ..helper.system import parallelize
-from ..helper.plot import (CMAP_CATEGORICAL, DPI, FIGURE_SIZE, decorate,
-                            save_plot)
+from .helper.d1 import normalize_1d
+from .helper.d2 import split_df
+from .helper.file import establish_filepath
+from .helper.system import parallelize
+from .mathematics.equation import define_x_coordinates_for_reflection
+from .plot.plot import CMAP_CATEGORICAL, DPI, FIGURE_SIZE, decorate, save_plot
 
 
 def fit_essentiality(feature_x_sample, filepath_prefix, features=(), n_jobs=1):
@@ -51,7 +50,7 @@ def fit_essentiality(feature_x_sample, filepath_prefix, features=(), n_jobs=1):
     print('Fitting with {} jobs ...'.format(n_jobs))
     f_x_f = concat(
         parallelize(_fit_essentiality,
-                    split_dataframe(feature_x_sample, n_jobs), n_jobs))
+                    split_df(feature_x_sample, n_jobs), n_jobs))
 
     # Sort by shape
     f_x_f.sort_values('Shape', inplace=True)
@@ -175,7 +174,8 @@ def plot_essentiality(feature_x_sample,
             bins=n_bins,
             kde=False,
             norm_hist=True,
-            hist_kws=dict(linewidth=0.92, color='#20d9ba', alpha=0.26),
+            hist_kws=dict(
+                linewidth=0.92, color='#20d9ba', alpha=0.26),
             ax=ax_graph)
 
         # ==============================================================
@@ -254,7 +254,7 @@ def plot_essentiality(feature_x_sample,
                 # Explode 'carea1 / carea2',
                 # Not that good during entropy test 'log(carea1 / carea2)',
                 # Explode 'where(f2 < f1, carea1 / carea2, 0)',
-                # 0ing abruptly drops 'where(f2 < f1, log(carea1 / carea2), 0)',
+                # 0ing abruptly drops 'where(f2 < f1, log(carea1 / carea2), 0)'
 
                 # (f1 - f2) / f1
                 # Better during only f2 < f1 '(f1 - f2) / f1',
@@ -317,7 +317,8 @@ def plot_essentiality(feature_x_sample,
                 bins=n_bins,
                 kde=False,
                 norm_hist=True,
-                hist_kws=dict(linewidth=0.92, color='#070707', alpha=0.26))
+                hist_kws=dict(
+                    linewidth=0.92, color='#070707', alpha=0.26))
             for ei_, c in eis:
                 plot(
                     grids, (ei_ - ei_.min()) / (ei_.max() - ei_.min()) *
@@ -343,9 +344,12 @@ def plot_essentiality(feature_x_sample,
         a_m_d = _get_amp_mut_del(bar_df, f_i)
 
         bar_specifications = [
-            dict(vector=a_m_d.iloc[0, :], ax=ax_bar0, color='#9017e6'),
-            dict(vector=a_m_d.iloc[1, :], ax=ax_bar1, color='#6410a0'),
-            dict(vector=a_m_d.iloc[2, :], ax=ax_bar2, color='#470b72'),
+            dict(
+                vector=a_m_d.iloc[0, :], ax=ax_bar0, color='#9017e6'),
+            dict(
+                vector=a_m_d.iloc[1, :], ax=ax_bar1, color='#6410a0'),
+            dict(
+                vector=a_m_d.iloc[2, :], ax=ax_bar2, color='#470b72'),
         ]
 
         for spec in bar_specifications:
@@ -483,8 +487,12 @@ def _compute_essentiality_index(f1,
             carea2 = cumsum(darea2[::-1])[::-1]
 
         else:
-            raise ValueError(
-                'Unknown area_direction: {}.'.format(area_direction))
+            raise ValueError('Unknown area_direction: {}.'.format(
+                area_direction))
 
     # Compute essentiality index
+    dummy = log
+    dummy = where
+    dummy = carea1
+    dummy = carea2
     return eval(function)
