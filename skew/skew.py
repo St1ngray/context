@@ -2,8 +2,11 @@ from os.path import join
 
 from matplotlib.gridspec import GridSpec
 from matplotlib.pyplot import close, figure, plot, show, subplot
-from numpy import argmin, asarray, cumsum, empty, linspace, log, sign, where
+from numpy import (argmax, argmin, asarray, cumsum, empty, linspace, log, sign,
+                   sqrt, where)
 from pandas import DataFrame, Index, Series, concat
+from scipy.special import stdtr
+from scipy.stats.distributions import t
 from seaborn import distplot, rugplot
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
@@ -11,7 +14,6 @@ from .helper.d1 import normalize_1d
 from .helper.d2 import split_df
 from .helper.file import establish_filepath
 from .helper.system import parallelize
-from .mathematics.equation import define_x_coordinates_for_reflection
 from .plot.plot import CMAP_CATEGORICAL, DPI, FIGURE_SIZE, decorate, save_plot
 
 
@@ -483,3 +485,43 @@ def _compute_essentiality_index(f1,
     dummy = carea1
     dummy = carea2
     return eval(function)
+
+
+def define_skew_t_pdf(x, df, shape, location, scale):
+    """
+    Get skew-t PDF of x with parameters location, scale, df, & shape.
+    :param x: array-like; vector of independent variables used to compute probabilities of the skew-t PDF.
+    :param df: number; degree of freedom of the skew-t PDF
+    :param shape: number; skewness or shape parameter of the skew-t PDF
+    :param location: number; location of the skew-t PDF
+    :param scale: number; scale of the skew-t PDF
+    :return array-like: skew-t PDF (defined by `df`, `shape`, `location`, and `scale`) evaluated at `x`.
+    """
+
+    return (2 / scale) * t._pdf((
+        (x - location) / scale), df) * stdtr(df + 1, shape * (
+            (x - location) / scale) * sqrt((df + 1) / (df + x**2)))
+
+
+def define_x_coordinates_for_reflection(function, x_grids):
+    """
+    Make x_grids for getting reflected function.
+    :param function: array-like; (1, x_grids.size)
+    :param x_grids: array-like; (1, x_grids.size)
+    :return: array; (1, x_grids.size)
+    """
+
+    pivot_x = x_grids[argmax(function)]
+
+    x_grids_for_reflection = empty(len(x_grids))
+    for i, a_x in enumerate(x_grids):
+
+        distance_to_reflecting_x = abs(a_x - pivot_x) * 2
+
+        if a_x < pivot_x:  # Left of the pivot x
+            x_grids_for_reflection[i] = a_x + distance_to_reflecting_x
+
+        else:  # Right of the pivot x
+            x_grids_for_reflection[i] = a_x - distance_to_reflecting_x
+
+    return x_grids_for_reflection
