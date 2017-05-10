@@ -8,18 +8,18 @@ from pandas import DataFrame, Index, Series, concat
 from seaborn import distplot, rugplot
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
-from .helper.d1 import normalize_1d
-from .helper.d2 import split_df
-from .helper.file import establish_filepath
-from .helper.system import parallelize
-from .plot.plot import CMAP_CATEGORICAL, DPI, FIGURE_SIZE, decorate, save_plot
+from .dataplay.dataplay.d1 import normalize_1d
+from .helper.helper.dataframe import split_df
+from .file.file.file import establish_path
+from .helper.helper.system import parallelize
+from .plot.plot.plot import CMAP_CATEGORICAL, DPI, FIGURE_SIZE, decorate, save_plot
 
 
-def fit_essentiality(feature_x_sample, filepath_prefix, features=(), n_jobs=1):
+def fit_essentiality(feature_x_sample, file_path_prefix, features=(), n_jobs=1):
     """
     Fit skew-t PDF to the distribution of each feature, gene.
     :param feature_x_sample: DataFrame; (n_features, n_samples)
-    :param filepath_prefix: str;
+    :param file_path_prefix: str;
     :param features: iterable; selected features to fit
     :param n_jobs: int; number of jobs for parallel computing
     :return: DataFrame; (n_features, 5 [N, DF, Shape, Location, Scale])
@@ -42,9 +42,9 @@ def fit_essentiality(feature_x_sample, filepath_prefix, features=(), n_jobs=1):
     # Sort by shape
     f_x_f.sort_values('Shape', inplace=True)
 
-    filepath = '{}skew_t_fit.txt'.format(filepath_prefix)
-    establish_filepath(filepath)
-    f_x_f.to_csv(filepath, sep='\t')
+    file_path = '{}skew_t_fit.txt'.format(file_path_prefix)
+    establish_path(file_path)
+    f_x_f.to_csv(file_path, sep='\t')
 
     return f_x_f
 
@@ -80,9 +80,9 @@ def plot_essentiality(feature_x_sample,
     """
     Make essentiality plot for each gene.
     :param feature_x_sample: DataFrame or str;
-        (n_features, n_samples) or a filepath to a file
+        (n_features, n_samples) or a file_path to a file
     :param feature_x_fit: DataFrame or str;
-        (n_features, 5 (n, df, shape, location, scale)) or a filepath to a file
+        (n_features, 5 (n, df, shape, location, scale)) or a file_path to a file
     :param bar_df: dataframe;
     :param directory_path: str;
         directory_path/essentiality_plots/feature<id>.png will be saved
@@ -488,8 +488,8 @@ def _compute_essentiality_index(f1,
 def define_x_coordinates_for_reflection(function, x_grids):
     """
     Make x_grids for getting reflected function.
-    :param function: array-like; (1, x_grids.size)
-    :param x_grids: array-like; (1, x_grids.size)
+    :param function: array; (1, x_grids.size)
+    :param x_grids: array; (1, x_grids.size)
     :return: array; (1, x_grids.size)
     """
 
