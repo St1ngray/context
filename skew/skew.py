@@ -9,13 +9,15 @@ from seaborn import distplot, rugplot
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .dataplay.dataplay.d1 import normalize_1d
-from .helper.helper.dataframe import split_df
 from .file.file.file import establish_path
-from .helper.helper.system import parallelize
-from .plot.plot.plot import CMAP_CATEGORICAL, DPI, FIGURE_SIZE, decorate, save_plot
+from .helper.helper.dataframe import split_df
+from .helper.helper.multiprocess import multiprocess
+from .plot.plot.plot import (CMAP_CATEGORICAL, DPI, FIGURE_SIZE, decorate,
+                             save_plot)
 
 
-def fit_essentiality(feature_x_sample, file_path_prefix, features=(), n_jobs=1):
+def fit_essentiality(feature_x_sample, file_path_prefix, features=(),
+                     n_jobs=1):
     """
     Fit skew-t PDF to the distribution of each feature, gene.
     :param feature_x_sample: DataFrame; (n_features, n_samples)
@@ -36,8 +38,8 @@ def fit_essentiality(feature_x_sample, file_path_prefix, features=(), n_jobs=1):
 
     print('Fitting with {} jobs ...'.format(n_jobs))
     f_x_f = concat(
-        parallelize(_fit_essentiality,
-                    split_df(feature_x_sample, n_jobs), n_jobs))
+        multiprocess(_fit_essentiality,
+                     split_df(feature_x_sample, n_jobs), n_jobs))
 
     # Sort by shape
     f_x_f.sort_values('Shape', inplace=True)
