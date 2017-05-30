@@ -1,0 +1,3 @@
+[submodule "skew/dataplay"]
+	path = skew/dataplay
+	url = https://github.com/KwatME/dataplay
