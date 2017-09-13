@@ -1,3 +1,3 @@
 # Skew
 
-Library for analyzing skewed data :ocean:
+Library for working with skewed data :ocean:
