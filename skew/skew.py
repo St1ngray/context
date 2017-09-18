@@ -8,12 +8,13 @@ from pandas import DataFrame, Index, Series, concat
 from seaborn import distplot, rugplot
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
-from .dataplay.dataplay.d1 import normalize_1d
-from .file.file.file import establish_path
-from .helper.helper.dataframe import split_df
-from .helper.helper.multiprocess import multiprocess
-from .plot.plot.plot import (CMAP_CATEGORICAL, DPI, FIGURE_SIZE, decorate,
-                             save_plot)
+from .array_nd.array_nd.array_1d import normalize
+from .plot.plot.decorate import decorate
+from .plot.plot.save_plot import save_plot
+from .plot.plot.style import CMAP_CATEGORICAL_TAB20, FIGURE_SIZE
+from .support.support.df import split_df
+from .support.support.multiprocess import multiprocess
+from .support.support.path import establish_path
 
 
 def fit_essentiality(feature_x_sample, file_path_prefix, features=(),
@@ -77,8 +78,7 @@ def plot_essentiality(feature_x_sample,
                       n_x_grids=3000,
                       n_bins=50,
                       plot_fits=True,
-                      show_plot=True,
-                      dpi=DPI):
+                      show_plot=True):
     """
     Make essentiality plot for each gene.
     :param feature_x_sample: DataFrame or str;
@@ -98,7 +98,6 @@ def plot_essentiality(feature_x_sample,
     :param n_bins: int; number of histogram bins
     :param plot_fits: bool; plot fitted lines or not
     :param show_plot: bool; show plot or not
-    :param dpi: int; dots per inch
     :return: None
     """
 
@@ -163,8 +162,7 @@ def plot_essentiality(feature_x_sample,
             bins=n_bins,
             kde=False,
             norm_hist=True,
-            hist_kws=dict(
-                linewidth=0.92, color='#20d9ba', alpha=0.26),
+            hist_kws=dict(linewidth=0.92, color='#20d9ba', alpha=0.26),
             ax=ax_graph)
 
         # ==============================================================
@@ -293,7 +291,7 @@ def plot_essentiality(feature_x_sample,
                                                  ['+', '-'][shape > 0],
                                                  grids[1] - grids[0])
 
-                c = CMAP_CATEGORICAL(j / len(functions))
+                c = CMAP_CATEGORICAL_TAB20(j / len(functions))
                 eis.append((ei, c))
 
                 plot(grids, ei, color=c, **line_kwargs)
@@ -306,12 +304,11 @@ def plot_essentiality(feature_x_sample,
                 bins=n_bins,
                 kde=False,
                 norm_hist=True,
-                hist_kws=dict(
-                    linewidth=0.92, color='#070707', alpha=0.26))
+                hist_kws=dict(linewidth=0.92, color='#070707', alpha=0.26))
             for ei_, c in eis:
                 plot(
-                    grids, (ei_ - ei_.min()) / (ei_.max() - ei_.min()) *
-                    skew_t_pdf.max(),
+                    grids, (ei_ - ei_.min()) /
+                    (ei_.max() - ei_.min()) * skew_t_pdf.max(),
                     color=c,
                     linewidth=line_kwargs['linewidth'])
             decorate(title=f_i)
@@ -333,12 +330,9 @@ def plot_essentiality(feature_x_sample,
         a_m_d = _get_amp_mut_del(bar_df, f_i)
 
         bar_specifications = [
-            dict(
-                vector=a_m_d.iloc[0, :], ax=ax_bar0, color='#9017e6'),
-            dict(
-                vector=a_m_d.iloc[1, :], ax=ax_bar1, color='#6410a0'),
-            dict(
-                vector=a_m_d.iloc[2, :], ax=ax_bar2, color='#470b72'),
+            dict(vector=a_m_d.iloc[0, :], ax=ax_bar0, color='#9017e6'),
+            dict(vector=a_m_d.iloc[1, :], ax=ax_bar1, color='#6410a0'),
+            dict(vector=a_m_d.iloc[2, :], ax=ax_bar2, color='#470b72'),
         ]
 
         for spec in bar_specifications:
@@ -352,8 +346,7 @@ def plot_essentiality(feature_x_sample,
         # Save
         # ==================================================================
         save_plot(
-            join(directory_path, 'essentiality_plots/{}.png'.format(f_i)),
-            dpi=dpi)
+            join(directory_path, 'essentiality_plots/{}.png'.format(f_i)))
 
         if show_plot:
             show()
@@ -434,10 +427,10 @@ def make_essentiality_matrix(feature_x_sample,
             function = 'where(f2 < f1, ((f1 - f2) / f1)**{}, 0)'.format(scale)
 
         ei = _compute_essentiality_index(skew_t_pdf, skew_t_pdf_r, function,
-                                         ['+', '-'][shape > 0],
-                                         grids[1] - grids[0])
+                                         ['+',
+                                          '-'][shape > 0], grids[1] - grids[0])
 
-        ei = normalize_1d(ei, '0-1')
+        ei = normalize(ei, '0-1')
 
         empty_[i, :] = ei[[argmin(abs(grids - x))
                            for x in asarray(f_v)]] * sign(shape) * factor
@@ -476,8 +469,8 @@ def _compute_essentiality_index(f1,
             carea2 = cumsum(darea2[::-1])[::-1]
 
         else:
-            raise ValueError('Unknown area_direction: {}.'.format(
-                area_direction))
+            raise ValueError(
+                'Unknown area_direction: {}.'.format(area_direction))
 
     # Compute essentiality index
     dummy = log
