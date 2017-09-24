@@ -16,16 +16,20 @@ from .support.support.df import split_df
 from .support.support.multiprocess import multiprocess
 from .support.support.path import establish_path
 
+# TODO: refactor
+
 
 def fit_essentiality(feature_x_sample, file_path_prefix, features=(),
                      n_jobs=1):
     """
     Fit skew-t PDF to the distribution of each feature, gene.
-    :param feature_x_sample: DataFrame; (n_features, n_samples)
-    :param file_path_prefix: str;
-    :param features: iterable; selected features to fit
-    :param n_jobs: int; number of jobs for parallel computing
-    :return: DataFrame; (n_features, 5 [N, DF, Shape, Location, Scale])
+    Arguments:
+        feature_x_sample: DataFrame; (n_features, n_samples)
+        file_path_prefix: str;
+        features: iterable; selected features to fit
+        n_jobs: int; number of jobs for parallel computing
+    Returns:
+        DataFrame; (n_features, 5 [N, DF, Shape, Location, Scale])
     """
     if len(features):  # Fit selected features
         is_ = Index(features) & feature_x_sample.index
@@ -53,6 +57,9 @@ def fit_essentiality(feature_x_sample, file_path_prefix, features=(),
 
 
 def _fit_essentiality(f_x_s):
+    """
+    """
+
     f_x_f = DataFrame(
         index=f_x_s.index, columns=['N', 'DF', 'Shape', 'Location', 'Scale'])
 
@@ -81,24 +88,26 @@ def plot_essentiality(feature_x_sample,
                       show_plot=True):
     """
     Make essentiality plot for each gene.
-    :param feature_x_sample: DataFrame or str;
-        (n_features, n_samples) or a file_path to a file
-    :param feature_x_fit: DataFrame or str;
-        (n_features, 5 (n, df, shape, location, scale)) or a file_path to a file
-    :param bar_df: dataframe;
-    :param directory_path: str;
-        directory_path/essentiality_plots/feature<id>.png will be saved
+    Arguments:
+        feature_x_sample: DataFrame or str;
+            (n_features, n_samples) or a file_path to a file
+        feature_x_fit: DataFrame or str;
+            (n_features, 5 (n, df, shape, location, scale)) or a file_path to a file
+        bar_df: dataframe;
+        directory_path: str;
+            directory_path/essentiality_plots/feature<id>.png will be saved
 
-    :param features: iterable; (n_selected_features)
+        features: iterable; (n_selected_features)
 
-    :param enumerate_functions: bool;
+        enumerate_functions: bool;
 
-    :param figure_size: tuple; figure size
-    :param n_x_grids: int; number of x grids
-    :param n_bins: int; number of histogram bins
-    :param plot_fits: bool; plot fitted lines or not
-    :param show_plot: bool; show plot or not
-    :return: None
+        figure_size: tuple; figure size
+        n_x_grids: int; number of x grids
+        n_bins: int; number of histogram bins
+        plot_fits: bool; plot fitted lines or not
+        show_plot: bool; show plot or not
+    Returns:
+        None
     """
 
     # ==========================================================================
@@ -357,9 +366,11 @@ def plot_essentiality(feature_x_sample,
 def _get_amp_mut_del(gene_x_samples, gene):
     """
     Get AMP, MUT, and DEL information for a gene in the CCLEn.
-    :param gene_x_samples: DataFrame; (n_genes, n_samples)
-    :param gene: str; gene index used in gene_x_sample
-    :return: DataFrame; (3 (AMP, MUT, DEL), n_samples)
+    Arguments:
+        gene_x_samples: DataFrame; (n_genes, n_samples)
+        gene: str; gene index used in gene_x_sample
+    Returns:
+        DataFrame; (3 (AMP, MUT, DEL), n_samples)
     """
 
     # Amplification
@@ -393,12 +404,14 @@ def make_essentiality_matrix(feature_x_sample,
                              factor=1):
     """
 
-    :param feature_x_sample: DataFrame; (n_features, n_samples)
-    :param feature_x_fit: DataFrame;
-    :param n_grids: int;
-    :param function: str;
-    :param factor: number;
-    :return: DataFrame; (n_features, n_samples)
+    Arguments:
+        feature_x_sample: DataFrame; (n_features, n_samples)
+        feature_x_fit: DataFrame;
+        n_grids: int;
+        function: str;
+        factor: number;
+    Returns:
+        DataFrame; (n_features, n_samples)
     """
 
     print('\tApplying {} to each feature ...'.format(function))
@@ -446,11 +459,13 @@ def _compute_essentiality_index(f1,
                                 delta=None):
     """
     Make a function from f1 and f2.
-    :param f1: array; function on the top
-    :param f2: array; function at the bottom
-    :param area_direction: str; {'+', '-'}
-    :param function: str; ei = eval(function)
-    :return: array; ei
+    Arguments:
+        f1: array; function on the top
+        f2: array; function at the bottom
+        area_direction: str; {'+', '-'}
+        function: str; ei = eval(function)
+    Returns:
+        array; ei
     """
 
     if 'area' in function:  # Compute cumulative area
@@ -483,9 +498,11 @@ def _compute_essentiality_index(f1,
 def define_x_coordinates_for_reflection(function, x_grids):
     """
     Make x_grids for getting reflected function.
-    :param function: array; (1, x_grids.size)
-    :param x_grids: array; (1, x_grids.size)
-    :return: array; (1, x_grids.size)
+    Arguments:
+        function: array; (1, x_grids.size)
+        x_grids: array; (1, x_grids.size)
+    Returns:
+        array; (1, x_grids.size)
     """
 
     pivot_x = x_grids[argmax(function)]
