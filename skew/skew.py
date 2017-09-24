@@ -8,7 +8,7 @@ from pandas import DataFrame, Index, Series, concat
 from seaborn import distplot, rugplot
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
-from .array_nd.array_nd.array_1d import normalize
+from .array_nd.array_nd.normalize_1d_array import normalize_1d_array
 from .plot.plot.decorate import decorate
 from .plot.plot.save_plot import save_plot
 from .plot.plot.style import CMAP_CATEGORICAL_TAB20, FIGURE_SIZE
@@ -31,6 +31,7 @@ def fit_essentiality(feature_x_sample, file_path_prefix, features=(),
     Returns:
         DataFrame; (n_features, 5 [N, DF, Shape, Location, Scale])
     """
+
     if len(features):  # Fit selected features
         is_ = Index(features) & feature_x_sample.index
         if len(is_):
@@ -443,7 +444,7 @@ def make_essentiality_matrix(feature_x_sample,
                                          ['+',
                                           '-'][shape > 0], grids[1] - grids[0])
 
-        ei = normalize(ei, '0-1')
+        ei = normalize_1d_array(ei, '0-1')
 
         empty_[i, :] = ei[[argmin(abs(grids - x))
                            for x in asarray(f_v)]] * sign(shape) * factor
