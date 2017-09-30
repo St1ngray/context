@@ -8,7 +8,7 @@ from pandas import DataFrame, Index, Series, concat
 from seaborn import distplot, rugplot
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
-from .array_nd.array_nd.normalize_1d_array import normalize_1d_array
+from .nd_array.nd_array.normalize_1d_array import normalize_1d_array
 from .plot.plot.decorate import decorate
 from .plot.plot.save_plot import save_plot
 from .plot.plot.style import CMAP_CATEGORICAL_TAB20, FIGURE_SIZE
