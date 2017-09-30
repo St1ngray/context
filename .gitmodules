@@ -1,9 +1,6 @@
 [submodule "skew/support"]
 	path = skew/support
 	url = https://github.com/kwatme/support
-[submodule "skew/array_nd"]
-	path = skew/array_nd
-	url = https://github.com/kwatme/array_nd
 [submodule "skew/plot"]
 	path = skew/plot
 	url = https://github.com/kwatme/plot
