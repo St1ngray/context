@@ -1,12 +1,13 @@
 from os.path import join
 
 from matplotlib.pyplot import close, figure, gca, plot, show
-from numpy import (argmax, argmin, asarray, cumsum, empty, linspace, log, sign,
-                   where)
+from numpy import argmin, asarray, cumsum, empty, linspace, log, sign, where
 from pandas import DataFrame
 from seaborn import distplot
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
+from .nd_array.nd_array.get_coordinates_for_reflection import \
+    get_coordinates_for_reflection
 from .nd_array.nd_array.normalize_1d_array import normalize_1d_array
 from .plot.plot.decorate import decorate
 from .plot.plot.save_plot import save_plot
@@ -109,7 +110,7 @@ def plot_essentiality(feature_x_sample,
         # ==================================================================
         # Generate skew-t PDF over reflected grids
         skew_t_pdf_r = skew_t.pdf(
-            define_x_coordinates_for_reflection(skew_t_pdf, grids),
+            get_coordinates_for_reflection(skew_t_pdf, grids),
             df,
             shape,
             loc=location,
