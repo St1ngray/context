@@ -14,16 +14,16 @@ from .plot.plot.save_plot import save_plot
 from .plot.plot.style import CMAP_CATEGORICAL_TAB20, FIGURE_SIZE
 
 
-def plot_x(feature_x_sample,
-           feature_x_fit,
-           enumerate_functions=False,
-           figure_size=FIGURE_SIZE,
-           n_x_grid=3000,
-           n_bins=80,
-           feature_name='Feature',
-           plot_fits=True,
-           show_plot=True,
-           directory_path=None):
+def plot_context(feature_x_sample,
+                 feature_x_fit,
+                 enumerate_functions=False,
+                 figure_size=FIGURE_SIZE,
+                 n_x_grid=3000,
+                 n_bins=80,
+                 feature_name='Feature',
+                 plot_fits=True,
+                 show_plot=True,
+                 directory_path=None):
     """
     Make essentiality plot for each gene.
     Arguments:
