@@ -24,10 +24,10 @@ def compute_context_indices(array_1d,
         df (float):
         shape (float):
     Returns:
-        array: (n_grid); context indices
+        array: (n)
     """
 
-    if not skew_t_model:
+    if skew_t_model is None:
         skew_t_model = ACSkewT_gen()
 
     if any([p is None for p in [location, scale, df, shape]]):
@@ -47,8 +47,8 @@ def compute_context_indices(array_1d,
 
     # Compute CDF and CDF reflection
     d = grids[1] - grids[0]
-    d_area = pdf / pdf.sum() * d
-    d_area_reflection = pdf_reflection / pdf_reflection.sum() * d
+    d_area = d * pdf / pdf.sum()
+    d_area_reflection = d * pdf_reflection / pdf_reflection.sum()
     if shape < 0:
         cdf = cumsum(d_area)
         cdf_reflection = cumsum(d_area_reflection)
@@ -56,15 +56,15 @@ def compute_context_indices(array_1d,
         cdf = cumsum(d_area[::-1])[::-1]
         cdf_reflection = cumsum(d_area_reflection[::-1])[::-1]
 
-    f0 = cdf
-    f1 = cdf_reflection
+    # Compute context indices
+    f0 = pdf
+    f1 = pdf_reflection
+    context_indices = where(f1 < f0, ((f0 - f1) / f0), ((f0 - f1) / f1))
     if shape < 0:
-        context_indices = where(f1 < f0, ((f1 - f0) / f0), ((f1 - f0) / f1))
-    else:
-        context_indices = where(f1 < f0, ((f0 - f1) / f0), ((f0 - f1) / f1))
+        context_indices *= -1
 
     context_indices = context_indices[[
         argmin(abs(grids - v)) for v in array_1d
     ]]
 
-    return context_indices
+    return grids, pdf, pdf_reflection, cdf, cdf_reflection, context_indices

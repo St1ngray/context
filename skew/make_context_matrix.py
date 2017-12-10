@@ -4,7 +4,6 @@ from pandas import DataFrame, concat
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .compute_context_indices import compute_context_indices
-from .fit_1d_array_to_skew_t_pdf import fit_1d_array_to_skew_t_pdf
 from .support.support.df import split_df
 from .support.support.multiprocess import multiprocess
 from .support.support.path import establish_path
@@ -57,13 +56,15 @@ def _make_context_matrix(feature_x_sample, skew_t_model,
 
     context__feature_x_sample = DataFrame(
         index=feature_x_sample.index, columns=feature_x_sample.columns)
+    context__feature_x_sample.index.name = 'Feature'
 
     for i, (feature_index,
             feature_vector) in enumerate(feature_x_sample.iterrows()):
+        print('({}/{}) {} ...'.format(i + 1, feature_x_sample.shape[0],
+                                      feature_index))
 
         if fit_skew_t_pdf__feature_x_parameter is None:
-            location, scale, df, shape = fit_1d_array_to_skew_t_pdf(
-                feature_vector, skew_t_model=skew_t_model)
+            location = scale = df = shape = None
         else:
             location, scale, df, shape = fit_skew_t_pdf__feature_x_parameter.loc[
                 i, ['Location', 'Scale', 'DF', 'Shape']]
@@ -75,6 +76,6 @@ def _make_context_matrix(feature_x_sample, skew_t_model,
             location=location,
             scale=scale,
             df=df,
-            shape=shape)
+            shape=shape)[-1]
 
     return context__feature_x_sample

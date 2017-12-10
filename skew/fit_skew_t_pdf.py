@@ -11,7 +11,7 @@ from .support.support.path import establish_path
 
 def fit_skew_t_pdf(feature_x_sample, n_job=1, directory_path=None):
     """
-    Fit DataFrame rows (features) to skew-t PDF.
+    Fit features to skew-t PDF.
     Arguments:
         feature_x_sample (DataFrame): (n_feature, n_sample)
         n_job (int): number of jobs for parallel computing
@@ -40,7 +40,7 @@ def fit_skew_t_pdf(feature_x_sample, n_job=1, directory_path=None):
 
 def _fit_skew_t_pdf(feature_x_sample, skew_t_model):
     """
-    Fit DataFrame rows (features) to skew-t PDF.
+    Fit features to skew-t PDF.
     Arguments:
         feature_x_sample (DataFrame): (n_feature, n_sample)
         skew_t_model (statsmodels.sandbox.distributions.extras.ACSkewT_gen):

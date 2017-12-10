@@ -14,7 +14,7 @@ def fit_1d_array_to_skew_t_pdf(array_1d, skew_t_model=None):
         float: shape
     """
 
-    if not skew_t_model:
+    if skew_t_model is None:
         skew_t_model = ACSkewT_gen()
 
     df, shape, location, scale = skew_t_model.fit(array_1d)
