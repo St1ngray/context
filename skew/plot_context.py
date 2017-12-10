@@ -16,6 +16,7 @@ def plot_context(array_1d,
                  plot_skew_t_pdf=True,
                  plot_skew_t_cdf=True,
                  plot_context_indices=True,
+                 plot_both_context_on_top=True,
                  n_grid=3000,
                  location=None,
                  scale=None,
@@ -33,6 +34,7 @@ def plot_context(array_1d,
         plot_skew_t_pdf (bool):
         plot_skew_t_cdf (bool):
         plot_context_indices (bool):
+        plot_both_context_on_top (bool):
         n_grid (int):
         location (float):
         scale (float):
@@ -49,7 +51,7 @@ def plot_context(array_1d,
     # ==========================================================================
     figure(figsize=figure_size)
     xlim(array_1d.min(), array_1d.max())
-    ylim(0, 1)
+    ylim([-1, 0][plot_both_context_on_top], 1)
 
     # ==========================================================================
     # Decorate
@@ -138,7 +140,7 @@ def plot_context(array_1d,
         is_negative = context_indices < 0
         fill_between(
             grid[is_negative],
-            -1 * context_indices[is_negative],
+            [1, -1][plot_both_context_on_top] * context_indices[is_negative],
             color='#0088FF',
             **context_indices_line_kwargs)
         fill_between(

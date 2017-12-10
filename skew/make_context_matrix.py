@@ -66,7 +66,7 @@ def _make_context_matrix(feature_x_sample, fit_skew_t_pdf__feature_x_parameter,
             location = scale = df = shape = None
         else:
             location, scale, df, shape = fit_skew_t_pdf__feature_x_parameter.loc[
-                i, ['Location', 'Scale', 'DF', 'Shape']]
+                feature_index, ['Location', 'Scale', 'DF', 'Shape']]
 
         context__feature_x_sample.loc[feature_index] = compute_context_indices(
             feature_vector,
