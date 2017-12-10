@@ -21,22 +21,23 @@ def plot_context(series,
                  scale=None,
                  df=None,
                  shape=None,
-                 plot_fits=True,
                  show_plot=True,
                  directory_path=None):
     """
     Plot context.
     Arguments:
         series (DataFrame): (n_sample)
-        figure_size (tuple): figure size
-        n_bin (int): number of histogram bins
+        figure_size (tuple):
+        n_bin (int):
         feature_name (str):
+        plot_skew_t_pdf (bool):
+        plot_skew_t_cdf (bool):
+        plot_context_indices (bool):
         n_grid (int):
         location (float):
         scale (float):
         df (float):
         shape (float):
-        plot_fits (bool): whether to plot fitted lines
         show_plot (bool): whether to show plot
         directory_path (str): directory_path//<id>.png will be saved
     Returns:
