@@ -56,7 +56,7 @@ def plot_context(array_1d,
     decorate(
         style='white',
         title='Context Plot',
-        title_kwargs={'color': '#003171'},
+        title_kwargs={'color': '#4E41D8'},
         xlabel=name,
         ylabel='PDF | CDF | Context Index')
 
@@ -108,13 +108,13 @@ def plot_context(array_1d,
             linestyle='-', linewidth=3.9, zorder=3)
         pdf_line_kwargs = dict(linestyle='-', linewidth=2.3, zorder=3)
 
-        plot(grid, d['pdf'], color='#FFFFFF', **pdf_backgdound_line_kwargs)
+        plot(grid, d['pdf'], color='#EBF6F7', **pdf_backgdound_line_kwargs)
         plot(grid, d['pdf'], color='#20D9BA', **pdf_line_kwargs)
 
         plot(
             grid,
             d['pdf_reflection'],
-            color='#FFFFFF',
+            color='#EBF6F7',
             **pdf_backgdound_line_kwargs)
         plot(grid, d['pdf_reflection'], color='#9017E6', **pdf_line_kwargs)
 
@@ -132,13 +132,13 @@ def plot_context(array_1d,
     # ==========================================================================
     if plot_context_indices:
         context_indices_line_kwargs = dict(
-            linestyle='-', linewidth=2.3, alpha=0.69, zorder=1)
+            linestyle='-', linewidth=2.3, alpha=0.8, zorder=1)
         context_indices = d['context_indices']
         is_negative = context_indices < 0
         fill_between(
             grid[is_negative],
             -1 * context_indices[is_negative],
-            color='#4E41D9',
+            color='#0088FF',
             **context_indices_line_kwargs)
         fill_between(
             grid[~is_negative],
