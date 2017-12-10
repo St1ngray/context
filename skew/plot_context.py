@@ -9,10 +9,11 @@ from .plot.plot.save_plot import save_plot
 from .plot.plot.style import FIGURE_SIZE
 
 
-def plot_context(series,
+def plot_context(array_1d,
                  figure_size=FIGURE_SIZE,
                  n_bin=80,
                  feature_name='Feature',
+                 name='A Feature',
                  plot_skew_t_pdf=True,
                  plot_skew_t_cdf=True,
                  plot_context_indices=True,
@@ -26,10 +27,11 @@ def plot_context(series,
     """
     Plot context.
     Arguments:
-        series (DataFrame): (n_sample)
+        array_1d (array): (n)
         figure_size (tuple):
         n_bin (int):
-        feature_name (str):
+        feature_name (str): name of feature
+        name (str): the name of this feature
         plot_skew_t_pdf (bool):
         plot_skew_t_cdf (bool):
         plot_context_indices (bool):
@@ -53,7 +55,7 @@ def plot_context(series,
     # Plot histogram
     # ==========================================================================
     distplot(
-        series,
+        array_1d,
         bins=n_bin,
         kde=False,
         norm_hist=True,
@@ -62,12 +64,11 @@ def plot_context(series,
     # ==========================================================================
     # Decorate
     # ==========================================================================
-    decorate(
-        style='white', title=series.name, xlabel=feature_name, ylabel='PDF')
+    decorate(style='white', title=name, xlabel=feature_name, ylabel='PDF')
 
     if plot_skew_t_pdf or plot_skew_t_cdf or plot_context_indices:
         grids, pdf, pdf_reflection, cdf, cdf_reflection, context_indices = compute_context_indices(
-            series,
+            array_1d,
             n_grid=n_grid,
             location=location,
             scale=scale,
@@ -77,7 +78,7 @@ def plot_context(series,
             0.5,
             0.9,
             'N={:.0f}    Location={:.2f}    Scale={:.2f}    DF={:.2f}    Shape={:.2f}'.
-            format(series.size, location, scale, df, shape),
+            format(array_1d.size, location, scale, df, shape),
             size=16,
             weight='bold',
             color='#220530',
@@ -115,6 +116,5 @@ def plot_context(series,
     if show_plot:
         show()
     if directory_path:
-        save_plot(
-            join(directory_path, 'plot_context', '{}.png'.format(series.name)))
+        save_plot(join(directory_path, 'plot_context', '{}.png'.format(name)))
     close()
