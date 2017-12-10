@@ -55,6 +55,24 @@ def plot_context(array_1d,
     ylim(0, 1)
 
     # ==========================================================================
+    # Decorate
+    # ==========================================================================
+    decorate(
+        style='white',
+        title='Context Plot',
+        xlabel=feature_name,
+        ylabel='PDF | CDF | Context Index')
+
+    gcf().text(
+        0.5,
+        0.92,
+        name,
+        size=18,
+        weight='bold',
+        color='#20D9BA',
+        horizontalalignment='center')
+
+    # ==========================================================================
     # Plot histogram
     # ==========================================================================
     distplot(
@@ -64,14 +82,7 @@ def plot_context(array_1d,
         norm_hist=True,
         hist_kws=dict(linewidth=0.92, color='#20D9BA', alpha=0.92, zorder=2))
 
-    # ==========================================================================
-    # Decorate
-    # ==========================================================================
-    decorate(
-        style='white', title='Context Plot', xlabel=feature_name, ylabel='PDF')
-
     if plot_skew_t_pdf or plot_skew_t_cdf or plot_context_indices:
-
         d = compute_context_indices(
             array_1d,
             n_grid=n_grid,
@@ -80,14 +91,6 @@ def plot_context(array_1d,
             df=df,
             shape=shape)
 
-        gcf().text(
-            0.5,
-            0.92,
-            name,
-            size=18,
-            weight='bold',
-            color='#20D9BA',
-            horizontalalignment='center')
         gcf().text(
             0.5,
             0.9,
