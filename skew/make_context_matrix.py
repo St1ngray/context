@@ -75,6 +75,6 @@ def _make_context_matrix(feature_x_sample, fit_skew_t_pdf__feature_x_parameter,
             location=location,
             scale=scale,
             df=df,
-            shape=shape)['context_indices_on_array']
+            shape=shape)['context_indices_like_array']
 
     return context__feature_x_sample

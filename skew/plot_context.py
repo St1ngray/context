@@ -4,8 +4,6 @@ from matplotlib.pyplot import (close, figure, fill_between, gcf, plot, show,
                                ylim)
 from seaborn import distplot
 
-from nd_array.nd_array.normalize_1d_array import normalize_1d_array
-
 from .compute_context_indices import compute_context_indices
 from .plot.plot.decorate import decorate
 from .plot.plot.save_plot import save_plot
@@ -15,7 +13,6 @@ def plot_context(array_1d,
                  name,
                  figure_size=(10, 10),
                  n_bin=80,
-                 feature_name='Feature',
                  plot_skew_t_pdf=True,
                  plot_skew_t_cdf=True,
                  plot_context_indices=True,
@@ -33,7 +30,6 @@ def plot_context(array_1d,
         name (str): the name of this feature
         figure_size (tuple):
         n_bin (int):
-        feature_name (str): name of feature
         plot_skew_t_pdf (bool):
         plot_skew_t_cdf (bool):
         plot_context_indices (bool):
@@ -60,7 +56,7 @@ def plot_context(array_1d,
     decorate(
         style='white',
         title='Context Plot',
-        xlabel=feature_name,
+        xlabel=name,
         ylabel='PDF | CDF | Context Index')
 
     gcf().text(

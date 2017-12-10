@@ -42,6 +42,8 @@ def compute_context_indices(array_1d,
         # Fit skew-t PDF
         n, location, scale, df, shape = fit_1d_array_to_skew_t_pdf(
             array_1d, skew_t_model=skew_t_model)
+    else:
+        n = array_1d.size
 
     # Compute PDF and PDF reflection
     grid = linspace(array_1d.min(), array_1d.max(), n_grid)
@@ -83,6 +85,6 @@ def compute_context_indices(array_1d,
         cdf_reflection,
         'context_indices':
         context_indices,
-        'context_indices_on_array':
+        'context_indices_like_array':
         context_indices[[argmin(abs(grid - v)) for v in array_1d]],
     }
