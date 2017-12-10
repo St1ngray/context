@@ -59,7 +59,6 @@ def plot_context(array_1d,
     decorate(
         style='white',
         title='Context Plot',
-        title_kwargs={'color': '#4E41D8'},
         xlabel=name,
         ylabel='PDF | CDF | Context Index')
 
