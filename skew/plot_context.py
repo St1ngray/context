@@ -149,8 +149,8 @@ def plot_context(array_1d,
     # ==========================================================================
     # Show and save
     # ==========================================================================
+    if directory_path:
+        save_plot(join(directory_path, 'context_plot', '{}.png'.format(name)))
     if show_plot:
         show()
-    if directory_path:
-        save_plot(join(directory_path, 'plot_context', '{}.png'.format(name)))
     close()
