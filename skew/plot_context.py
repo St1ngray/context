@@ -1,16 +1,17 @@
 from os.path import join
 
-from matplotlib.pyplot import close, figure, gcf, plot, show
+from matplotlib.pyplot import close, figure, gcf, plot, show, ylim
 from seaborn import distplot
+
+from nd_array.nd_array.normalize_1d_array import normalize_1d_array
 
 from .compute_context_indices import compute_context_indices
 from .plot.plot.decorate import decorate
 from .plot.plot.save_plot import save_plot
-from .plot.plot.style import FIGURE_SIZE
 
 
 def plot_context(array_1d,
-                 figure_size=FIGURE_SIZE,
+                 figure_size=(10, 10),
                  n_bin=80,
                  feature_name='Feature',
                  name='A Feature',
@@ -50,6 +51,7 @@ def plot_context(array_1d,
     # Set up figure
     # ==========================================================================
     figure(figsize=figure_size)
+    ylim(-1, 1)
 
     # ==========================================================================
     # Plot histogram
@@ -67,48 +69,63 @@ def plot_context(array_1d,
     decorate(style='white', title=name, xlabel=feature_name, ylabel='PDF')
 
     if plot_skew_t_pdf or plot_skew_t_cdf or plot_context_indices:
-        grids, pdf, pdf_reflection, cdf, cdf_reflection, context_indices = compute_context_indices(
+
+        d = compute_context_indices(
             array_1d,
             n_grid=n_grid,
             location=location,
             scale=scale,
             df=df,
             shape=shape)
+
         gcf().text(
             0.5,
             0.9,
             'N={:.0f}    Location={:.2f}    Scale={:.2f}    DF={:.2f}    Shape={:.2f}'.
-            format(array_1d.size, location, scale, df, shape),
+            format(*d['fit']),
             size=16,
             weight='bold',
             color='#220530',
             horizontalalignment='center')
-        line_kwargs = dict(linestyle='-', linewidth=2.6)
+
+        grid = d['grid']
 
     # ==========================================================================
     # Plot skew-t PDF
     # ==========================================================================
     if plot_skew_t_pdf:
-        plot(grids, pdf, color='#20D9BA', **line_kwargs)
-        plot(grids, pdf_reflection, color='#4E41D9', **line_kwargs)
+        pdf_line_kwargs = dict(linestyle='-', linewidth=2.6)
+        plot(
+            grid,
+            d['pdf'],
+            # normalize_1d_array(d['pdf'], '0-1'),
+            color='#20D9BA',
+            **pdf_line_kwargs)
+        plot(
+            grid,
+            d['pdf_reflection'],
+            # normalize_1d_array(d['pdf_reflection'], '0-1'),
+            color='#4E41D9',
+            **pdf_line_kwargs)
 
     # ==========================================================================
     # Plot skew-t CDF
     # ==========================================================================
     if plot_skew_t_cdf:
-        plot(grids, cdf, linestyle='.', color='#20D9BA', **line_kwargs)
-        plot(
-            grids,
-            cdf_reflection,
-            linestyle='.',
-            color='#4E41D9',
-            **line_kwargs)
+        cdf_line_kwargs = dict(linestyle=':', linewidth=2.6)
+        plot(grid, d['cdf'], color='#20D9BA', **cdf_line_kwargs)
+        plot(grid, d['cdf_reflection'], color='#4E41D9', **cdf_line_kwargs)
 
     # ==========================================================================
-    # Plot context index
+    # Plot context indices
     # ==========================================================================
     if plot_context_indices:
-        plot(grids, context_indices, color='#FC154F', **line_kwargs)
+        plot(
+            grid,
+            d['context_indices'],
+            color='#FC154F',
+            linestyle='-',
+            linewidth=2.6)
 
     # ==========================================================================
     # Show and save

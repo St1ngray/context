@@ -24,7 +24,15 @@ def compute_context_indices(array_1d,
         df (float):
         shape (float):
     Returns:
-        array: (n)
+        dict: {
+            fit: [n, location, scale, df, shape] (5),
+            grid: array (n_grid),
+            pdf: array (n),
+            pdf_reflection: array (n),
+            cdf: array (n),
+            cdf_reflection: array (n),
+            context_indices: array (n),
+        }
     """
 
     if skew_t_model is None:
@@ -32,29 +40,26 @@ def compute_context_indices(array_1d,
 
     if any([p is None for p in [location, scale, df, shape]]):
         # Fit skew-t PDF
-        location, scale, df, shape = fit_1d_array_to_skew_t_pdf(
+        n, location, scale, df, shape = fit_1d_array_to_skew_t_pdf(
             array_1d, skew_t_model=skew_t_model)
 
     # Compute PDF and PDF reflection
-    grids = linspace(array_1d.min(), array_1d.max(), n_grid)
-    pdf = skew_t_model.pdf(grids, df, shape, loc=location, scale=scale)
+    grid = linspace(array_1d.min(), array_1d.max(), n_grid)
+    pdf = skew_t_model.pdf(grid, df, shape, loc=location, scale=scale)
     pdf_reflection = skew_t_model.pdf(
-        get_coordinates_for_reflection(grids, pdf),
+        get_coordinates_for_reflection(grid, pdf),
         df,
         shape,
         loc=location,
         scale=scale)
 
     # Compute CDF and CDF reflection
-    d = grids[1] - grids[0]
-    d_area = d * pdf / pdf.sum()
-    d_area_reflection = d * pdf_reflection / pdf_reflection.sum()
     if shape < 0:
-        cdf = cumsum(d_area)
-        cdf_reflection = cumsum(d_area_reflection)
+        cdf = cumsum(pdf / pdf.sum())
+        cdf_reflection = cumsum(pdf_reflection / pdf_reflection.sum())
     else:
-        cdf = cumsum(d_area[::-1])[::-1]
-        cdf_reflection = cumsum(d_area_reflection[::-1])[::-1]
+        cdf = cumsum(pdf[::-1])[::-1]
+        cdf_reflection = cumsum(pdf_reflection[::-1])[::-1]
 
     # Compute context indices
     f0 = pdf
@@ -63,8 +68,20 @@ def compute_context_indices(array_1d,
     if shape < 0:
         context_indices *= -1
 
-    context_indices = context_indices[[
-        argmin(abs(grids - v)) for v in array_1d
-    ]]
-
-    return grids, pdf, pdf_reflection, cdf, cdf_reflection, context_indices
+    return {
+        'fit': [n, location, scale, df, shape],
+        'grid':
+        grid,
+        'pdf':
+        pdf,
+        'pdf_reflection':
+        pdf_reflection,
+        'cdf':
+        cdf,
+        'cdf_reflection':
+        cdf_reflection,
+        'context_indices':
+        context_indices,
+        'context_indices_on_array':
+        context_indices[[argmin(abs(grid - v)) for v in array_1d]],
+    }

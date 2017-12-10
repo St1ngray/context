@@ -8,6 +8,7 @@ def fit_1d_array_to_skew_t_pdf(array_1d, skew_t_model=None):
         array_1d (array): (n)
         skew_t_model (statsmodels.sandbox.distributions.extras.ACSkewT_gen):
     Returns:
+        int: n
         float: location
         float: scale
         float: df
@@ -19,4 +20,4 @@ def fit_1d_array_to_skew_t_pdf(array_1d, skew_t_model=None):
 
     df, shape, location, scale = skew_t_model.fit(array_1d)
 
-    return location, scale, df, shape
+    return array_1d.size, location, scale, df, shape

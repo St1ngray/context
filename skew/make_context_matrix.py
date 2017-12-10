@@ -26,11 +26,9 @@ def make_context_matrix(feature_x_sample,
         DataFrame: (n_feature, n_sample)
     """
 
-    skew_t_model = ACSkewT_gen()
-
     context__feature_x_sample = concat(
         multiprocess(_make_context_matrix, [[
-            df, skew_t_model, fit_skew_t_pdf__feature_x_parameter, n_grid
+            df, fit_skew_t_pdf__feature_x_parameter, n_grid
         ] for df in split_df(feature_x_sample, n_job)], n_job))
 
     if directory_path:
@@ -41,18 +39,19 @@ def make_context_matrix(feature_x_sample,
     return context__feature_x_sample
 
 
-def _make_context_matrix(feature_x_sample, skew_t_model,
-                         fit_skew_t_pdf__feature_x_parameter, n_grid):
+def _make_context_matrix(feature_x_sample, fit_skew_t_pdf__feature_x_parameter,
+                         n_grid):
     """
     Make context matrix.
     Arguments:
         feature_x_sample (DataFrame): (n_feature, n_sample)
-        skew_t_model (statsmodels.sandbox.distributions.extras.ACSkewT_gen):
         fit_skew_t_pdf__feature_x_parameter (DataFrame):
         n_grid (int):
     Returns:
         DataFrame: (n_feature, n_sample)
     """
+
+    skew_t_model = ACSkewT_gen()
 
     context__feature_x_sample = DataFrame(
         index=feature_x_sample.index, columns=feature_x_sample.columns)
@@ -76,6 +75,6 @@ def _make_context_matrix(feature_x_sample, skew_t_model,
             location=location,
             scale=scale,
             df=df,
-            shape=shape)[-1]
+            shape=shape)['context_indices_on_array']
 
     return context__feature_x_sample

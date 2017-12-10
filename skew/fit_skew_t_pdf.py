@@ -17,13 +17,11 @@ def fit_skew_t_pdf(feature_x_sample, n_job=1, directory_path=None):
         n_job (int): number of jobs for parallel computing
         directory_path (str): where outputs are saved
     Returns:
-        DataFrame: (n_feature, 5 [N, DF, Shape, Location, Scale])
+        DataFrame: (n_feature, 5 [N, Location, Scale, DF, Shape])
     """
 
-    skew_t_model = ACSkewT_gen()
-
     fit_skew_t_pdf__feature_x_parameter = concat(
-        multiprocess(_fit_skew_t_pdf, [[df, skew_t_model]
+        multiprocess(_fit_skew_t_pdf, [[df]
                                        for df in split_df(
                                            feature_x_sample, n_job)], n_job))
 
@@ -38,15 +36,16 @@ def fit_skew_t_pdf(feature_x_sample, n_job=1, directory_path=None):
     return fit_skew_t_pdf__feature_x_parameter
 
 
-def _fit_skew_t_pdf(feature_x_sample, skew_t_model):
+def _fit_skew_t_pdf(feature_x_sample):
     """
     Fit features to skew-t PDF.
     Arguments:
         feature_x_sample (DataFrame): (n_feature, n_sample)
-        skew_t_model (statsmodels.sandbox.distributions.extras.ACSkewT_gen):
     Returns:
-        DataFrame: (n_feature, 5 [N, DF, Shape, Location, Scale])
+        DataFrame: (n_feature, 5 [N, Location, Scale, DF, Shape])
     """
+
+    skew_t_model = ACSkewT_gen()
 
     fit_skew_t_pdf__feature_x_parameter = DataFrame(
         index=feature_x_sample.index,
@@ -59,7 +58,7 @@ def _fit_skew_t_pdf(feature_x_sample, skew_t_model):
                                       feature_index))
 
         fit_skew_t_pdf__feature_x_parameter.loc[
-            feature_index] = feature_vector.size, *fit_1d_array_to_skew_t_pdf(
+            feature_index] = fit_1d_array_to_skew_t_pdf(
                 feature_vector, skew_t_model=skew_t_model)
 
     return fit_skew_t_pdf__feature_x_parameter
