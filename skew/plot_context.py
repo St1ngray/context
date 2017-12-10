@@ -56,6 +56,7 @@ def plot_context(array_1d,
     decorate(
         style='white',
         title='Context Plot',
+        title_kwargs={'color': '#003171'},
         xlabel=name,
         ylabel='PDF | CDF | Context Index')
 
@@ -142,7 +143,7 @@ def plot_context(array_1d,
         fill_between(
             grid[~is_negative],
             context_indices[~is_negative],
-            color='#FC154F',
+            color='#FF1968',
             **context_indices_line_kwargs)
 
     # ==========================================================================
