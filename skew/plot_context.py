@@ -1,7 +1,7 @@
 from os.path import join
 
 from matplotlib.pyplot import (close, figure, fill_between, gcf, plot, show,
-                               ylim)
+                               xlim, ylim)
 from seaborn import distplot
 
 from .compute_context_indices import compute_context_indices
@@ -48,6 +48,7 @@ def plot_context(array_1d,
     # Set up figure
     # ==========================================================================
     figure(figsize=figure_size)
+    xlim(array_1d.min(), array_1d.max())
     ylim(0, 1)
 
     # ==========================================================================

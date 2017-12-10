@@ -1,4 +1,4 @@
-from numpy import argmin, cumsum, linspace, where
+from numpy import argmin, cumsum, linspace, sign, where
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .fit_1d_array_to_skew_t_pdf import fit_1d_array_to_skew_t_pdf
@@ -68,6 +68,9 @@ def compute_context_indices(array_1d,
     f0 = pdf
     f1 = pdf_reflection
     context_indices = where(f1 < f0, ((f0 - f1) / f0), ((f0 - f1) / f1))
+    # context_indices = context_indices * scale / df
+    context_indices = sign(context_indices) * abs(context_indices)**(
+        df / scale)
     if shape < 0:
         context_indices *= -1
 
