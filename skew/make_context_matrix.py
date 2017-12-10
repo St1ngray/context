@@ -54,7 +54,9 @@ def _make_context_matrix(feature_x_sample, fit_skew_t_pdf__feature_x_parameter,
     skew_t_model = ACSkewT_gen()
 
     context__feature_x_sample = DataFrame(
-        index=feature_x_sample.index, columns=feature_x_sample.columns)
+        index=feature_x_sample.index,
+        columns=feature_x_sample.columns,
+        dtype='float')
     context__feature_x_sample.index.name = 'Feature'
 
     for i, (feature_index,
