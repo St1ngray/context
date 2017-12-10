@@ -58,8 +58,9 @@ def compute_context_indices(array_1d,
         cdf = cumsum(pdf / pdf.sum())
         cdf_reflection = cumsum(pdf_reflection / pdf_reflection.sum())
     else:
-        cdf = cumsum(pdf[::-1])[::-1]
-        cdf_reflection = cumsum(pdf_reflection[::-1])[::-1]
+        cdf = cumsum(pdf[::-1] / pdf.sum())[::-1]
+        cdf_reflection = cumsum(
+            pdf_reflection[::-1] / pdf_reflection.sum())[::-1]
 
     # Compute context indices
     f0 = pdf
