@@ -13,6 +13,7 @@ def make_context_matrix(feature_x_sample,
                         fit_skew_t_pdf__feature_x_parameter=None,
                         n_grid=3000,
                         n_job=1,
+                        log=False,
                         directory_path=None):
     """
     Make context matrix.
@@ -21,6 +22,7 @@ def make_context_matrix(feature_x_sample,
         fit_skew_t_pdf__feature_x_parameter (DataFrame):
         n_grid (int):
         n_job (int): number of jobs for parallel computing
+        log (bool): whether to log progress
         directory_path (str): where outputs are saved
     Returns:
         DataFrame: (n_feature, n_sample)
@@ -28,7 +30,7 @@ def make_context_matrix(feature_x_sample,
 
     context__feature_x_sample = concat(
         multiprocess(_make_context_matrix, [[
-            df, fit_skew_t_pdf__feature_x_parameter, n_grid
+            df, fit_skew_t_pdf__feature_x_parameter, n_grid, log
         ] for df in split_df(feature_x_sample, n_job)], n_job))
 
     if directory_path:
@@ -40,13 +42,14 @@ def make_context_matrix(feature_x_sample,
 
 
 def _make_context_matrix(feature_x_sample, fit_skew_t_pdf__feature_x_parameter,
-                         n_grid):
+                         n_grid, log):
     """
     Make context matrix.
     Arguments:
         feature_x_sample (DataFrame): (n_feature, n_sample)
         fit_skew_t_pdf__feature_x_parameter (DataFrame):
         n_grid (int):
+        log (bool): whether to log progress
     Returns:
         DataFrame: (n_feature, n_sample)
     """
@@ -61,8 +64,9 @@ def _make_context_matrix(feature_x_sample, fit_skew_t_pdf__feature_x_parameter,
 
     for i, (feature_index,
             feature_vector) in enumerate(feature_x_sample.iterrows()):
-        print('({}/{}) {} ...'.format(i + 1, feature_x_sample.shape[0],
-                                      feature_index))
+        if log:
+            print('({}/{}) {} ...'.format(i + 1, feature_x_sample.shape[0],
+                                          feature_index))
 
         if fit_skew_t_pdf__feature_x_parameter is None:
             location = scale = df = shape = None

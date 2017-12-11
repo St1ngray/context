@@ -12,6 +12,7 @@ from .plot.plot.save_plot import save_plot
 def plot_context(array_1d,
                  name,
                  figure_size=(10, 10),
+                 title='Context Plot',
                  n_bin=80,
                  plot_skew_t_pdf=True,
                  plot_skew_t_cdf=True,
@@ -30,6 +31,7 @@ def plot_context(array_1d,
         array_1d (array): (n)
         name (str): the name of this feature
         figure_size (tuple):
+        title (str):
         n_bin (int):
         plot_skew_t_pdf (bool):
         plot_skew_t_cdf (bool):
@@ -58,7 +60,7 @@ def plot_context(array_1d,
     # ==========================================================================
     decorate(
         style='white',
-        title='Context Plot',
+        title=title,
         xlabel=name,
         ylabel='PDF | CDF | Context Index')
 

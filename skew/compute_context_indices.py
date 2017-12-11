@@ -4,6 +4,7 @@ from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 from .fit_1d_array_to_skew_t_pdf import fit_1d_array_to_skew_t_pdf
 from .nd_array.nd_array.get_coordinates_for_reflection import \
     get_coordinates_for_reflection
+from .nd_array.nd_array.normalize_1d_array import normalize_1d_array
 
 
 def compute_context_indices(array_1d,
@@ -68,11 +69,8 @@ def compute_context_indices(array_1d,
     f0 = pdf
     f1 = pdf_reflection
     context_indices = where(f1 < f0, ((f0 - f1) / f0), ((f0 - f1) / f1))
-    # context_indices = context_indices * scale / df
     context_indices = sign(context_indices) * abs(context_indices)**(
-        df / scale)
-    if shape < 0:
-        context_indices *= -1
+        df / scale) * sign(shape)
 
     return {
         'fit': [n, location, scale, df, shape],
