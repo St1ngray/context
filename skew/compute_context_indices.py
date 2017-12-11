@@ -56,6 +56,7 @@ def compute_context_indices(array_1d,
         scale=scale)
 
     # Compute CDF and CDF reflection
+    # TODO: add compute_1d_array_cumulative_sum to nd_array library
     if shape < 0:
         cdf = cumsum(pdf / pdf.sum())
         cdf_reflection = cumsum(pdf_reflection / pdf_reflection.sum())
