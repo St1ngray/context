@@ -4,7 +4,6 @@ from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 from .fit_1d_array_to_skew_t_pdf import fit_1d_array_to_skew_t_pdf
 from .nd_array.nd_array.get_coordinates_for_reflection import \
     get_coordinates_for_reflection
-from .nd_array.nd_array.normalize_1d_array import normalize_1d_array
 
 
 def compute_context_indices(array_1d,
@@ -72,20 +71,21 @@ def compute_context_indices(array_1d,
     context_indices = sign(context_indices) * abs(context_indices)**(
         df / scale) * sign(shape)
 
+    context_indices_like_array = context_indices[[
+        argmin(abs(grid - v)) for v in array_1d
+    ]]
+
+    context_summary = ((sign(context_indices_like_array) == sign(shape)) *
+                       context_indices_like_array).sum()
+
     return {
         'fit': [n, location, scale, df, shape],
-        'grid':
-        grid,
-        'pdf':
-        pdf,
-        'pdf_reflection':
-        pdf_reflection,
-        'cdf':
-        cdf,
-        'cdf_reflection':
-        cdf_reflection,
-        'context_indices':
-        context_indices,
-        'context_indices_like_array':
-        context_indices[[argmin(abs(grid - v)) for v in array_1d]],
+        'grid': grid,
+        'pdf': pdf,
+        'pdf_reflection': pdf_reflection,
+        'cdf': cdf,
+        'cdf_reflection': cdf_reflection,
+        'context_indices': context_indices,
+        'context_indices_like_array': context_indices_like_array,
+        'context_summary': context_summary,
     }
