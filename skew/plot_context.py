@@ -7,11 +7,12 @@ from seaborn import distplot
 from .compute_context_indices import compute_context_indices
 from .plot.plot.decorate import decorate
 from .plot.plot.save_plot import save_plot
+from .plot.plot.style import FIGURE_SIZE
 
 
 def plot_context(array_1d,
                  name,
-                 figure_size=(10, 10),
+                 figure_size=FIGURE_SIZE,
                  n_bin=80,
                  plot_skew_t_pdf=True,
                  plot_skew_t_cdf=True,
@@ -97,7 +98,7 @@ def plot_context(array_1d,
             0.9,
             'N={:.0f}    Location={:.2f}    Scale={:.2f}    DF={:.2f}    Shape={:.2f}'.
             format(*d['fit']),
-            size=13,
+            size=16,
             weight='bold',
             color='#220530',
             horizontalalignment='center')
