@@ -11,11 +11,10 @@ from .plot.plot.style import FIGURE_SIZE
 
 
 def plot_context(array_1d,
-                 name,
                  figure_size=FIGURE_SIZE,
-                 n_bin=80,
+                 n_bin=None,
                  plot_skew_t_pdf=True,
-                 plot_skew_t_cdf=True,
+                 plot_skew_t_cdf=False,
                  plot_context_indices=True,
                  plot_both_context_on_top=True,
                  n_grid=3000,
@@ -24,13 +23,14 @@ def plot_context(array_1d,
                  df=None,
                  shape=None,
                  title='Context Plot',
+                 feature_name='Feature',
+                 value_name='Value',
                  show_plot=True,
                  directory_path=None):
     """
     Plot context.
     Arguments:
         array_1d (array): (n)
-        name (str): the name of this feature
         figure_size (tuple):
         n_bin (int):
         plot_skew_t_pdf (bool):
@@ -43,6 +43,8 @@ def plot_context(array_1d,
         df (float):
         shape (float):
         title (str):
+        value_name (str): the name of value
+        feature_name (str): the name of feature
         show_plot (bool): whether to show plot
         directory_path (str): directory_path//<id>.png will be saved
     Returns:
@@ -62,13 +64,13 @@ def plot_context(array_1d,
     decorate(
         style='white',
         title=title,
-        xlabel=name,
-        ylabel='PDF | CDF | Context Index')
+        xlabel=value_name,
+        ylabel='Probability | Context Index')
 
     gcf().text(
         0.5,
         0.92,
-        name,
+        feature_name,
         size=18,
         weight='bold',
         color='#20D9BA',
@@ -77,12 +79,22 @@ def plot_context(array_1d,
     # ==========================================================================
     # Plot histogram
     # ==========================================================================
+    if not n_bin:
+        n_bin = array_1d.size // 8
+
     distplot(
         array_1d,
         bins=n_bin,
         kde=False,
         norm_hist=True,
-        hist_kws=dict(linewidth=0.92, color='#20D9BA', alpha=0.92, zorder=2))
+        hist_kws=dict(
+            histtype='step',
+            fill=True,
+            linewidth=0.92,
+            color='#003171',
+            facecolor='#20D9BA',
+            alpha=0.92,
+            zorder=2))
 
     if plot_skew_t_pdf or plot_skew_t_cdf or plot_context_indices:
         d = compute_context_indices(
@@ -109,26 +121,26 @@ def plot_context(array_1d,
     # Plot skew-t PDF
     # ==========================================================================
     if plot_skew_t_pdf:
+
         pdf_backgdound_line_kwargs = dict(
-            linestyle='-', linewidth=3.9, zorder=3)
-        pdf_line_kwargs = dict(linestyle='-', linewidth=2.3, zorder=3)
+            linestyle='-',
+            linewidth=6.9,
+            color='#003171',
+            alpha=0.69,
+            zorder=3)
+        plot(grid, d['pdf'], **pdf_backgdound_line_kwargs)
+        plot(grid, d['pdf_reflection'], **pdf_backgdound_line_kwargs)
 
-        plot(grid, d['pdf'], color='#EBF6F7', **pdf_backgdound_line_kwargs)
+        pdf_line_kwargs = dict(linestyle='-', linewidth=3.9, zorder=3)
         plot(grid, d['pdf'], color='#20D9BA', **pdf_line_kwargs)
-
-        plot(
-            grid,
-            d['pdf_reflection'],
-            color='#EBF6F7',
-            **pdf_backgdound_line_kwargs)
         plot(grid, d['pdf_reflection'], color='#9017E6', **pdf_line_kwargs)
 
     # ==========================================================================
     # Plot skew-t CDF
     # ==========================================================================
     if plot_skew_t_cdf:
-        cdf_line_kwargs = dict(linestyle=':', linewidth=2.3, zorder=4)
 
+        cdf_line_kwargs = dict(linestyle=':', linewidth=3.9, zorder=4)
         plot(grid, d['cdf'], color='#20D9BA', **cdf_line_kwargs)
         plot(grid, d['cdf_reflection'], color='#9017E6', **cdf_line_kwargs)
 
@@ -136,15 +148,18 @@ def plot_context(array_1d,
     # Plot context indices
     # ==========================================================================
     if plot_context_indices:
-        context_indices_line_kwargs = dict(
-            linestyle='-', linewidth=2.3, alpha=0.8, zorder=1)
+
         context_indices = d['context_indices']
         is_negative = context_indices < 0
+
+        context_indices_line_kwargs = dict(
+            linestyle='-', linewidth=3.9, alpha=0.8, zorder=1)
         fill_between(
             grid[is_negative],
             [1, -1][plot_both_context_on_top] * context_indices[is_negative],
             color='#0088FF',
             **context_indices_line_kwargs)
+
         fill_between(
             grid[~is_negative],
             context_indices[~is_negative],
@@ -155,7 +170,9 @@ def plot_context(array_1d,
     # Show and save
     # ==========================================================================
     if directory_path:
-        save_plot(join(directory_path, 'context_plot', '{}.png'.format(name)))
+        save_plot(
+            join(directory_path, 'context_plot', '{}.png'.format(
+                feature_name)))
     if show_plot:
         show()
     close()
