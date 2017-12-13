@@ -21,7 +21,7 @@ def plot_context(array_1d,
                  scale=None,
                  df=None,
                  shape=None,
-                 compute_context_indices_method='tail_reduction',
+                 compute_context_indices_method='tail_reduction_reflection',
                  title='Context Plot',
                  feature_name='Feature',
                  value_name='Value',
@@ -41,7 +41,8 @@ def plot_context(array_1d,
         scale (float):
         df (float):
         shape (float):
-        compute_context_indices_method (str): 'tail_reduction' | 'reflection'
+        compute_context_indices_method (str): 'tail_reduction' | 'reflection' |
+            'tail_reduction_reflection'
         title (str):
         value_name (str): the name of value
         feature_name (str): the name of feature

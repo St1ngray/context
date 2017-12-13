@@ -9,20 +9,22 @@ from .support.support.multiprocess import multiprocess
 from .support.support.path import establish_path
 
 
-def make_context_matrix(feature_x_sample,
-                        fit_skew_t_pdf__feature_x_parameter=None,
-                        n_grid=3000,
-                        compute_context_indices_method='tail_reduction',
-                        log=False,
-                        n_job=1,
-                        directory_path=None):
+def make_context_matrix(
+        feature_x_sample,
+        fit_skew_t_pdf__feature_x_parameter=None,
+        n_grid=3000,
+        compute_context_indices_method='tail_reduction_reflection',
+        log=False,
+        n_job=1,
+        directory_path=None):
     """
     Make context matrix.
     Arguments:
         feature_x_sample (DataFrame): (n_feature, n_sample)
         fit_skew_t_pdf__feature_x_parameter (DataFrame):
         n_grid (int):
-        compute_context_indices_method (str): 'tail_reduction' | 'reflection'
+        compute_context_indices_method (str): 'tail_reduction' | 'reflection' |
+            'tail_reduction_reflection'
         log (bool): whether to log progress
         n_job (int): number of jobs for parallel computing
         directory_path (str): where outputs are saved
