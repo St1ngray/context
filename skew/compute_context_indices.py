@@ -1,18 +1,23 @@
-from numpy import argmin, cumsum, linspace, sign, where
+from numpy import argmax, argmin, linspace, log2, sqrt, where
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
+
+from summarize_context_indices import summarize_context_indices
 
 from .fit_1d_array_to_skew_t_pdf import fit_1d_array_to_skew_t_pdf
 from .nd_array.nd_array.get_coordinates_for_reflection import \
     get_coordinates_for_reflection
 
 
-def compute_context_indices(array_1d,
-                            skew_t_model=None,
-                            n_grid=3000,
-                            location=None,
-                            scale=None,
-                            df=None,
-                            shape=None):
+def compute_context_indices(
+        array_1d,
+        skew_t_model=None,
+        n_grid=3000,
+        location=None,
+        scale=None,
+        df=None,
+        shape=None,
+        compute_context_indices_method='tail_reduction_reflection',
+        degrees_of_freedom_for_tail_reduction=10e8):
     """
     Compute context indices.
     Arguments:
@@ -23,15 +28,18 @@ def compute_context_indices(array_1d,
         scale (float):
         df (float):
         shape (float):
+        compute_context_indices_method (str): 'tail_reduction' | 'reflection' |
+            'tail_reduction_reflection'
+        degrees_of_freedom_for_tail_reduction (number):
     Returns:
         dict: {
             fit: [n, location, scale, df, shape] (5),
             grid: array (n_grid),
-            pdf: array (n),
-            pdf_reflection: array (n),
-            cdf: array (n),
-            cdf_reflection: array (n),
-            context_indices: array (n),
+            pdf: array (n_grid),
+            pdf_transformed: array (n_grid),
+            context_indices: array (n_grid),
+            context_indices_like_array: array (n),
+            context_summary: float,
         }
     """
 
@@ -45,47 +53,72 @@ def compute_context_indices(array_1d,
     else:
         n = array_1d.size
 
-    # Compute PDF and PDF reflection
+    # Compute PDF
     grid = linspace(array_1d.min(), array_1d.max(), n_grid)
     pdf = skew_t_model.pdf(grid, df, shape, loc=location, scale=scale)
-    pdf_reflection = skew_t_model.pdf(
-        get_coordinates_for_reflection(grid, pdf),
-        df,
-        shape,
-        loc=location,
-        scale=scale)
 
-    # Compute CDF and CDF reflection
-    # TODO: add compute_1d_array_cumulative_sum to nd_array library
-    if shape < 0:
-        cdf = cumsum(pdf / pdf.sum())
-        cdf_reflection = cumsum(pdf_reflection / pdf_reflection.sum())
+    # Compute context indices magnitude
+    if compute_context_indices_method == 'tail_reduction':
+
+        pdf_transformed = skew_t_model.pdf(
+            grid,
+            degrees_of_freedom_for_tail_reduction,
+            shape,
+            loc=location,
+            scale=scale)
+
+        context_indices_magnitude = where(pdf_transformed < pdf,
+                                          ((pdf - pdf_transformed) / pdf), 0)
+
+    elif compute_context_indices_method == 'reflection':
+
+        pdf_transformed = skew_t_model.pdf(
+            get_coordinates_for_reflection(grid, pdf),
+            df,
+            shape,
+            loc=location,
+            scale=scale)
+
+        context_indices_magnitude = where(
+            pdf_transformed < pdf, ((pdf - pdf_transformed) / pdf),
+            ((pdf_transformed - pdf) / pdf_transformed))
+
+    elif compute_context_indices_method == 'tail_reduction_reflection':
+
+        pdf_transformed = skew_t_model.pdf(
+            get_coordinates_for_reflection(grid, pdf),
+            degrees_of_freedom_for_tail_reduction,
+            shape,
+            loc=location,
+            scale=scale)
+
+        context_indices_magnitude = where(pdf_transformed < pdf,
+                                          ((pdf - pdf_transformed) / pdf), 0)
+
     else:
-        cdf = cumsum(pdf[::-1] / pdf.sum())[::-1]
-        cdf_reflection = cumsum(
-            pdf_reflection[::-1] / pdf_reflection.sum())[::-1]
+        raise ValueError('Unknown compute_context_indices_method {}.'.format(
+            compute_context_indices_method))
 
     # Compute context indices
-    f0 = pdf
-    f1 = pdf_reflection
-    context_indices = where(f1 < f0, ((f0 - f1) / f0), ((f0 - f1) / f1))
-    context_indices = sign(context_indices) * abs(context_indices)**(
-        df / scale) * sign(shape)
+    pdf_argmax = argmax(pdf)
+    signs = [-1] * pdf_argmax + [1] * (n_grid - pdf_argmax)
+    context_indices = signs * context_indices_magnitude**(
+        log2(df) / sqrt(abs(shape) * scale))
 
+    # Make context_indices like array_1d
     context_indices_like_array = context_indices[[
         argmin(abs(grid - v)) for v in array_1d
     ]]
 
-    context_summary = ((sign(context_indices_like_array) == sign(shape)) *
-                       context_indices_like_array).sum()
+    # Summarize context indices
+    context_summary = summarize_context_indices(context_indices_like_array,
+                                                shape)
 
     return {
         'fit': [n, location, scale, df, shape],
         'grid': grid,
         'pdf': pdf,
-        'pdf_reflection': pdf_reflection,
-        'cdf': cdf,
-        'cdf_reflection': cdf_reflection,
+        'pdf_transformed': pdf_transformed,
         'context_indices': context_indices,
         'context_indices_like_array': context_indices_like_array,
         'context_summary': context_summary,

@@ -12,8 +12,9 @@ from .support.support.path import establish_path
 def make_context_matrix(feature_x_sample,
                         fit_skew_t_pdf__feature_x_parameter=None,
                         n_grid=3000,
-                        n_job=1,
+                        compute_context_indices_method='tail_reduction',
                         log=False,
+                        n_job=1,
                         directory_path=None):
     """
     Make context matrix.
@@ -21,8 +22,9 @@ def make_context_matrix(feature_x_sample,
         feature_x_sample (DataFrame): (n_feature, n_sample)
         fit_skew_t_pdf__feature_x_parameter (DataFrame):
         n_grid (int):
-        n_job (int): number of jobs for parallel computing
+        compute_context_indices_method (str): 'tail_reduction' | 'reflection'
         log (bool): whether to log progress
+        n_job (int): number of jobs for parallel computing
         directory_path (str): where outputs are saved
     Returns:
         DataFrame: (n_feature, n_sample)
@@ -30,7 +32,8 @@ def make_context_matrix(feature_x_sample,
 
     context__feature_x_sample = concat(
         multiprocess(_make_context_matrix, [[
-            df, fit_skew_t_pdf__feature_x_parameter, n_grid, log
+            df, fit_skew_t_pdf__feature_x_parameter, n_grid,
+            compute_context_indices_method, log
         ] for df in split_df(feature_x_sample, n_job)], n_job))
 
     if directory_path:
@@ -42,13 +45,14 @@ def make_context_matrix(feature_x_sample,
 
 
 def _make_context_matrix(feature_x_sample, fit_skew_t_pdf__feature_x_parameter,
-                         n_grid, log):
+                         n_grid, compute_context_indices_method, log):
     """
     Make context matrix.
     Arguments:
         feature_x_sample (DataFrame): (n_feature, n_sample)
         fit_skew_t_pdf__feature_x_parameter (DataFrame):
         n_grid (int):
+        compute_context_indices_method (str): 'tail_reduction' | 'reflection'
         log (bool): whether to log progress
     Returns:
         DataFrame: (n_feature, n_sample)
@@ -81,6 +85,8 @@ def _make_context_matrix(feature_x_sample, fit_skew_t_pdf__feature_x_parameter,
             location=location,
             scale=scale,
             df=df,
-            shape=shape)['context_indices_like_array']
+            shape=shape,
+            compute_context_indices_method=compute_context_indices_method)[
+                'context_indices_like_array']
 
     return context__feature_x_sample

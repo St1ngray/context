@@ -14,7 +14,6 @@ def plot_context(array_1d,
                  figure_size=FIGURE_SIZE,
                  n_bin=None,
                  plot_skew_t_pdf=True,
-                 plot_skew_t_cdf=False,
                  plot_context_indices=True,
                  plot_both_context_on_top=True,
                  n_grid=3000,
@@ -22,6 +21,7 @@ def plot_context(array_1d,
                  scale=None,
                  df=None,
                  shape=None,
+                 compute_context_indices_method='tail_reduction',
                  title='Context Plot',
                  feature_name='Feature',
                  value_name='Value',
@@ -34,7 +34,6 @@ def plot_context(array_1d,
         figure_size (tuple):
         n_bin (int):
         plot_skew_t_pdf (bool):
-        plot_skew_t_cdf (bool):
         plot_context_indices (bool):
         plot_both_context_on_top (bool):
         n_grid (int):
@@ -42,6 +41,7 @@ def plot_context(array_1d,
         scale (float):
         df (float):
         shape (float):
+        compute_context_indices_method (str): 'tail_reduction' | 'reflection'
         title (str):
         value_name (str): the name of value
         feature_name (str): the name of feature
@@ -96,14 +96,15 @@ def plot_context(array_1d,
             alpha=0.92,
             zorder=2))
 
-    if plot_skew_t_pdf or plot_skew_t_cdf or plot_context_indices:
+    if plot_skew_t_pdf or plot_context_indices:
         d = compute_context_indices(
             array_1d,
             n_grid=n_grid,
             location=location,
             scale=scale,
             df=df,
-            shape=shape)
+            shape=shape,
+            compute_context_indices_method=compute_context_indices_method)
 
         gcf().text(
             0.5,
@@ -129,20 +130,11 @@ def plot_context(array_1d,
             alpha=0.69,
             zorder=3)
         plot(grid, d['pdf'], **pdf_backgdound_line_kwargs)
-        plot(grid, d['pdf_reflection'], **pdf_backgdound_line_kwargs)
+        plot(grid, d['pdf_transformed'], **pdf_backgdound_line_kwargs)
 
         pdf_line_kwargs = dict(linestyle='-', linewidth=3.9, zorder=3)
         plot(grid, d['pdf'], color='#20D9BA', **pdf_line_kwargs)
-        plot(grid, d['pdf_reflection'], color='#9017E6', **pdf_line_kwargs)
-
-    # ==========================================================================
-    # Plot skew-t CDF
-    # ==========================================================================
-    if plot_skew_t_cdf:
-
-        cdf_line_kwargs = dict(linestyle=':', linewidth=3.9, zorder=4)
-        plot(grid, d['cdf'], color='#20D9BA', **cdf_line_kwargs)
-        plot(grid, d['cdf_reflection'], color='#9017E6', **cdf_line_kwargs)
+        plot(grid, d['pdf_transformed'], color='#9017E6', **pdf_line_kwargs)
 
     # ==========================================================================
     # Plot context indices
@@ -159,7 +151,6 @@ def plot_context(array_1d,
             [1, -1][plot_both_context_on_top] * context_indices[is_negative],
             color='#0088FF',
             **context_indices_line_kwargs)
-
         fill_between(
             grid[~is_negative],
             context_indices[~is_negative],
