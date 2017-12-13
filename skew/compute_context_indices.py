@@ -1,11 +1,10 @@
 from numpy import argmax, argmin, linspace, log2, sqrt, where
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
-from summarize_context_indices import summarize_context_indices
-
 from .fit_1d_array_to_skew_t_pdf import fit_1d_array_to_skew_t_pdf
 from .nd_array.nd_array.get_coordinates_for_reflection import \
     get_coordinates_for_reflection
+from .summarize_context_indices import summarize_context_indices
 
 
 def compute_context_indices(
