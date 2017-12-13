@@ -55,8 +55,14 @@ def summarize_context_matrix_by_feature(context__feature_x_sample,
         xlabel='Rank',
         ylabel='Context Summary')
 
-    print('Extreme context summary:')
-    print(feature_context_summary.head(n_extreme_to_print))
-    print(feature_context_summary.tail(n_extreme_to_print))
+    print('=' * 80)
+    print('Extreme {} Context Summary'.format(n_extreme_to_print))
+    print('v' * 80)
+    for g, cs in feature_context_summary[:n_extreme_to_print].items():
+        print('{}\t{}'.format(g, cs))
+    print('*' * 80)
+    for g, cs in feature_context_summary[-n_extreme_to_print:].items():
+        print('{}\t{}'.format(g, cs))
+    print('=' * 80)
 
     return feature_context_summary
