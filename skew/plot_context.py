@@ -1,17 +1,16 @@
 from os.path import join
 
-from matplotlib.pyplot import (close, figure, fill_between, gcf, plot, show,
-                               xlim, ylim)
-from seaborn import distplot
+from matplotlib.pyplot import (close, figure, fill_between, gcf, hist, plot,
+                               show, xlim, ylim)
+from numpy import ones_like
 
 from .compute_context_indices import compute_context_indices
 from .plot.plot.decorate import decorate
 from .plot.plot.save_plot import save_plot
-from .plot.plot.style import FIGURE_SIZE
 
 
 def plot_context(array_1d,
-                 figure_size=FIGURE_SIZE,
+                 figure_size=(8, 8),
                  n_bin=None,
                  plot_skew_t_pdf=True,
                  plot_context_indices=True,
@@ -80,22 +79,17 @@ def plot_context(array_1d,
     # ==========================================================================
     # Plot histogram
     # ==========================================================================
-    if not n_bin:
-        n_bin = array_1d.size // 8
-
-    distplot(
+    hist(
         array_1d,
+        weights=ones_like(array_1d) / array_1d.size,
         bins=n_bin,
-        kde=False,
-        norm_hist=True,
-        hist_kws=dict(
-            histtype='step',
-            fill=True,
-            linewidth=0.92,
-            color='#003171',
-            facecolor='#20D9BA',
-            alpha=0.92,
-            zorder=2))
+        histtype='step',
+        fill=True,
+        linewidth=0.92,
+        color='#003171',
+        facecolor='#20D9BA',
+        alpha=0.92,
+        zorder=2)
 
     if plot_skew_t_pdf or plot_context_indices:
         d = compute_context_indices(
@@ -120,20 +114,20 @@ def plot_context(array_1d,
         grid = d['grid']
 
     # ==========================================================================
-    # Plot skew-t PDF
+    # Plot skew-t PDF and transformed PDF
     # ==========================================================================
     if plot_skew_t_pdf:
 
         pdf_backgdound_line_kwargs = dict(
             linestyle='-',
-            linewidth=6.9,
+            linewidth=3.9,
             color='#003171',
             alpha=0.69,
             zorder=3)
         plot(grid, d['pdf'], **pdf_backgdound_line_kwargs)
         plot(grid, d['pdf_transformed'], **pdf_backgdound_line_kwargs)
 
-        pdf_line_kwargs = dict(linestyle='-', linewidth=3.9, zorder=3)
+        pdf_line_kwargs = dict(linestyle='-', linewidth=2.6, zorder=3)
         plot(grid, d['pdf'], color='#20D9BA', **pdf_line_kwargs)
         plot(grid, d['pdf_transformed'], color='#9017E6', **pdf_line_kwargs)
 
