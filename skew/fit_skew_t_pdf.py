@@ -1,65 +1,23 @@
-from os.path import join
-
-from pandas import DataFrame, concat
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
-from .fit_1d_array_to_skew_t_pdf import fit_1d_array_to_skew_t_pdf
-from .support.support.df import split_df
-from .support.support.multiprocess import multiprocess
-from .support.support.path import establish_path
 
-
-def fit_skew_t_pdf(feature_x_sample, n_job=1, log=False, directory_path=None):
+def fit_skew_t_pdf(array_1d, skew_t_model=None):
     """
-    Fit features to skew-t PDF.
+    Fit skew-t PDF.
     Arguments:
-        feature_x_sample (DataFrame): (n_feature, n_sample)
-        n_job (int): number of jobs for parallel computing
-        log (bool): whether to log progress
-        directory_path (str): where outputs are saved
+        array_1d (array): (n)
+        skew_t_model (statsmodels.sandbox.distributions.extras.ACSkewT_gen):
     Returns:
-        DataFrame: (n_feature, 5 [N, Location, Scale, DF, Shape])
+        int: n
+        float: location
+        float: scale
+        float: df
+        float: shape
     """
 
-    fit_skew_t_pdf__feature_x_parameter = concat(
-        multiprocess(_fit_skew_t_pdf, [[df, log]
-                                       for df in split_df(
-                                           feature_x_sample, n_job)], n_job))
+    if skew_t_model is None:
+        skew_t_model = ACSkewT_gen()
 
-    if directory_path:
-        establish_path(directory_path, path_type='directory')
-        fit_skew_t_pdf__feature_x_parameter.to_csv(
-            join(directory_path, 'fit_skew_t_pdf__feature_x_parameter.tsv'),
-            sep='\t')
+    df, shape, location, scale = skew_t_model.fit(array_1d)
 
-    return fit_skew_t_pdf__feature_x_parameter
-
-
-def _fit_skew_t_pdf(feature_x_sample, log):
-    """
-    Fit features to skew-t PDF.
-    Arguments:
-        feature_x_sample (DataFrame): (n_feature, n_sample)
-        log (bool): whether to log progress
-    Returns:
-        DataFrame: (n_feature, 5 [N, Location, Scale, DF, Shape])
-    """
-
-    skew_t_model = ACSkewT_gen()
-
-    fit_skew_t_pdf__feature_x_parameter = DataFrame(
-        index=feature_x_sample.index,
-        columns=['N', 'Location', 'Scale', 'DF', 'Shape'])
-    fit_skew_t_pdf__feature_x_parameter.index.name = 'Feature'
-
-    for i, (feature_index,
-            feature_vector) in enumerate(feature_x_sample.iterrows()):
-        if log:
-            print('({}/{}) {} ...'.format(i + 1, feature_x_sample.shape[0],
-                                          feature_index))
-
-        fit_skew_t_pdf__feature_x_parameter.loc[
-            feature_index] = fit_1d_array_to_skew_t_pdf(
-                feature_vector, skew_t_model=skew_t_model)
-
-    return fit_skew_t_pdf__feature_x_parameter
+    return array_1d.size, location, scale, df, shape
