@@ -17,5 +17,10 @@ def summarize_context_indices(
 
     if summarize_context_indices_method == 'summarize_only_shape_side':
         return ((sign(context_indices) == sign(shape)) * context_indices).sum()
-    else:
+
+    elif summarize_context_indices_method == 'summarize_both_side':
         return context_indices.sum()
+
+    else:
+        raise ValueError('Unknown summarize_context_indices_method {}.'.format(
+            summarize_context_indices_method))
