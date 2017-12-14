@@ -50,7 +50,7 @@ def make_context_matrix_and_summarize_context(
     ] for df in split_df(feature_x_sample, n_job)], n_job)
 
     context__feature_x_sample = concat([r[0] for r in returns])
-    feature_context_summary = concat([r[1] for r in returns])
+    feature_context_summary = concat([r[1] for r in returns]).sort_values()
 
     if directory_path:
         establish_path(directory_path, path_type='directory')
