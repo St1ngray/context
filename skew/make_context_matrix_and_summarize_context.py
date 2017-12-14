@@ -4,7 +4,6 @@ from pandas import DataFrame, Series, concat
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .compute_context import compute_context
-from .plot.plot.plot_points import plot_points
 from .support.support.df import split_df
 from .support.support.multiprocess import multiprocess
 from .support.support.path import establish_path
@@ -20,7 +19,6 @@ def make_context_matrix_and_summarize_context(
         summarize_context_side='shape_side',
         n_job=1,
         log=False,
-        n_extreme_to_print=10,
         directory_path=None):
     """
     Make context matrix and summarize context.
@@ -36,7 +34,6 @@ def make_context_matrix_and_summarize_context(
         summarize_context_side (str): 'shape_side' | 'both_sides'
         n_job (int): number of jobs for parallel computing
         log (bool): whether to log progress
-        n_extreme_to_print (int): number of extreme features to print
         directory_path (str): where outputs are saved
     Returns:
         DataFrame: (n_feature, n_sample)
@@ -62,23 +59,6 @@ def make_context_matrix_and_summarize_context(
             join(directory_path, 'feature_context_summary.tsv'),
             header=True,
             sep='\t')
-
-    plot_points(
-        range(feature_context_summary.size),
-        feature_context_summary,
-        title='Ranked Context Summary',
-        xlabel='Rank',
-        ylabel='Context Summary')
-
-    print('=' * 80)
-    print('Extreme {} Context Summary'.format(n_extreme_to_print))
-    print('v' * 80)
-    for g, cs in feature_context_summary[:n_extreme_to_print].items():
-        print('{}\t{}'.format(g, cs))
-    print('*' * 80)
-    for g, cs in feature_context_summary[-n_extreme_to_print:].items():
-        print('{}\t{}'.format(g, cs))
-    print('=' * 80)
 
     return context__feature_x_sample, feature_context_summary
 
