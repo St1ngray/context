@@ -9,6 +9,7 @@ from .support.support.path import establish_path
 
 def summarize_context_matrix_by_feature(context__feature_x_sample,
                                         fit_skew_t_pdf__feature_x_parameter,
+                                        summarize_only_shape_side=False,
                                         log=False,
                                         n_extreme_to_print=10,
                                         directory_path=None):
@@ -17,6 +18,8 @@ def summarize_context_matrix_by_feature(context__feature_x_sample,
     Arguments:
         context__feature_x_sample (DataFrame): (n_feature, n_sample)
         fit_skew_t_pdf__feature_x_parameter (DataFrame):
+        summarize_only_shape_side (bool): whether to only summarize the shape
+            size
         log (bool): whether to log progress
         n_extreme_to_print (int): the number of extreme features to plot
         directory_path (str): where outputs are saved
@@ -35,9 +38,13 @@ def summarize_context_matrix_by_feature(context__feature_x_sample,
             print('({}/{}) {} ...'.format(
                 i + 1, context__feature_x_sample.shape[0], feature_index))
 
+        if summarize_only_shape_side:
+            shape = fit_skew_t_pdf__feature_x_parameter.loc[feature_index,
+                                                            'Shape']
+        else:
+            shape = None
         feature_context_summary[feature_index] = summarize_context_indices(
-            feature_context_vector,
-            fit_skew_t_pdf__feature_x_parameter.loc[feature_index, 'Shape'])
+            feature_context_vector, shape)
 
     feature_context_summary.sort_values(inplace=True)
 

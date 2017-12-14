@@ -1,7 +1,7 @@
 from numpy import sign
 
 
-def summarize_context_indices(context_indices, shape):
+def summarize_context_indices(context_indices, shape=None):
     """
     Summarize context indices.
     Arguments:
@@ -11,4 +11,7 @@ def summarize_context_indices(context_indices, shape):
         float: context summary
     """
 
-    return ((sign(context_indices) == sign(shape)) * context_indices).sum()
+    if shape is None:
+        return context_indices.sum()
+    else:
+        return ((sign(context_indices) == sign(shape)) * context_indices).sum()

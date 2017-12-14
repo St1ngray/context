@@ -1,4 +1,4 @@
-from numpy import argmax, argmin, linspace, log2, sqrt, where
+from numpy import argmax, argmin, linspace, log, sqrt, where
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .fit_1d_array_to_skew_t_pdf import fit_1d_array_to_skew_t_pdf
@@ -102,7 +102,7 @@ def compute_context_indices(
     pdf_argmax = argmax(pdf)
     signs = [-1] * pdf_argmax + [1] * (n_grid - pdf_argmax)
     context_indices = signs * context_indices_magnitude**(
-        log2(df) / sqrt(abs(shape) * scale))
+        log(df) / sqrt(abs(shape) * scale))
 
     # Make context_indices like array_1d
     context_indices_like_array = context_indices[[
