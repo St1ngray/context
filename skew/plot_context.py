@@ -72,6 +72,7 @@ def plot_context(array_1d,
             facecolor='#20D9BA',
             alpha=0.92,
             zorder=2),
+        rug_kws=dict(linewidth=8, color='#FFFFFF', zorder=2),
         norm_hist=True,
         ax=ax,
         xlabel=xlabel)
