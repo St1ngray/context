@@ -14,7 +14,7 @@ from .support.support.path import clean_file_name
 
 def plot_context(array_1d,
                  title,
-                 figure_size=[FIGURE_SIZE[0] * 1.8, FIGURE_SIZE[1]],
+                 figure_size=[FIGURE_SIZE[0] * 1.88, FIGURE_SIZE[1]],
                  n_bin=None,
                  plot_skew_t_pdf=True,
                  plot_context_indices=True,
