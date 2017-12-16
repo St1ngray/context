@@ -139,7 +139,7 @@ def plot_context(array_1d,
             color='#0088FF',
             **context_indices_line_kwargs)
 
-        title = '{} (Context Summary = {:.2f})'.format(
+        title = '{} (Context Summary {:.2f})'.format(
             title, context_dict['context_summary'])
 
     if plot_skew_t_pdf or plot_context_indices:
