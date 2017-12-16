@@ -63,6 +63,7 @@ def plot_context(array_1d,
         array_1d,
         bins=n_bin,
         kde=False,
+        rug=True,
         hist_kws=dict(
             histtype='step',
             fill=True,
