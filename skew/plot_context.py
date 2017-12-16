@@ -1,6 +1,8 @@
 from os.path import join
 
-from matplotlib.pyplot import close, figure, show
+from matplotlib.gridspec import GridSpec
+from matplotlib.pyplot import close, figure, show, subplot
+from seaborn import swarmplot
 
 from .compute_context import compute_context
 from .plot.plot.decorate import decorate
@@ -57,13 +59,16 @@ def plot_context(array_1d,
         None
     """
 
-    ax = figure(figsize=figure_size).gca()
+    figure(figsize=figure_size)
+
+    gridspec = GridSpec(100, 1)
+
+    ax = subplot(gridspec[:92, :])
+    ax_bottom = subplot(gridspec[92:, :])
 
     plot_distribution(
         array_1d,
         bins=n_bin,
-        kde=False,
-        rug=True,
         hist_kws=dict(
             histtype='step',
             fill=True,
@@ -72,16 +77,11 @@ def plot_context(array_1d,
             facecolor='#20D9BA',
             alpha=0.92,
             zorder=2),
-        rug_kws=dict(
-            linewidth=2.6,
-            # color='#FFDDCA',
-            # color='#2A603B',
-            color='#EBF6F7',
-            # color='#2E211B',
-            zorder=4),
+        # rug=True,
+        # rug_kws=dict(linewidth=2.6, color='#EBF6F7', alpha=0.92, zorder=4),
+        kde=False,
         norm_hist=True,
-        ax=ax,
-        xlabel=xlabel)
+        ax=ax)
 
     context_dict = compute_context(
         array_1d,
@@ -164,12 +164,29 @@ def plot_context(array_1d,
             color='#181B26',
             horizontalalignment='center')
 
-    decorate(ax=ax, style='white', title=title)
+    decorate(
+        ax=ax,
+        despine_kwargs={'bottom': True},
+        style='white',
+        title=title,
+        xticks=[])
+
+    swarmplot(x=array_1d, ax=ax_bottom, color='#20D9BA', alpha=0.92)
+    # for annotation_i, annotation_vector in annotation_x_sample.iterrows():
+    #     swarmplot(
+    #         x=annotation_vector * array_1d,
+    #         ax=ax_bottom,
+    #         color=color,
+    #         alpha=0.92)
+    decorate(
+        ax=ax_bottom, despine_kwargs=dict(left=True), xlabel=xlabel, yticks=[])
 
     if directory_path:
         save_plot(
             join(directory_path, 'context_plot',
                  clean_file_name('{}.png'.format(title))))
+
     if show_plot:
         show()
+
     close()
