@@ -50,7 +50,8 @@ def _fit_skew_t_pdfs(feature_x_sample, log):
 
     fit_skew_t_pdf__feature_x_parameter = DataFrame(
         index=feature_x_sample.index,
-        columns=['N', 'Location', 'Scale', 'DF', 'Shape'])
+        columns=['N', 'Location', 'Scale', 'DF', 'Shape'],
+        dtype='float')
     fit_skew_t_pdf__feature_x_parameter.index.name = 'Feature'
 
     for i, (feature_index,
