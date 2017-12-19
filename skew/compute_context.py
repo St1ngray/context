@@ -12,12 +12,12 @@ def compute_context(array_1d,
                     scale=None,
                     df=None,
                     shape=None,
-                    interval_percent=0.6827,
                     n_grid=3000,
                     compute_context_method='tail_reduction_reflection',
                     degrees_of_freedom_for_tail_reduction=10e8,
                     summarize_context_by='absolute_value_weighted_context',
-                    summarize_context_side='shape_side'):
+                    summarize_context_side='shape_side',
+                    no_context_interval_percent=0.6827):
     """
     Compute context.
     Arguments:
@@ -27,7 +27,6 @@ def compute_context(array_1d,
         scale (float):
         df (float):
         shape (float):
-        interval_percent (float): 0 <= interval_percent <= 1
         n_grid (int):
         compute_context_method (str): 'tail_reduction_reflection' |
             'tail_reduction' | 'reflection' |
@@ -35,16 +34,17 @@ def compute_context(array_1d,
         summarize_context_by (str): 'absolute_value_weighted_context' |
             'context'
         summarize_context_side (str): 'shape_side' | 'both_sides'
+        no_context_interval_percent (float): 0 <= & <= 1
     Returns:
         dict: {
             fit: [n, location, scale, df, shape] (5),
-            interval: [lower_bound, higher_bound] (2),
             grid: array (n_grid),
             pdf: array (n_grid),
             pdf_transformed: array (n_grid),
             context_indices: array (n_grid),
             context_indices_like_array: array (n),
             conext_summary: float,
+            no_context: array (n),
         }
     """
 
@@ -56,7 +56,6 @@ def compute_context(array_1d,
             array_1d, skew_t_model=skew_t_model)
     else:
         n = array_1d.size
-    interval = skew_t_model.interval(0.5, df, shape, loc=location, scale=scale)
 
     grid = linspace(array_1d.min(), array_1d.max(), n_grid)
 
@@ -122,11 +121,18 @@ def compute_context(array_1d,
         raise ValueError(
             'Unknown summarize_context_by {}.'.format(summarize_context_by))
 
+    lower_bound, upper_bound = skew_t_model.interval(
+        no_context_interval_percent, df, shape, loc=location, scale=scale)
     if summarize_context_side == 'shape_side':
         context_summary = ((sign(a) == sign(shape)) * a).sum()
+        if 0 < shape:
+            no_context = array_1d < upper_bound
+        else:
+            no_context = lower_bound < array_1d
 
     elif summarize_context_side == 'both_sides':
         context_summary = a.sum()
+        no_context = (lower_bound < array_1d) & (array_1d < upper_bound)
 
     else:
         raise ValueError('Unknown summarize_context_side {}.'.format(
@@ -134,11 +140,11 @@ def compute_context(array_1d,
 
     return {
         'fit': [n, location, scale, df, shape],
-        'interval': interval,
         'grid': grid,
         'pdf': pdf,
         'pdf_transformed': pdf_transformed,
         'context_indices': context_indices,
         'context_indices_like_array': context_indices_like_array,
         'context_summary': context_summary,
+        'no_context': no_context,
     }

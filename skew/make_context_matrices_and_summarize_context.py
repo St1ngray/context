@@ -37,8 +37,8 @@ def make_context_matrices_and_summarize_context(
         directory_path (str): where outputs are saved
     Returns:
         DataFrame: (n_feature, n_sample)
-        DataFrame: (n_feature, n_sample)
         Series: (n_feature)
+        DataFrame: (n_feature, n_sample)
     """
 
     returns = multiprocess(_make_context_matrices_and_summarize_context, [[
@@ -48,8 +48,8 @@ def make_context_matrices_and_summarize_context(
     ] for df in split_df(feature_x_sample, n_job)], n_job)
 
     context__feature_x_sample = concat([r[0] for r in returns])
-    in_context__feature_x_sample = concat([r[1] for r in returns])
-    feature_context_summary = concat([r[2] for r in returns]).sort_values()
+    feature_context_summary = concat([r[1] for r in returns]).sort_values()
+    no_context__feature_x_sample = concat([r[2] for r in returns])
 
     if directory_path:
         establish_path(directory_path, path_type='directory')
@@ -62,7 +62,10 @@ def make_context_matrices_and_summarize_context(
             header=True,
             sep='\t')
 
-    return context__feature_x_sample, in_context__feature_x_sample, feature_context_summary
+        no_context__feature_x_sample.to_csv(
+            join(directory_path, 'no_context__feature_x_sample.tsv'), sep='\t')
+
+    return context__feature_x_sample, feature_context_summary, no_context__feature_x_sample
 
 
 def _make_context_matrices_and_summarize_context(
@@ -84,28 +87,24 @@ def _make_context_matrices_and_summarize_context(
         log (bool): whether to log progress
     Returns:
         DataFrame: (n_feature, n_sample)
-        DataFrame: (n_feature, n_sample)
         Series: (n_feature)
+        DataFrame: (n_feature, n_sample)
     """
 
     skew_t_model = ACSkewT_gen()
 
     context__feature_x_sample = DataFrame(
-        index=feature_x_sample.index,
-        columns=feature_x_sample.columns,
-        dtype='float')
-    context__feature_x_sample.index.name = 'Feature'
-
-    in_context__feature_x_sample = DataFrame(
-        index=feature_x_sample.index,
-        columns=feature_x_sample.columns,
-        dtype='int')
+        index=feature_x_sample.index, columns=feature_x_sample.columns)
     context__feature_x_sample.index.name = 'Feature'
 
     feature_context_summary = Series(
-        index=context__feature_x_sample.index,
-        name='Context Summary',
-        dtype='float')
+        index=context__feature_x_sample.index, name='Context Summary')
+
+    no_context__feature_x_sample = DataFrame(
+        index=feature_x_sample.index,
+        columns=feature_x_sample.columns,
+        dtype=bool)
+    no_context__feature_x_sample.index.name = 'Feature'
 
     for i, (feature_index,
             feature_vector) in enumerate(feature_x_sample.iterrows()):
@@ -136,14 +135,10 @@ def _make_context_matrices_and_summarize_context(
         context__feature_x_sample.loc[feature_index] = context_dict[
             'context_indices_like_array']
 
-        if 0 < context_dict['fit'][4]:
-            in_context = context_dict['interval'][1] < feature_vector
-        else:
-            in_context = feature_vector < context_dict['interval'][0]
-        in_context__feature_x_sample.loc[feature_index] = in_context.astype(
-            int)
-
         feature_context_summary[feature_index] = context_dict[
             'context_summary']
 
-    return context__feature_x_sample, in_context__feature_x_sample, feature_context_summary
+        no_context__feature_x_sample.loc[feature_index] = context_dict[
+            'no_context']
+
+    return context__feature_x_sample, feature_context_summary, no_context__feature_x_sample
