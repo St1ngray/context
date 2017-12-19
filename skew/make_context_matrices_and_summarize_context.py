@@ -94,11 +94,15 @@ def _make_context_matrices_and_summarize_context(
     skew_t_model = ACSkewT_gen()
 
     context__feature_x_sample = DataFrame(
-        index=feature_x_sample.index, columns=feature_x_sample.columns)
+        index=feature_x_sample.index,
+        columns=feature_x_sample.columns,
+        dtype='float64')
     context__feature_x_sample.index.name = 'Feature'
 
     feature_context_summary = Series(
-        index=context__feature_x_sample.index, name='Context Summary')
+        index=context__feature_x_sample.index,
+        name='Context Summary',
+        dtype='float64')
 
     no_context__feature_x_sample = DataFrame(
         index=feature_x_sample.index,
