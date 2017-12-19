@@ -12,6 +12,7 @@ def compute_context(array_1d,
                     scale=None,
                     df=None,
                     shape=None,
+                    interval_percent=0.6827,
                     n_grid=3000,
                     compute_context_method='tail_reduction_reflection',
                     degrees_of_freedom_for_tail_reduction=10e8,
@@ -26,6 +27,7 @@ def compute_context(array_1d,
         scale (float):
         df (float):
         shape (float):
+        interval_percent (float): 0 <= interval_percent <= 1
         n_grid (int):
         compute_context_method (str): 'tail_reduction_reflection' |
             'tail_reduction' | 'reflection' |
@@ -36,6 +38,7 @@ def compute_context(array_1d,
     Returns:
         dict: {
             fit: [n, location, scale, df, shape] (5),
+            interval: [lower_bound, higher_bound] (2),
             grid: array (n_grid),
             pdf: array (n_grid),
             pdf_transformed: array (n_grid),
@@ -53,6 +56,7 @@ def compute_context(array_1d,
             array_1d, skew_t_model=skew_t_model)
     else:
         n = array_1d.size
+    interval = skew_t_model.interval(0.5, df, shape, loc=location, scale=scale)
 
     grid = linspace(array_1d.min(), array_1d.max(), n_grid)
 
@@ -130,6 +134,7 @@ def compute_context(array_1d,
 
     return {
         'fit': [n, location, scale, df, shape],
+        'interval': interval,
         'grid': grid,
         'pdf': pdf,
         'pdf_transformed': pdf_transformed,

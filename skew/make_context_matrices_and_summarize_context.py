@@ -9,7 +9,7 @@ from .support.support.multiprocess import multiprocess
 from .support.support.path import establish_path
 
 
-def make_context_matrix_and_summarize_context(
+def make_context_matrices_and_summarize_context(
         feature_x_sample,
         fit_skew_t_pdf__feature_x_parameter=None,
         n_grid=3000,
@@ -21,7 +21,7 @@ def make_context_matrix_and_summarize_context(
         log=False,
         directory_path=None):
     """
-    Make context matrix and summarize context.
+    Make context matrices and summarize context.
     Arguments:
         feature_x_sample (DataFrame): (n_feature, n_sample)
         fit_skew_t_pdf__feature_x_parameter (DataFrame):
@@ -37,17 +37,19 @@ def make_context_matrix_and_summarize_context(
         directory_path (str): where outputs are saved
     Returns:
         DataFrame: (n_feature, n_sample)
+        DataFrame: (n_feature, n_sample)
         Series: (n_feature)
     """
 
-    returns = multiprocess(_make_context_matrix_and_summarize_context, [[
+    returns = multiprocess(_make_context_matrices_and_summarize_context, [[
         df, fit_skew_t_pdf__feature_x_parameter, n_grid,
         compute_context_method, degrees_of_freedom_for_tail_reduction,
         summarize_context_by, summarize_context_side, log
     ] for df in split_df(feature_x_sample, n_job)], n_job)
 
     context__feature_x_sample = concat([r[0] for r in returns])
-    feature_context_summary = concat([r[1] for r in returns]).sort_values()
+    in_context__feature_x_sample = concat([r[1] for r in returns])
+    feature_context_summary = concat([r[2] for r in returns]).sort_values()
 
     if directory_path:
         establish_path(directory_path, path_type='directory')
@@ -60,15 +62,15 @@ def make_context_matrix_and_summarize_context(
             header=True,
             sep='\t')
 
-    return context__feature_x_sample, feature_context_summary
+    return context__feature_x_sample, in_context__feature_x_sample, feature_context_summary
 
 
-def _make_context_matrix_and_summarize_context(
+def _make_context_matrices_and_summarize_context(
         feature_x_sample, fit_skew_t_pdf__feature_x_parameter, n_grid,
         compute_context_method, degrees_of_freedom_for_tail_reduction,
         summarize_context_by, summarize_context_side, log):
     """
-    Make context matrix and summarize context.
+    Make context matrices and summarize context.
     Arguments:
         feature_x_sample (DataFrame): (n_feature, n_sample)
         fit_skew_t_pdf__feature_x_parameter (DataFrame):
@@ -82,6 +84,7 @@ def _make_context_matrix_and_summarize_context(
         log (bool): whether to log progress
     Returns:
         DataFrame: (n_feature, n_sample)
+        DataFrame: (n_feature, n_sample)
         Series: (n_feature)
     """
 
@@ -91,6 +94,12 @@ def _make_context_matrix_and_summarize_context(
         index=feature_x_sample.index,
         columns=feature_x_sample.columns,
         dtype='float')
+    context__feature_x_sample.index.name = 'Feature'
+
+    in_context__feature_x_sample = DataFrame(
+        index=feature_x_sample.index,
+        columns=feature_x_sample.columns,
+        dtype='int')
     context__feature_x_sample.index.name = 'Feature'
 
     feature_context_summary = Series(
@@ -127,7 +136,14 @@ def _make_context_matrix_and_summarize_context(
         context__feature_x_sample.loc[feature_index] = context_dict[
             'context_indices_like_array']
 
+        if 0 < context_dict['fit'][4]:
+            in_context = context_dict['interval'][1] < feature_vector
+        else:
+            in_context = feature_vector < context_dict['interval'][0]
+        in_context__feature_x_sample.loc[feature_index] = in_context.astype(
+            int)
+
         feature_context_summary[feature_index] = context_dict[
             'context_summary']
 
-    return context__feature_x_sample, feature_context_summary
+    return context__feature_x_sample, in_context__feature_x_sample, feature_context_summary
