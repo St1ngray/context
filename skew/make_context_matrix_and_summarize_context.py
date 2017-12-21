@@ -9,7 +9,7 @@ from .support.support.multiprocess import multiprocess
 from .support.support.path import establish_path
 
 
-def make_context_matrices_and_summarize_context(
+def make_context_matrix_and_summarize_context(
         feature_x_sample,
         fit_skew_t_pdf__feature_x_parameter=None,
         n_grid=3000,
@@ -21,7 +21,7 @@ def make_context_matrices_and_summarize_context(
         log=False,
         directory_path=None):
     """
-    Make context matrices and summarize context.
+    Make context matrix and summarize context.
     Arguments:
         feature_x_sample (DataFrame): (n_feature, n_sample)
         fit_skew_t_pdf__feature_x_parameter (DataFrame):
@@ -38,10 +38,9 @@ def make_context_matrices_and_summarize_context(
     Returns:
         DataFrame: (n_feature, n_sample)
         Series: (n_feature)
-        DataFrame: (n_feature, n_sample)
     """
 
-    returns = multiprocess(_make_context_matrices_and_summarize_context, [[
+    returns = multiprocess(_make_context_matrix_and_summarize_context, [[
         df, fit_skew_t_pdf__feature_x_parameter, n_grid,
         compute_context_method, degrees_of_freedom_for_tail_reduction,
         summarize_context_by, summarize_context_side, log
@@ -49,7 +48,6 @@ def make_context_matrices_and_summarize_context(
 
     context__feature_x_sample = concat([r[0] for r in returns])
     feature_context_summary = concat([r[1] for r in returns]).sort_values()
-    no_context__feature_x_sample = concat([r[2] for r in returns])
 
     if directory_path:
         establish_path(directory_path, path_type='directory')
@@ -62,18 +60,15 @@ def make_context_matrices_and_summarize_context(
             header=True,
             sep='\t')
 
-        no_context__feature_x_sample.to_csv(
-            join(directory_path, 'no_context__feature_x_sample.tsv'), sep='\t')
-
-    return context__feature_x_sample, feature_context_summary, no_context__feature_x_sample
+    return context__feature_x_sample, feature_context_summary
 
 
-def _make_context_matrices_and_summarize_context(
+def _make_context_matrix_and_summarize_context(
         feature_x_sample, fit_skew_t_pdf__feature_x_parameter, n_grid,
         compute_context_method, degrees_of_freedom_for_tail_reduction,
         summarize_context_by, summarize_context_side, log):
     """
-    Make context matrices and summarize context.
+    Make context matrix and summarize context.
     Arguments:
         feature_x_sample (DataFrame): (n_feature, n_sample)
         fit_skew_t_pdf__feature_x_parameter (DataFrame):
@@ -88,7 +83,6 @@ def _make_context_matrices_and_summarize_context(
     Returns:
         DataFrame: (n_feature, n_sample)
         Series: (n_feature)
-        DataFrame: (n_feature, n_sample)
     """
 
     skew_t_model = ACSkewT_gen()
@@ -103,12 +97,6 @@ def _make_context_matrices_and_summarize_context(
         index=context__feature_x_sample.index,
         name='Context Summary',
         dtype='float64')
-
-    no_context__feature_x_sample = DataFrame(
-        index=feature_x_sample.index,
-        columns=feature_x_sample.columns,
-        dtype=bool)
-    no_context__feature_x_sample.index.name = 'Feature'
 
     for i, (feature_index,
             feature_vector) in enumerate(feature_x_sample.iterrows()):
@@ -142,7 +130,4 @@ def _make_context_matrices_and_summarize_context(
         feature_context_summary[feature_index] = context_dict[
             'context_summary']
 
-        no_context__feature_x_sample.loc[feature_index] = context_dict[
-            'no_context']
-
-    return context__feature_x_sample, feature_context_summary, no_context__feature_x_sample
+    return context__feature_x_sample, feature_context_summary

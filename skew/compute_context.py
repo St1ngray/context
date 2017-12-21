@@ -16,8 +16,7 @@ def compute_context(array_1d,
                     compute_context_method='tail_reduction_reflection',
                     degrees_of_freedom_for_tail_reduction=10e8,
                     summarize_context_by='absolute_value_weighted_context',
-                    summarize_context_side='shape_side',
-                    no_context_interval_percent=0.6827):
+                    summarize_context_side='shape_side'):
     """
     Compute context.
     Arguments:
@@ -34,7 +33,6 @@ def compute_context(array_1d,
         summarize_context_by (str): 'absolute_value_weighted_context' |
             'context'
         summarize_context_side (str): 'shape_side' | 'both_sides'
-        no_context_interval_percent (float): 0 <= & <= 1
     Returns:
         dict: {
             fit: [n, location, scale, df, shape] (5),
@@ -44,7 +42,6 @@ def compute_context(array_1d,
             context_indices: array (n_grid),
             context_indices_like_array: array (n),
             conext_summary: float,
-            no_context: array (n),
         }
     """
 
@@ -121,18 +118,11 @@ def compute_context(array_1d,
         raise ValueError(
             'Unknown summarize_context_by {}.'.format(summarize_context_by))
 
-    lower_bound, upper_bound = skew_t_model.interval(
-        no_context_interval_percent, df, shape, loc=location, scale=scale)
     if summarize_context_side == 'shape_side':
         context_summary = ((sign(a) == sign(shape)) * a).sum()
-        if 0 < shape:
-            no_context = array_1d < upper_bound
-        else:
-            no_context = lower_bound < array_1d
 
     elif summarize_context_side == 'both_sides':
         context_summary = a.sum()
-        no_context = (lower_bound < array_1d) & (array_1d < upper_bound)
 
     else:
         raise ValueError('Unknown summarize_context_side {}.'.format(
@@ -146,5 +136,4 @@ def compute_context(array_1d,
         'context_indices': context_indices,
         'context_indices_like_array': context_indices_like_array,
         'context_summary': context_summary,
-        'no_context': no_context,
     }

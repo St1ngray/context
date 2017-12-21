@@ -18,6 +18,7 @@ def fit_skew_t_pdf(array_1d, skew_t_model=None):
     if skew_t_model is None:
         skew_t_model = ACSkewT_gen()
 
-    df, shape, location, scale = skew_t_model.fit(array_1d)
+    df, shape, location, scale = skew_t_model.fit(
+        array_1d, loc=array_1d.mean(), scale=array_1d.std())
 
     return array_1d.size, location, scale, df, shape
