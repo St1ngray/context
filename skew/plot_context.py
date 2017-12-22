@@ -63,8 +63,8 @@ def plot_context(array_1d,
 
     gridspec = GridSpec(100, 1)
 
-    ax = subplot(gridspec[:92, :])
-    ax_bottom = subplot(gridspec[92:, :])
+    ax = subplot(gridspec[:80, :])
+    ax_bottom = subplot(gridspec[80:, :])
 
     plot_distribution(
         array_1d,
