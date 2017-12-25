@@ -96,7 +96,7 @@ def compute_context(array_1d,
                                           ((pdf - pdf_transformed) / pdf), 0)
 
     else:
-        raise ValueError('Unknown compute_context_method {}.'.format(
+        raise ValueError('Unknown compute_context_method: {}.'.format(
             compute_context_method))
 
     pdf_argmax = argmax(pdf)
@@ -116,7 +116,7 @@ def compute_context(array_1d,
 
     else:
         raise ValueError(
-            'Unknown summarize_context_by {}.'.format(summarize_context_by))
+            'Unknown summarize_context_by: {}.'.format(summarize_context_by))
 
     if summarize_context_side == 'shape_side':
         context_summary = ((sign(a) == sign(shape)) * a).sum()
@@ -125,7 +125,7 @@ def compute_context(array_1d,
         context_summary = a.sum()
 
     else:
-        raise ValueError('Unknown summarize_context_side {}.'.format(
+        raise ValueError('Unknown summarize_context_side: {}.'.format(
             summarize_context_side))
 
     return {
