@@ -11,7 +11,7 @@ from .support.support.path import establish_path
 
 def make_context_matrix_and_summarize_context(
         feature_x_sample,
-        fit_skew_t_pdf__feature_x_parameter=None,
+        feature_x_skew_t_pdf_fit_parameter=None,
         n_grid=3000,
         compute_context_method='tail_reduction_reflection',
         degrees_of_freedom_for_tail_reduction=10e8,
@@ -24,7 +24,7 @@ def make_context_matrix_and_summarize_context(
     Make context matrix and summarize context.
     Arguments:
         feature_x_sample (DataFrame): (n_feature, n_sample)
-        fit_skew_t_pdf__feature_x_parameter (DataFrame):
+        feature_x_skew_t_pdf_fit_parameter (DataFrame):
         n_grid (int):
         compute_context_method (str): 'tail_reduction_reflection' |
             'tail_reduction' | 'reflection' |
@@ -41,7 +41,7 @@ def make_context_matrix_and_summarize_context(
     """
 
     returns = multiprocess(_make_context_matrix_and_summarize_context, [[
-        df, fit_skew_t_pdf__feature_x_parameter, n_grid,
+        df, feature_x_skew_t_pdf_fit_parameter, n_grid,
         compute_context_method, degrees_of_freedom_for_tail_reduction,
         summarize_context_by, summarize_context_side, log
     ] for df in split_df(feature_x_sample, n_job)], n_job)
@@ -64,14 +64,14 @@ def make_context_matrix_and_summarize_context(
 
 
 def _make_context_matrix_and_summarize_context(
-        feature_x_sample, fit_skew_t_pdf__feature_x_parameter, n_grid,
+        feature_x_sample, feature_x_skew_t_pdf_fit_parameter, n_grid,
         compute_context_method, degrees_of_freedom_for_tail_reduction,
         summarize_context_by, summarize_context_side, log):
     """
     Make context matrix and summarize context.
     Arguments:
         feature_x_sample (DataFrame): (n_feature, n_sample)
-        fit_skew_t_pdf__feature_x_parameter (DataFrame):
+        feature_x_skew_t_pdf_fit_parameter (DataFrame):
         n_grid (int):
         compute_context_method (str): 'tail_reduction' | 'reflection' |
             'tail_reduction_reflection'
@@ -104,10 +104,10 @@ def _make_context_matrix_and_summarize_context(
             print('({}/{}) {} ...'.format(i + 1, feature_x_sample.shape[0],
                                           feature_index))
 
-        if fit_skew_t_pdf__feature_x_parameter is None:
+        if feature_x_skew_t_pdf_fit_parameter is None:
             location = scale = df = shape = None
         else:
-            location, scale, df, shape = fit_skew_t_pdf__feature_x_parameter.loc[
+            location, scale, df, shape = feature_x_skew_t_pdf_fit_parameter.loc[
                 feature_index, ['Location', 'Scale', 'DF', 'Shape']]
 
         context_dict = compute_context(
