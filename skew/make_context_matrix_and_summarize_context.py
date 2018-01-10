@@ -50,7 +50,7 @@ def make_context_matrix_and_summarize_context(
     feature_context_summary = concat([r[1] for r in returns]).sort_values()
 
     if directory_path:
-        establish_path(directory_path, path_type='directory')
+        establish_path(directory_path, 'directory')
 
         context__feature_x_sample.to_csv(
             join(directory_path, 'context__feature_x_sample.tsv'), sep='\t')

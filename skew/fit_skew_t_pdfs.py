@@ -27,7 +27,7 @@ def fit_skew_t_pdfs(feature_x_sample, n_job=1, log=False, directory_path=None):
                                             feature_x_sample, n_job)], n_job))
 
     if directory_path:
-        establish_path(directory_path, path_type='directory')
+        establish_path(directory_path, 'directory')
 
         feature_x_skew_t_pdf_fit_parameter.to_csv(
             join(directory_path, 'feature_x_skew_t_pdf_fit_parameter.tsv'),
