@@ -11,7 +11,7 @@ from .plot.plot.get_ax_positions_relative_to_ax import \
 from .plot.plot.plot_distribution import plot_distribution
 from .plot.plot.save_plot import save_plot
 from .plot.plot.style import FIGURE_SIZE
-from .support.support.path import clean_file_name
+from .support.support.path import clean_name
 
 
 def plot_context(array_1d,
@@ -185,7 +185,7 @@ def plot_context(array_1d,
     if directory_path:
         save_plot(
             join(directory_path, 'context_plot',
-                 clean_file_name('{}.png'.format(title))))
+                 clean_name('{}.png'.format(title))))
 
     if show_plot:
         show()
