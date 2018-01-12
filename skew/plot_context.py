@@ -64,7 +64,7 @@ def plot_context(array_1d,
     gridspec = GridSpec(100, 1)
 
     ax = subplot(gridspec[:80, :])
-    ax_bottom = subplot(gridspec[80:, :])
+    ax_bottom = subplot(gridspec[80:, :], sharex=ax)
 
     plot_distribution(
         array_1d,
@@ -166,10 +166,11 @@ def plot_context(array_1d,
 
     decorate(
         ax=ax,
-        despine_kwargs={'bottom': True},
+        despine_kwargs={
+            'bottom': True,
+        },
         style='white',
-        title=title,
-        xticks=[])
+        title=title, )
 
     swarmplot(x=array_1d, ax=ax_bottom, color='#20D9BA', alpha=0.92)
     # for annotation_i, annotation_vector in annotation_x_sample.iterrows():
