@@ -13,12 +13,12 @@ def fit_skew_t_pdfs(feature_x_sample, n_job=1, log=False, directory_path=None):
     """
     Fit skew-t PDFs.
     Arguments:
-        feature_x_sample (DataFrame): (n_feature, n_sample)
+        feature_x_sample (DataFrame): (n_feature, n_sample, )
         n_job (int):
         log (bool):
         directory_path (str):
     Returns:
-        DataFrame: (n_feature, 5 [N, Location, Scale, DF, Shape])
+        DataFrame: (n_feature, 5 [N, Location, Scale, DF, Shape], )
     """
 
     feature_x_skew_t_pdf_fit_parameter = concat(
@@ -40,10 +40,10 @@ def _fit_skew_t_pdfs(feature_x_sample, log):
     """
     Fit skew-t PDFs.
     Arguments:
-        feature_x_sample (DataFrame): (n_feature, n_sample)
+        feature_x_sample (DataFrame): (n_feature, n_sample, )
         log (bool): whether to log progress
     Returns:
-        DataFrame: (n_feature, 5 [N, Location, Scale, DF, Shape])
+        DataFrame: (n_feature, 5 [N, Location, Scale, DF, Shape], )
     """
 
     skew_t_model = ACSkewT_gen()

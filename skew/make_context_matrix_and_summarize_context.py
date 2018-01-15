@@ -23,7 +23,7 @@ def make_context_matrix_and_summarize_context(
     """
     Make context matrix and summarize context.
     Arguments:
-        feature_x_sample (DataFrame): (n_feature, n_sample)
+        feature_x_sample (DataFrame): (n_feature, n_sample, )
         feature_x_skew_t_pdf_fit_parameter (DataFrame):
         n_grid (int):
         compute_context_method (str): 'tail_reduction_reflection' |
@@ -36,8 +36,8 @@ def make_context_matrix_and_summarize_context(
         log (bool): whether to log progress
         directory_path (str): where outputs are saved
     Returns:
-        DataFrame: (n_feature, n_sample)
-        Series: (n_feature)
+        DataFrame: (n_feature, n_sample, )
+        Series: (n_feature, )
     """
 
     returns = multiprocess(_make_context_matrix_and_summarize_context, [[
@@ -70,7 +70,7 @@ def _make_context_matrix_and_summarize_context(
     """
     Make context matrix and summarize context.
     Arguments:
-        feature_x_sample (DataFrame): (n_feature, n_sample)
+        feature_x_sample (DataFrame): (n_feature, n_sample, )
         feature_x_skew_t_pdf_fit_parameter (DataFrame):
         n_grid (int):
         compute_context_method (str): 'tail_reduction' | 'reflection' |
@@ -81,8 +81,8 @@ def _make_context_matrix_and_summarize_context(
         summarize_context_side (str): 'shape_side' | 'both_sides'
         log (bool): whether to log progress
     Returns:
-        DataFrame: (n_feature, n_sample)
-        Series: (n_feature)
+        DataFrame: (n_feature, n_sample, )
+        Series: (n_feature, )
     """
 
     skew_t_model = ACSkewT_gen()
@@ -96,7 +96,7 @@ def _make_context_matrix_and_summarize_context(
     feature_context_summary = Series(
         index=context__feature_x_sample.index,
         name='Context Summary',
-        dtype='float64')
+        dtype=float)
 
     for i, (feature_index,
             feature_vector) in enumerate(feature_x_sample.iterrows()):

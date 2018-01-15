@@ -5,7 +5,7 @@ def fit_skew_t_pdf(array_1d, skew_t_model=None):
     """
     Fit skew-t PDF.
     Arguments:
-        array_1d (array): (n)
+        array_1d (array): (n, )
         skew_t_model (statsmodels.sandbox.distributions.extras.ACSkewT_gen):
     Returns:
         int: n

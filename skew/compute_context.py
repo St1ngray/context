@@ -20,7 +20,7 @@ def compute_context(array_1d,
     """
     Compute context.
     Arguments:
-        array_1d (array): (n)
+        array_1d (array): (n, )
         skew_t_model (statsmodels.sandbox.distributions.extras.ACSkewT_gen):
         location (float):
         scale (float):
@@ -35,12 +35,12 @@ def compute_context(array_1d,
         summarize_context_side (str): 'shape_side' | 'both_sides'
     Returns:
         dict: {
-            fit: [n, location, scale, df, shape] (5),
-            grid: array (n_grid),
-            pdf: array (n_grid),
-            pdf_transformed: array (n_grid),
-            context_indices: array (n_grid),
-            context_indices_like_array: array (n),
+            fit: [n, location, scale, df, shape] (5, ),
+            grid: array (n_grid, ),
+            pdf: array (n_grid, ),
+            pdf_transformed: array (n_grid, ),
+            context_indices: array (n_grid, ),
+            context_indices_like_array: array (n, ),
             conext_summary: float,
         }
     """

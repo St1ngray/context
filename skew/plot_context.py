@@ -1,7 +1,7 @@
 from os.path import join
 
 from matplotlib.gridspec import GridSpec
-from matplotlib.pyplot import close, figure, show, subplot
+from matplotlib.pyplot import figure, show, subplot
 from seaborn import swarmplot
 
 from .compute_context import compute_context
@@ -15,7 +15,7 @@ from .support.support.path import clean_name
 
 def plot_context(array_1d,
                  title,
-                 figure_size=[FIGURE_SIZE[0] * 1.88, FIGURE_SIZE[1]],
+                 figure_size=(FIGURE_SIZE[0] * 1.88, FIGURE_SIZE[1], ),
                  n_bin=None,
                  plot_skew_t_pdf=True,
                  plot_context_indices=True,
@@ -29,12 +29,11 @@ def plot_context(array_1d,
                  summarize_context_by='absolute_value_weighted_context',
                  summarize_context_side='shape_side',
                  xlabel='Value',
-                 show_plot=True,
                  directory_path=None):
     """
     Plot context.
     Arguments:
-        array_1d (array): (n)
+        array_1d (array): (n, )
         title (str):
         figure_size (iterable):
         n_bin (int):
@@ -52,10 +51,8 @@ def plot_context(array_1d,
             'context'
         summarize_context_side (str): 'shape_side' | 'both_sides'
         xlabel (str):
-        show_plot (bool):
         directory_path (str):
     Returns:
-        None
     """
 
     figure(figsize=figure_size)
@@ -186,7 +183,4 @@ def plot_context(array_1d,
             join(directory_path, 'context_plot',
                  clean_name('{}.png'.format(title))))
 
-    if show_plot:
-        show()
-
-    close()
+    show()
