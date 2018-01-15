@@ -6,8 +6,7 @@ from seaborn import swarmplot
 
 from .compute_context import compute_context
 from .plot.plot.decorate_ax import decorate_ax
-from .plot.plot.get_ax_positions_relative_to_ax import \
-    get_ax_positions_relative_to_ax
+from .plot.plot.get_ax_positions import get_ax_positions
 from .plot.plot.plot_distribution import plot_distribution
 from .plot.plot.save_plot import save_plot
 from .plot.plot.style import FIGURE_SIZE
@@ -151,8 +150,7 @@ def plot_context(array_1d,
             title, context_dict['context_summary'])
 
     if plot_skew_t_pdf or plot_context_indices:
-        ax_x_min, ax_x_max, ax_y_min, ax_y_max = get_ax_positions_relative_to_ax(
-            ax)
+        ax_x_min, ax_x_max, ax_y_min, ax_y_max = get_ax_positions(ax, 'ax')
 
         ax.text(
             (ax_x_min + ax_x_max) / 2,
