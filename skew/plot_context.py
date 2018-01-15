@@ -5,7 +5,7 @@ from matplotlib.pyplot import close, figure, show, subplot
 from seaborn import swarmplot
 
 from .compute_context import compute_context
-from .plot.plot.decorate import decorate
+from .plot.plot.decorate_ax import decorate_ax
 from .plot.plot.get_ax_positions_relative_to_ax import \
     get_ax_positions_relative_to_ax
 from .plot.plot.plot_distribution import plot_distribution
@@ -164,8 +164,8 @@ def plot_context(array_1d,
             color='#181B26',
             horizontalalignment='center')
 
-    decorate(
-        ax=ax,
+    decorate_ax(
+        ax,
         despine_kwargs={
             'bottom': True,
         },
@@ -179,8 +179,8 @@ def plot_context(array_1d,
     #         ax=ax_bottom,
     #         color=color,
     #         alpha=0.92)
-    decorate(
-        ax=ax_bottom, despine_kwargs=dict(left=True), xlabel=xlabel, yticks=[])
+    decorate_ax(
+        ax_bottom, despine_kwargs=dict(left=True), xlabel=xlabel, yticks=[])
 
     if directory_path:
         save_plot(
