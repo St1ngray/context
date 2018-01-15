@@ -67,20 +67,21 @@ def plot_context(array_1d,
 
     plot_distribution(
         array_1d,
-        bins=n_bin,
-        hist_kws=dict(
-            histtype='step',
-            fill=True,
-            linewidth=1.8,
-            color='#003171',
-            facecolor='#20D9BA',
-            alpha=0.92,
-            zorder=2),
-        # rug=True,
-        # rug_kws=dict(linewidth=2.6, color='#EBF6F7', alpha=0.92, zorder=4),
-        kde=False,
-        norm_hist=True,
-        ax=ax)
+        ax=ax,
+        distplot_kwargs={
+            'bins': n_bin,
+            'hist_kws': {
+                'histtype': 'step',
+                'fill': True,
+                'linewidth': 1.8,
+                'color': '#003171',
+                'facecolor': '#20D9BA',
+                'alpha': 0.92,
+                'zorder': 2,
+            },
+            'kde': False,
+            'norm_hist': True,
+        })
 
     context_dict = compute_context(
         array_1d,
