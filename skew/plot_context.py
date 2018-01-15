@@ -15,7 +15,9 @@ from .support.support.path import clean_name
 
 def plot_context(array_1d,
                  title,
-                 figure_size=(FIGURE_SIZE[0] * 1.88, FIGURE_SIZE[1], ),
+                 figure_size=(
+                     FIGURE_SIZE[0] * 1.88,
+                     FIGURE_SIZE[1], ),
                  n_bin=None,
                  plot_skew_t_pdf=True,
                  plot_context_indices=True,
@@ -33,7 +35,7 @@ def plot_context(array_1d,
     """
     Plot context.
     Arguments:
-        array_1d (array): (n, )
+        array_1d (ndarray): (n, )
         title (str):
         figure_size (iterable):
         n_bin (int):
@@ -46,7 +48,7 @@ def plot_context(array_1d,
         n_grid (int):
         compute_context_method (str): 'tail_reduction_reflection' |
             'tail_reduction' | 'reflection' |
-        degrees_of_freedom_for_tail_reduction (number):
+        degrees_of_freedom_for_tail_reduction (float):
         summarize_context_by (str): 'absolute_value_weighted_context' |
             'context'
         summarize_context_side (str): 'shape_side' | 'both_sides'

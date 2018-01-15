@@ -60,8 +60,7 @@ def _fit_skew_t_pdfs(feature_x_sample, log):
             print('({}/{}) {} ...'.format(i + 1, feature_x_sample.shape[0],
                                           feature_index))
 
-        feature_x_skew_t_pdf_fit_parameter.loc[
-            feature_index] = fit_skew_t_pdf(
-                feature_vector, skew_t_model=skew_t_model)
+        feature_x_skew_t_pdf_fit_parameter.loc[feature_index] = fit_skew_t_pdf(
+            feature_vector, skew_t_model=skew_t_model)
 
     return feature_x_skew_t_pdf_fit_parameter

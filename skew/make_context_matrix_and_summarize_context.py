@@ -28,7 +28,7 @@ def make_context_matrix_and_summarize_context(
         n_grid (int):
         compute_context_method (str): 'tail_reduction_reflection' |
             'tail_reduction' | 'reflection' |
-        degrees_of_freedom_for_tail_reduction (number):
+        degrees_of_freedom_for_tail_reduction (float):
         summarize_context_by (str): 'absolute_value_weighted_context' |
             'context'
         summarize_context_side (str): 'shape_side' | 'both_sides'
@@ -41,9 +41,9 @@ def make_context_matrix_and_summarize_context(
     """
 
     returns = multiprocess(_make_context_matrix_and_summarize_context, [[
-        df, feature_x_skew_t_pdf_fit_parameter, n_grid,
-        compute_context_method, degrees_of_freedom_for_tail_reduction,
-        summarize_context_by, summarize_context_side, log
+        df, feature_x_skew_t_pdf_fit_parameter, n_grid, compute_context_method,
+        degrees_of_freedom_for_tail_reduction, summarize_context_by,
+        summarize_context_side, log
     ] for df in split_df(feature_x_sample, n_job)], n_job)
 
     context__feature_x_sample = concat([r[0] for r in returns])
@@ -75,7 +75,7 @@ def _make_context_matrix_and_summarize_context(
         n_grid (int):
         compute_context_method (str): 'tail_reduction' | 'reflection' |
             'tail_reduction_reflection'
-        degrees_of_freedom_for_tail_reduction (number):
+        degrees_of_freedom_for_tail_reduction (float):
         summarize_context_by (str): 'context' |
             'absolute_value_weighted_context'
         summarize_context_side (str): 'shape_side' | 'both_sides'
@@ -90,7 +90,7 @@ def _make_context_matrix_and_summarize_context(
     context__feature_x_sample = DataFrame(
         index=feature_x_sample.index,
         columns=feature_x_sample.columns,
-        dtype='float64')
+        dtype='float')
     context__feature_x_sample.index.name = 'Feature'
 
     feature_context_summary = Series(

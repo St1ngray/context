@@ -20,7 +20,7 @@ def compute_context(array_1d,
     """
     Compute context.
     Arguments:
-        array_1d (array): (n, )
+        array_1d (ndarray): (n, )
         skew_t_model (statsmodels.sandbox.distributions.extras.ACSkewT_gen):
         location (float):
         scale (float):
@@ -29,7 +29,7 @@ def compute_context(array_1d,
         n_grid (int):
         compute_context_method (str): 'tail_reduction_reflection' |
             'tail_reduction' | 'reflection' |
-        degrees_of_freedom_for_tail_reduction (number):
+        degrees_of_freedom_for_tail_reduction (float):
         summarize_context_by (str): 'absolute_value_weighted_context' |
             'context'
         summarize_context_side (str): 'shape_side' | 'both_sides'
