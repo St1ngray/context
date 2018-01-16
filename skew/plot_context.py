@@ -9,7 +9,7 @@ from .plot.plot.decorate_ax import decorate_ax
 from .plot.plot.get_ax_positions import get_ax_positions
 from .plot.plot.plot_distribution import plot_distribution
 from .plot.plot.save_plot import save_plot
-from .plot.plot.style import FIGURE_SIZE
+from .plot.plot.style import FIGURE_SIZE, FONT_LARGEST, FONT_STANDARD
 from .support.support.path import clean_name
 
 
@@ -105,14 +105,19 @@ def plot_context(array_1d,
         background_line_alpha = 0.69
         background_line_color = '#003171'
 
-        pdf_backgdound_line_kwargs = dict(
-            linestyle='-',
-            linewidth=linewidth * 1.8,
-            color=background_line_color,
-            alpha=background_line_alpha,
-            zorder=plot_skew_t_pdf_zorder)
-        pdf_line_kwargs = dict(
-            linestyle='-', linewidth=linewidth, zorder=plot_skew_t_pdf_zorder)
+        pdf_backgdound_line_kwargs = {
+            'linestyle': '-',
+            'linewidth': linewidth * 1.8,
+            'color': background_line_color,
+            'alpha': background_line_alpha,
+            'zorder': plot_skew_t_pdf_zorder,
+        }
+
+        pdf_line_kwargs = {
+            'linestyle': '-',
+            'linewidth': linewidth,
+            'zorder': plot_skew_t_pdf_zorder,
+        }
 
         ax.plot(grid, pdf, **pdf_backgdound_line_kwargs)
         ax.plot(grid, pdf, color='#20D9BA', **pdf_line_kwargs)
@@ -129,8 +134,12 @@ def plot_context(array_1d,
         context_indices = context_dict['context_indices']
         is_positive = 0 < context_indices
 
-        context_indices_line_kwargs = dict(
-            linestyle='-', linewidth=linewidth, alpha=0.8, zorder=1)
+        context_indices_line_kwargs = {
+            'linestyle': '-',
+            'linewidth': linewidth,
+            'alpha': 0.8,
+            'zorder': 1,
+        }
 
         pdf_max = pdf.max()
 
@@ -149,28 +158,31 @@ def plot_context(array_1d,
         title = '{} (Context Summary {:.2f})'.format(
             title, context_dict['context_summary'])
 
-    if plot_skew_t_pdf or plot_context_indices:
-        ax_x_min, ax_x_max, ax_y_min, ax_y_max = get_ax_positions(ax, 'ax')
+    ax_x_min, ax_x_max, ax_y_min, ax_y_max = get_ax_positions(ax, 'ax')
 
+    ax.text(
+        (ax_x_min + ax_x_max) / 2,
+        ax_y_max * 1.080,
+        title,
+        horizontalalignment='center',
+        **FONT_LARGEST)
+
+    if plot_skew_t_pdf or plot_context_indices:
         ax.text(
             (ax_x_min + ax_x_max) / 2,
             ax_y_max * 1.026,
-            'N={:.0f}  Location={:.2f}  Scale={:.2f}  DF={:.2f}  Shape={:.2f}'.
+            'N={:.0f}   Location={:.2f}   Scale={:.2f}   DF={:.2f}   Shape={:.2f}'.
             format(*context_dict['fit']),
-            size=16,
-            weight='bold',
-            color='#181B26',
-            horizontalalignment='center')
+            horizontalalignment='center',
+            **FONT_STANDARD)
 
     decorate_ax(
-        ax,
-        despine_kwargs={
+        ax, despine_kwargs={
             'bottom': True,
-        },
-        style='white',
-        title=title, )
+        }, style='white')
 
     swarmplot(x=array_1d, ax=ax_bottom, color='#20D9BA', alpha=0.92)
+    # TODO: enable multiple swarmplots (make sure to dynamically set axes)
     # for annotation_i, annotation_vector in annotation_x_sample.iterrows():
     #     swarmplot(
     #         x=annotation_vector * array_1d,
@@ -178,7 +190,9 @@ def plot_context(array_1d,
     #         color=color,
     #         alpha=0.92)
     decorate_ax(
-        ax_bottom, despine_kwargs=dict(left=True), xlabel=xlabel, yticks=[])
+        ax_bottom, despine_kwargs={
+            'left': True,
+        }, xlabel=xlabel, yticks=())
 
     if directory_path:
         save_plot(

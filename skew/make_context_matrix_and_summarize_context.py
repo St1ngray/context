@@ -40,14 +40,18 @@ def make_context_matrix_and_summarize_context(
         Series: (n_feature, )
     """
 
-    returns = multiprocess(_make_context_matrix_and_summarize_context, [[
-        df, feature_x_skew_t_pdf_fit_parameter, n_grid, compute_context_method,
-        degrees_of_freedom_for_tail_reduction, summarize_context_by,
-        summarize_context_side, log
-    ] for df in split_df(feature_x_sample, n_job)], n_job)
+    returns = multiprocess(_make_context_matrix_and_summarize_context, ((
+        df,
+        feature_x_skew_t_pdf_fit_parameter,
+        n_grid,
+        compute_context_method,
+        degrees_of_freedom_for_tail_reduction,
+        summarize_context_by,
+        summarize_context_side,
+        log, ) for df in split_df(feature_x_sample, n_job)), n_job)
 
-    context__feature_x_sample = concat([r[0] for r in returns])
-    feature_context_summary = concat([r[1] for r in returns]).sort_values()
+    context__feature_x_sample = concat((r[0] for r in returns))
+    feature_context_summary = concat((r[1] for r in returns)).sort_values()
 
     if directory_path:
         establish_path(directory_path, 'directory')
@@ -90,7 +94,7 @@ def _make_context_matrix_and_summarize_context(
     context__feature_x_sample = DataFrame(
         index=feature_x_sample.index,
         columns=feature_x_sample.columns,
-        dtype='float')
+        dtype=float)
     context__feature_x_sample.index.name = 'Feature'
 
     feature_context_summary = Series(
@@ -98,8 +102,9 @@ def _make_context_matrix_and_summarize_context(
         name='Context Summary',
         dtype=float)
 
-    for i, (feature_index,
-            feature_vector) in enumerate(feature_x_sample.iterrows()):
+    for i, (
+            feature_index,
+            feature_vector, ) in enumerate(feature_x_sample.iterrows()):
         if log:
             print('({}/{}) {} ...'.format(i + 1, feature_x_sample.shape[0],
                                           feature_index))

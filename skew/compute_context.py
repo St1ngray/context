@@ -1,4 +1,5 @@
-from numpy import absolute, argmax, argmin, linspace, log, sign, sqrt, where
+from numpy import (absolute, argmax, argmin, array, linspace, log, sign, sqrt,
+                   where)
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .fit_skew_t_pdf import fit_skew_t_pdf
@@ -35,12 +36,12 @@ def compute_context(array_1d,
         summarize_context_side (str): 'shape_side' | 'both_sides'
     Returns:
         dict: {
-            fit: [n, location, scale, df, shape] (5, ),
-            grid: array (n_grid, ),
-            pdf: array (n_grid, ),
-            pdf_transformed: array (n_grid, ),
-            context_indices: array (n_grid, ),
-            context_indices_like_array: array (n, ),
+            fit: ndarray; (5, ); (n, location, scale, df, shape)
+            grid: ndarray; (n_grid, ),
+            pdf: ndarray; (n_grid, ),
+            pdf_transformed: ndarray; (n_grid, ),
+            context_indices: ndarray; (n_grid, ),
+            context_indices_like_array: ndarray; (n, ),
             conext_summary: float,
         }
     """
@@ -129,7 +130,12 @@ def compute_context(array_1d,
             summarize_context_side))
 
     return {
-        'fit': [n, location, scale, df, shape],
+        'fit': array((
+            n,
+            location,
+            scale,
+            df,
+            shape, )),
         'grid': grid,
         'pdf': pdf,
         'pdf_transformed': pdf_transformed,
