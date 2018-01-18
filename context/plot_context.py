@@ -78,7 +78,6 @@ def plot_context(array_1d,
                 'alpha': 0.92,
                 'zorder': 2,
             },
-            'kde': False,
             'norm_hist': True,
         })
 
