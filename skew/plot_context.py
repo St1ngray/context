@@ -1,7 +1,7 @@
 from os.path import join
 
 from matplotlib.gridspec import GridSpec
-from matplotlib.pyplot import figure, show, subplot
+from matplotlib.pyplot import figure, subplot
 from seaborn import swarmplot
 
 from .compute_context import compute_context
@@ -198,5 +198,3 @@ def plot_context(array_1d,
         save_plot(
             join(directory_path, 'context_plot',
                  clean_name('{}.png'.format(title))))
-
-    show()
