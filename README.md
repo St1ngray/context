@@ -1,3 +1,3 @@
-# Skew
+# Context
 
-Library for working with skews :ocean:
+Library for working with context :ocean:
