@@ -1,0 +1,9 @@
+[submodule "context/nd_array"]
+	path = context/nd_array
+	url = https://github.com/KwatME/nd_array
+[submodule "context/support"]
+	path = context/support
+	url = https://github.com/KwatME/support
+[submodule "context/plot"]
+	path = context/plot
+	url = https://github.com/KwatME/plot
