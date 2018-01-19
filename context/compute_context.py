@@ -36,7 +36,7 @@ def compute_context(array_1d,
         summarize_context_side (str): 'shape_side' | 'both_sides'
     Returns:
         dict: {
-            fit: ndarray; (5, ); (n, location, scale, df, shape)
+            fit: ndarray; (5, ) (n, location, scale, df, shape),
             grid: ndarray; (n_grid, ),
             pdf: ndarray; (n_grid, ),
             pdf_transformed: ndarray; (n_grid, ),
@@ -49,7 +49,11 @@ def compute_context(array_1d,
     if skew_t_model is None:
         skew_t_model = ACSkewT_gen()
 
-    if any([p is None for p in [location, scale, df, shape]]):
+    if any((p is None for p in (
+            location,
+            scale,
+            df,
+            shape, ))):
         n, location, scale, df, shape = fit_skew_t_pdf(
             array_1d, skew_t_model=skew_t_model)
     else:
