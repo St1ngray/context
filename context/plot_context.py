@@ -69,6 +69,7 @@ def plot_context(array_1d,
         ax=ax,
         distplot_kwargs={
             'bins': n_bin,
+            'norm_hist': True,
             'hist_kws': {
                 'histtype': 'step',
                 'fill': True,
@@ -78,7 +79,6 @@ def plot_context(array_1d,
                 'alpha': 0.92,
                 'zorder': 2,
             },
-            'norm_hist': True,
         })
 
     context_dict = compute_context(
