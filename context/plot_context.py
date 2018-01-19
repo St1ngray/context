@@ -157,7 +157,7 @@ def plot_context(array_1d,
             **context_indices_line_kwargs)
 
         if add_context_summary_to_title:
-            title += 'Context Summary={:.2f})'.format(
+            title += ' (Context Summary={:.2f})'.format(
                 context_dict['context_summary'])
 
     ax_x_min, ax_x_max, ax_y_min, ax_y_max = get_ax_positions(ax, 'ax')
