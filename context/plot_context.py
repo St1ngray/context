@@ -13,6 +13,7 @@ from .plot.plot.style import FIGURE_SIZE, FONT_LARGEST, FONT_STANDARD
 from .support.support.path import clean_name
 
 
+# TODO: plot count instead of frequency when not plotting plot_skew_t_pdf and context_indices
 def plot_context(array_1d,
                  title,
                  figure_size=(
