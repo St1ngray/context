@@ -13,7 +13,6 @@ from .plot.plot.style import FIGURE_SIZE, FONT_LARGEST, FONT_STANDARD
 from .support.support.path import clean_name
 
 
-# TODO: plot count instead of frequency when not plotting plot_skew_t_pdf and context_indices
 def plot_context(array_1d,
                  title,
                  figure_size=(
@@ -26,11 +25,10 @@ def plot_context(array_1d,
                  scale=None,
                  df=None,
                  shape=None,
+                 fit_fixed_location=None,
+                 fit_fixed_scale=None,
                  n_grid=3000,
-                 compute_context_method='tail_reduction_reflection',
                  degrees_of_freedom_for_tail_reduction=10e8,
-                 summarize_context_by='absolute_value_weighted_context',
-                 summarize_context_side='shape_side',
                  add_context_summary_to_title=True,
                  xlabel='Value',
                  directory_path=None):
@@ -47,13 +45,10 @@ def plot_context(array_1d,
         scale (float):
         df (float):
         shape (float):
+        fit_fixed_location (float):
+        fit_fixed_scale (float):
         n_grid (int):
-        compute_context_method (str): 'tail_reduction_reflection' |
-            'tail_reduction' | 'reflection' |
         degrees_of_freedom_for_tail_reduction (float):
-        summarize_context_by (str): 'absolute_value_weighted_context' |
-            'context'
-        summarize_context_side (str): 'shape_side' | 'both_sides'
         add_context_summary_to_title (bool):
         xlabel (str):
         directory_path (str):
@@ -90,12 +85,11 @@ def plot_context(array_1d,
         scale=scale,
         df=df,
         shape=shape,
+        fit_fixed_location=fit_fixed_location,
+        fit_fixed_scale=fit_fixed_scale,
         n_grid=n_grid,
-        compute_context_method=compute_context_method,
         degrees_of_freedom_for_tail_reduction=
-        degrees_of_freedom_for_tail_reduction,
-        summarize_context_by=summarize_context_by,
-        summarize_context_side=summarize_context_side)
+        degrees_of_freedom_for_tail_reduction)
 
     grid = context_dict['grid']
     pdf = context_dict['pdf']
