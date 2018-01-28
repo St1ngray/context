@@ -1,5 +1,5 @@
-from numpy import (absolute, argmax, argmin, array, linspace, log, sign, sqrt,
-                   where)
+from numpy import (absolute, argmax, argmin, array, convolve, linspace, log,
+                   sign, sqrt, where)
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .fit_skew_t_pdf import fit_skew_t_pdf
@@ -72,23 +72,12 @@ def compute_context(array_1d,
         loc=location,
         scale=scale)
 
+    grid_for_reflection = argmax(pdf_reference)
+
     if true_mean is not None:
 
-        distance_penalties = absolute((grid - true_mean) / location)
-
-        if location < 0:
-            coordinate = location + 3 * scale
-            distance_penalties = where(grid < min(coordinate, true_mean),
-                                       distance_penalties, 1)
-        else:
-            coordinate = location - 3 * scale
-            distance_penalties = where(
-                max(coordinate, true_mean) < grid, distance_penalties, 1)
-
-        pdf_reference = pdf_reference**where(1 < distance_penalties,
-                                             distance_penalties, 1)
-
-    grid_for_reflection = argmax(pdf_reference)
+        location_penalties = absolute((grid - true_mean) / location)
+        pdf_reference = pdf_reference**location_penalties
 
     context_indices_magnitude = where(
         pdf_reference < pdf, ((pdf - pdf_reference) / pdf),
