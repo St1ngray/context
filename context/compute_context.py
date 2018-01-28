@@ -77,15 +77,13 @@ def compute_context(array_1d,
         if location < 0:
             coordinate = location + scale
             distance_penalties = where(grid < coordinate,
-                                       absolute((grid - true_mean) / location),
-                                       1)
+                                       (grid - true_mean) / location, 1)
         else:
             coordinate = location - scale
             distance_penalties = where(coordinate < grid,
-                                       absolute((grid - true_mean) / location),
-                                       1)
+                                       (grid - true_mean) / location, 1)
 
-        pdf_reference = pdf_reference * (1 / distance_penalties)
+        pdf_reference = pdf_reference**distance_penalties
 
         grid_for_reflection = argmin(absolute(grid - coordinate))
 
