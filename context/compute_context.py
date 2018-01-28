@@ -77,13 +77,13 @@ def compute_context(array_1d,
         distance_penalties = absolute((grid - true_mean) / location)
 
         if location < 0:
-            coordinate = location + scale
-            distance_penalties = where(grid < min(coordinate, location),
+            coordinate = location + 3 * scale
+            distance_penalties = where(grid < min(coordinate, true_mean),
                                        distance_penalties, 1)
         else:
-            coordinate = location - scale
+            coordinate = location - 3 * scale
             distance_penalties = where(
-                max(coordinate, location) < grid, distance_penalties, 1)
+                max(coordinate, true_mean) < grid, distance_penalties, 1)
 
         pdf_reference = pdf_reference**where(1 < distance_penalties,
                                              distance_penalties, 1)
