@@ -16,6 +16,7 @@ def make_context_matrix_and_summarize_context(
         fit_fixed_location=None,
         fit_fixed_scale=None,
         n_grid=3000,
+        true_mean=None,
         degrees_of_freedom_for_tail_reduction=10e8,
         directory_path=None):
     """
@@ -27,6 +28,7 @@ def make_context_matrix_and_summarize_context(
         fit_fixed_location (float):
         fit_fixed_scale (float):
         n_grid (int):
+        true_mean (float):
         degrees_of_freedom_for_tail_reduction (float):
         directory_path (str):
     Returns:
@@ -41,6 +43,7 @@ def make_context_matrix_and_summarize_context(
                                fit_fixed_location,
                                fit_fixed_scale,
                                n_grid,
+                               true_mean,
                                degrees_of_freedom_for_tail_reduction, )
                             for df in split_df(feature_x_sample, n_job)),
                            n_job)
@@ -64,7 +67,7 @@ def make_context_matrix_and_summarize_context(
 
 def _make_context_matrix_and_summarize_context(
         feature_x_sample, feature_x_skew_t_pdf_fit_parameter,
-        fit_fixed_location, fit_fixed_scale, n_grid,
+        fit_fixed_location, fit_fixed_scale, n_grid, true_mean,
         degrees_of_freedom_for_tail_reduction):
     """
     Make context matrix and summarize context.
@@ -74,6 +77,7 @@ def _make_context_matrix_and_summarize_context(
         fit_fixed_location (float):
         fit_fixed_scale (float):
         n_grid (int):
+        true_mean (float):
         degrees_of_freedom_for_tail_reduction (float):
     Returns:
         DataFrame: (n_feature, n_sample, )
@@ -119,6 +123,7 @@ def _make_context_matrix_and_summarize_context(
             fit_fixed_location=fit_fixed_location,
             fit_fixed_scale=fit_fixed_scale,
             n_grid=n_grid,
+            true_mean=true_mean,
             degrees_of_freedom_for_tail_reduction=
             degrees_of_freedom_for_tail_reduction)
 

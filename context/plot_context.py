@@ -28,6 +28,7 @@ def plot_context(array_1d,
                  fit_fixed_location=None,
                  fit_fixed_scale=None,
                  n_grid=3000,
+                 true_mean=None,
                  degrees_of_freedom_for_tail_reduction=10e8,
                  add_context_summary_to_title=True,
                  xlabel='Value',
@@ -48,6 +49,7 @@ def plot_context(array_1d,
         fit_fixed_location (float):
         fit_fixed_scale (float):
         n_grid (int):
+        true_mean (float):
         degrees_of_freedom_for_tail_reduction (float):
         add_context_summary_to_title (bool):
         xlabel (str):
@@ -88,6 +90,7 @@ def plot_context(array_1d,
         fit_fixed_location=fit_fixed_location,
         fit_fixed_scale=fit_fixed_scale,
         n_grid=n_grid,
+        true_mean=true_mean,
         degrees_of_freedom_for_tail_reduction=
         degrees_of_freedom_for_tail_reduction)
 
@@ -118,17 +121,17 @@ def plot_context(array_1d,
         ax.plot(grid, pdf, **pdf_backgdound_line_kwargs)
         ax.plot(grid, pdf, color='#20D9BA', **pdf_line_kwargs)
 
-        ax.plot(grid, context_dict['pdf_transformed'],
+        ax.plot(grid, context_dict['pdf_reference'],
                 **pdf_backgdound_line_kwargs)
         ax.plot(
             grid,
-            context_dict['pdf_transformed'],
+            context_dict['pdf_reference'],
             color='#9017E6',
             **pdf_line_kwargs)
 
     if plot_context_indices:
         context_indices = context_dict['context_indices']
-        is_positive = 0 < context_indices
+        is_positive = 0 <= context_indices
 
         context_indices_line_kwargs = {
             'linestyle': '-',
