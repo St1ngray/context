@@ -73,12 +73,27 @@ def compute_context(array_1d,
         scale=scale)
 
     if true_mean is not None:
+
         distance_penalties = absolute(grid - true_mean)
+
+        if location < 0:
+            coordinate = location + scale
+            distance_penalties = where(grid < coordinate, distance_penalties,
+                                       1)
+        else:
+            coordinate = location - scale
+            distance_penalties = where(coordinate < grid, distance_penalties,
+                                       1)
+
+        distance_penalties /= absolute(location)
 
         pdf_reference = pdf_reference**where(1 < distance_penalties,
                                              distance_penalties, 1)
 
-    grid_for_reflection = argmax(pdf_reference)
+        grid_for_reflection = argmin(absolute(grid - coordinate))
+
+    else:
+        grid_for_reflection = argmax(pdf_reference)
 
     context_indices_magnitude = where(
         pdf_reference < pdf, ((pdf - pdf_reference) / pdf),
