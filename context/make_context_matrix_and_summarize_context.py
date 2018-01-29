@@ -97,7 +97,7 @@ def _make_context_matrix_and_summarize_context(
         name='Context Summary',
         dtype=float)
 
-    n_per_log = max(feature_x_sample.shape[0] // 100, 1)
+    n_per_log = max(feature_x_sample.shape[0] // 10, 1)
 
     for i, (
             feature_index,

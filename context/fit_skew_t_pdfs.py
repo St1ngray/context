@@ -67,7 +67,7 @@ def _fit_skew_t_pdfs(feature_x_sample, fit_fixed_location, fit_fixed_scale):
         dtype=float)
     feature_x_skew_t_pdf_fit_parameter.index.name = 'Feature'
 
-    n_per_log = max(feature_x_sample.shape[0] // 100, 1)
+    n_per_log = max(feature_x_sample.shape[0] // 10, 1)
 
     for i, (
             feature_index,
