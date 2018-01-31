@@ -1,25 +1,12 @@
-from numpy import (absolute, argmax, argmin, array, linspace, log, sign, sqrt,
-                   where, zeros_like)
+from numpy import (absolute, argmax, argmin, array, linspace, log, sqrt, where,
+                   zeros_like)
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .fit_skew_t_pdf import fit_skew_t_pdf
 from .nd_array.nd_array.get_coordinates_for_reflection import \
     get_coordinates_for_reflection
-
-
-def get_intersections_between_2_1d_arrays(array_2d_0, array_2d_1):
-    """
-    Get intersections between 2 1D arrays.
-    Arguments:
-        array_2d_0 (ndarray): (n, )
-        array_2d_1 (ndarray): (n, )
-    Returns:
-        ndarray: (n, ); bools
-    """
-
-    from numpy import append, diff
-
-    return append(diff(sign(array_2d_0 - array_2d_1)) != 0, False)
+from .nd_array.nd_array.get_intersections_between_2_1d_arrays import \
+    get_intersections_between_2_1d_arrays
 
 
 def compute_context(array_1d,
