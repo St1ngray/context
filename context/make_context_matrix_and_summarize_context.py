@@ -19,6 +19,9 @@ def make_context_matrix_and_summarize_context(
         fit_fixed_scale=None,
         n_grid=3000,
         degree_of_freedom_for_tail_reduction=10e8,
+        global_shape=None,
+        global_location=None,
+        global_scale=None,
         directory_path=None):
     """
     Make context matrix and summarize context.
@@ -31,17 +34,14 @@ def make_context_matrix_and_summarize_context(
         fit_fixed_scale (float):
         n_grid (int):
         degree_of_freedom_for_tail_reduction (float):
+        global_shape (float):
+        global_location (float):
+        global_scale (float):
         directory_path (str):
     Returns:
         DataFrame: (n_feature, n_sample, )
         Series: (n_feature, )
     """
-
-    if use_global_reference:
-        _, global_location, global_scale, _, global_shape = fit_skew_t_pdf_globally(
-            feature_x_sample)
-    else:
-        global_location = global_scale = global_shape = None
 
     returns = multiprocess(_make_context_matrix_and_summarize_context, ((
         df,
