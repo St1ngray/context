@@ -2,6 +2,7 @@ from os.path import join
 
 from matplotlib.gridspec import GridSpec
 from matplotlib.pyplot import figure, subplot
+from numpy import absolute
 from seaborn import swarmplot
 
 from .compute_context import compute_context
@@ -16,10 +17,10 @@ from .support.support.path import clean_name
 def plot_context(array_1d,
                  title,
                  figure_size=(
-                     FIGURE_SIZE[0] * 1.88,
+                     FIGURE_SIZE[0] * 1.80,
                      FIGURE_SIZE[1], ),
                  n_bin=None,
-                 plot_skew_t_pdf=True,
+                 plot_fit_and_references=True,
                  plot_context_indices=True,
                  location=None,
                  scale=None,
@@ -28,8 +29,10 @@ def plot_context(array_1d,
                  fit_fixed_location=None,
                  fit_fixed_scale=None,
                  n_grid=3000,
-                 true_mean=None,
                  degrees_of_freedom_for_tail_reduction=10e8,
+                 global_shape=None,
+                 global_location=None,
+                 global_scale=None,
                  add_context_summary_to_title=True,
                  xlabel='Value',
                  directory_path=None):
@@ -40,7 +43,7 @@ def plot_context(array_1d,
         title (str):
         figure_size (iterable):
         n_bin (int):
-        plot_skew_t_pdf (bool):
+        plot_fit_and_references (bool):
         plot_context_indices (bool):
         location (float):
         scale (float):
@@ -49,8 +52,10 @@ def plot_context(array_1d,
         fit_fixed_location (float):
         fit_fixed_scale (float):
         n_grid (int):
-        true_mean (float):
         degrees_of_freedom_for_tail_reduction (float):
+        global_shape (float):
+        global_location (float):
+        global_scale (float):
         add_context_summary_to_title (bool):
         xlabel (str):
         directory_path (str):
@@ -64,6 +69,37 @@ def plot_context(array_1d,
     ax = subplot(gridspec[:80, :])
     ax_bottom = subplot(gridspec[80:, :], sharex=ax)
 
+    context_dict = compute_context(
+        array_1d,
+        location=location,
+        scale=scale,
+        df=df,
+        shape=shape,
+        fit_fixed_location=fit_fixed_location,
+        fit_fixed_scale=fit_fixed_scale,
+        n_grid=n_grid,
+        degrees_of_freedom_for_tail_reduction=
+        degrees_of_freedom_for_tail_reduction,
+        global_shape=global_shape,
+        global_location=global_location,
+        global_scale=global_scale)
+
+    fit = context_dict['fit']
+    grid = context_dict['grid']
+    pdf = context_dict['pdf']
+    pdf_reference = context_dict['pdf_reference']
+    global_pdf_reference = context_dict['global_pdf_reference']
+    context_indices = context_dict['context_indices']
+    context_summary = context_dict['context_summary']
+
+    ax.set_ylim(0,
+                max((
+                    pdf.max(),
+                    pdf_reference.max(),
+                    global_pdf_reference.max(),
+                    absolute(context_indices).max(),
+                    1, )) * 1.08)
+
     plot_distribution(
         array_1d,
         ax=ax,
@@ -74,63 +110,49 @@ def plot_context(array_1d,
                 'histtype': 'step',
                 'fill': True,
                 'linewidth': 1.8,
-                'color': '#003171',
+                'color': '#23191E',
                 'facecolor': '#20D9BA',
-                'alpha': 0.92,
+                'alpha': 0.8,
                 'zorder': 2,
             },
         })
 
-    context_dict = compute_context(
-        array_1d,
-        location=location,
-        scale=scale,
-        df=df,
-        shape=shape,
-        fit_fixed_location=fit_fixed_location,
-        fit_fixed_scale=fit_fixed_scale,
-        n_grid=n_grid,
-        true_mean=true_mean,
-        degrees_of_freedom_for_tail_reduction=
-        degrees_of_freedom_for_tail_reduction)
+    linewidth = 5.1
 
-    grid = context_dict['grid']
-    pdf = context_dict['pdf']
+    if plot_fit_and_references:
 
-    linewidth = 3.9
-
-    if plot_skew_t_pdf:
-        plot_skew_t_pdf_zorder = 3
-        background_line_alpha = 0.69
-        background_line_color = '#003171'
+        plot_fit_and_references_zorder = 3
+        background_line_alpha = 0.8
+        background_line_color = '#EBF6F7'
 
         pdf_backgdound_line_kwargs = {
             'linestyle': '-',
-            'linewidth': linewidth * 1.8,
+            'linewidth': linewidth * 1.51,
             'color': background_line_color,
             'alpha': background_line_alpha,
-            'zorder': plot_skew_t_pdf_zorder,
+            'zorder': plot_fit_and_references_zorder,
         }
 
         pdf_line_kwargs = {
             'linestyle': '-',
             'linewidth': linewidth,
-            'zorder': plot_skew_t_pdf_zorder,
+            'zorder': plot_fit_and_references_zorder,
         }
 
         ax.plot(grid, pdf, **pdf_backgdound_line_kwargs)
         ax.plot(grid, pdf, color='#20D9BA', **pdf_line_kwargs)
 
-        ax.plot(grid, context_dict['pdf_reference'],
-                **pdf_backgdound_line_kwargs)
-        ax.plot(
-            grid,
-            context_dict['pdf_reference'],
-            color='#9017E6',
-            **pdf_line_kwargs)
+        ax.plot(grid, pdf_reference, **pdf_backgdound_line_kwargs)
+        ax.plot(grid, pdf_reference, color='#9017E6', **pdf_line_kwargs)
+
+        if global_pdf_reference is not None:
+
+            ax.plot(grid, global_pdf_reference, **pdf_backgdound_line_kwargs)
+            ax.plot(
+                grid, global_pdf_reference, color='#4E40D8', **pdf_line_kwargs)
 
     if plot_context_indices:
-        context_indices = context_dict['context_indices']
+
         is_positive = 0 <= context_indices
 
         context_indices_line_kwargs = {
@@ -140,39 +162,36 @@ def plot_context(array_1d,
             'zorder': 1,
         }
 
-        pdf_max = pdf.max()
-
         ax.fill_between(
             grid[is_positive],
-            pdf_max * context_indices[is_positive],
+            context_indices[is_positive],
             color='#FF1968',
             **context_indices_line_kwargs)
 
         ax.fill_between(
             grid[~is_positive],
-            context_indices[~is_positive] * pdf_max * -1,
+            -1 * context_indices[~is_positive],
             color='#0088FF',
             **context_indices_line_kwargs)
 
         if add_context_summary_to_title:
-            title += ' (Context Summary={:.2f})'.format(
-                context_dict['context_summary'])
+            title += ' (Context Summary={:.2f})'.format(context_summary)
 
     ax_x_min, ax_x_max, ax_y_min, ax_y_max = get_ax_positions(ax, 'ax')
 
     ax.text(
         (ax_x_min + ax_x_max) / 2,
-        ax_y_max * 1.080,
+        ax_y_max * 1.08,
         title,
         horizontalalignment='center',
         **FONT_LARGEST)
 
-    if plot_skew_t_pdf or plot_context_indices:
+    if plot_fit_and_references:
         ax.text(
             (ax_x_min + ax_x_max) / 2,
             ax_y_max * 1.026,
             'N={:.0f}   Location={:.2f}   Scale={:.2f}   DF={:.2f}   Shape={:.2f}'.
-            format(*context_dict['fit']),
+            format(*fit),
             horizontalalignment='center',
             **FONT_STANDARD)
 
