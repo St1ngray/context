@@ -26,7 +26,9 @@ def fit_skew_t_pdf_globally(feature_x_sample,
 
     values = feature_x_sample.values.flatten()
 
-    values = values[~isna(values)]
+    is_missing = isna(values)
+    values = values[~is_missing]
+    print('Dropped {} missing.'.format(is_missing.sum()))
 
     n, location, scale, degree_of_freedom, shape = fit_skew_t_pdf(
         values,

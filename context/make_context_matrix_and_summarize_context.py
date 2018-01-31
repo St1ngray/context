@@ -4,7 +4,6 @@ from pandas import DataFrame, Series, concat
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .compute_context import compute_context
-from .fit_skew_t_pdf_globally import fit_skew_t_pdf_globally
 from .support.support.df import split_df
 from .support.support.multiprocess import multiprocess
 from .support.support.path import establish_path
