@@ -4,7 +4,9 @@ from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 def fit_skew_t_pdf(array_1d,
                    skew_t_model=None,
                    fit_fixed_location=None,
-                   fit_fixed_scale=None):
+                   fit_fixed_scale=None,
+                   fit_initial_location=None,
+                   fit_initial_scale=None):
     """
     Fit skew-t PDF.
     Arguments:
@@ -12,11 +14,13 @@ def fit_skew_t_pdf(array_1d,
         skew_t_model (statsmodels.sandbox.distributions.extras.ACSkewT_gen):
         fit_fixed_location (float):
         fit_fixed_scale (float):
+        fit_initial_location (float):
+        fit_initial_scale (float):
     Returns:
         int: n
         float: location
         float: scale
-        float: df
+        float: degree of freedom
         float: shape
     """
 
@@ -31,6 +35,13 @@ def fit_skew_t_pdf(array_1d,
     if fit_fixed_scale is not None:
         kwargs['fscale'] = fit_fixed_scale
 
-    df, shape, location, scale = skew_t_model.fit(array_1d, **kwargs)
+    if fit_initial_location is not None:
+        kwargs['loc'] = fit_initial_location
 
-    return array_1d.size, location, scale, df, shape
+    if fit_initial_scale is not None:
+        kwargs['scale'] = fit_initial_scale
+
+    degree_of_freedom, shape, location, scale = skew_t_model.fit(
+        array_1d, **kwargs)
+
+    return array_1d.size, location, scale, degree_of_freedom, shape

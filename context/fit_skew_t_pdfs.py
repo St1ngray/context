@@ -13,6 +13,8 @@ def fit_skew_t_pdfs(feature_x_sample,
                     n_job=1,
                     fit_fixed_location=None,
                     fit_fixed_scale=None,
+                    fit_initial_location=None,
+                    fit_initial_scale=None,
                     directory_path=None):
     """
     Fit skew-t PDFs.
@@ -21,16 +23,20 @@ def fit_skew_t_pdfs(feature_x_sample,
         n_job (int):
         fit_fixed_location (float):
         fit_fixed_scale (float):
+        fit_initial_location (float):
+        fit_initial_scale (float):
         directory_path (str):
     Returns:
-        DataFrame: (n_feature, 5 (N, Location, Scale, DF, Shape), )
+        DataFrame: (n_feature, 5 (N, Location, Scale, DF, Shape, ), )
     """
 
     feature_x_skew_t_pdf_fit_parameter = concat(
         multiprocess(_fit_skew_t_pdfs, ((
             df,
             fit_fixed_location,
-            fit_fixed_scale, ) for df in split_df(feature_x_sample, n_job)),
+            fit_fixed_scale,
+            fit_initial_location,
+            fit_initial_scale, ) for df in split_df(feature_x_sample, n_job)),
                      n_job))
 
     if directory_path:
@@ -43,15 +49,18 @@ def fit_skew_t_pdfs(feature_x_sample,
     return feature_x_skew_t_pdf_fit_parameter
 
 
-def _fit_skew_t_pdfs(feature_x_sample, fit_fixed_location, fit_fixed_scale):
+def _fit_skew_t_pdfs(feature_x_sample, fit_fixed_location, fit_fixed_scale,
+                     fit_initial_location, fit_initial_scale):
     """
     Fit skew-t PDFs.
     Arguments:
         feature_x_sample (DataFrame): (n_feature, n_sample, )
         fit_fixed_location (float):
         fit_fixed_scale (float):
+        fit_initial_location (float):
+        fit_initial_scale (float):
     Returns:
-        DataFrame: (n_feature, 5 (N, Location, Scale, DF, Shape), )
+        DataFrame: (n_feature, 5 (N, Location, Scale, DF, Shape, ), )
     """
 
     skew_t_model = ACSkewT_gen()
@@ -62,7 +71,7 @@ def _fit_skew_t_pdfs(feature_x_sample, fit_fixed_location, fit_fixed_scale):
             'N',
             'Location',
             'Scale',
-            'DF',
+            'Degree of Freedom',
             'Shape', ),
         dtype=float)
     feature_x_skew_t_pdf_fit_parameter.index.name = 'Feature'
@@ -81,6 +90,8 @@ def _fit_skew_t_pdfs(feature_x_sample, fit_fixed_location, fit_fixed_scale):
             feature_vector,
             skew_t_model=skew_t_model,
             fit_fixed_location=fit_fixed_location,
-            fit_fixed_scale=fit_fixed_scale)
+            fit_fixed_scale=fit_fixed_scale,
+            fit_initial_location=fit_initial_location,
+            fit_initial_scale=fit_initial_scale)
 
     return feature_x_skew_t_pdf_fit_parameter

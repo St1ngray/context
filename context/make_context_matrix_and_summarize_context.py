@@ -18,7 +18,7 @@ def make_context_matrix_and_summarize_context(
         fit_fixed_location=None,
         fit_fixed_scale=None,
         n_grid=3000,
-        degrees_of_freedom_for_tail_reduction=10e8,
+        degree_of_freedom_for_tail_reduction=10e8,
         directory_path=None):
     """
     Make context matrix and summarize context.
@@ -30,7 +30,7 @@ def make_context_matrix_and_summarize_context(
         fit_fixed_location (float):
         fit_fixed_scale (float):
         n_grid (int):
-        degrees_of_freedom_for_tail_reduction (float):
+        degree_of_freedom_for_tail_reduction (float):
         directory_path (str):
     Returns:
         DataFrame: (n_feature, n_sample, )
@@ -49,7 +49,7 @@ def make_context_matrix_and_summarize_context(
         fit_fixed_location,
         fit_fixed_scale,
         n_grid,
-        degrees_of_freedom_for_tail_reduction,
+        degree_of_freedom_for_tail_reduction,
         global_location,
         global_scale,
         global_shape, ) for df in split_df(feature_x_sample, n_job)), n_job)
@@ -74,7 +74,7 @@ def make_context_matrix_and_summarize_context(
 def _make_context_matrix_and_summarize_context(
         feature_x_sample, feature_x_skew_t_pdf_fit_parameter,
         fit_fixed_location, fit_fixed_scale, n_grid,
-        degrees_of_freedom_for_tail_reduction, global_location, global_scale,
+        degree_of_freedom_for_tail_reduction, global_location, global_scale,
         global_shape):
     """
     Make context matrix and summarize context.
@@ -84,7 +84,7 @@ def _make_context_matrix_and_summarize_context(
         fit_fixed_location (float):
         fit_fixed_scale (float):
         n_grid (int):
-        degrees_of_freedom_for_tail_reduction (float):
+        degree_of_freedom_for_tail_reduction (float):
         global_location (float):
         global_scale (float):
         global_shape (float):
@@ -117,23 +117,28 @@ def _make_context_matrix_and_summarize_context(
                                           feature_index))
 
         if feature_x_skew_t_pdf_fit_parameter is None:
-            location = scale = df = shape = None
+            location = scale = degree_of_freedom = shape = None
         else:
-            location, scale, df, shape = feature_x_skew_t_pdf_fit_parameter.loc[
-                feature_index, ['Location', 'Scale', 'DF', 'Shape']]
+            location, scale, degree_of_freedom, shape = feature_x_skew_t_pdf_fit_parameter.loc[
+                feature_index, [
+                    'Location',
+                    'Scale',
+                    'Degree of Freedom',
+                    'Shape',
+                ]]
 
         context_dict = compute_context(
             feature_vector,
             skew_t_model=skew_t_model,
             location=location,
             scale=scale,
-            df=df,
+            degree_of_freedom=degree_of_freedom,
             shape=shape,
             fit_fixed_location=fit_fixed_location,
             fit_fixed_scale=fit_fixed_scale,
             n_grid=n_grid,
-            degrees_of_freedom_for_tail_reduction=
-            degrees_of_freedom_for_tail_reduction,
+            degree_of_freedom_for_tail_reduction=
+            degree_of_freedom_for_tail_reduction,
             global_location=global_location,
             global_scale=global_scale,
             global_shape=global_shape)

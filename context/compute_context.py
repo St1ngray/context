@@ -1,5 +1,4 @@
-from numpy import (absolute, argmax, argmin, array, linspace, log, sqrt, where,
-                   zeros_like)
+from numpy import absolute, argmax, argmin, array, linspace, log, sqrt, where
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .fit_skew_t_pdf import fit_skew_t_pdf
@@ -13,12 +12,14 @@ def compute_context(array_1d,
                     skew_t_model=None,
                     location=None,
                     scale=None,
-                    df=None,
+                    degree_of_freedom=None,
                     shape=None,
                     fit_fixed_location=None,
                     fit_fixed_scale=None,
+                    fit_initial_location=None,
+                    fit_initial_scale=None,
                     n_grid=3000,
-                    degrees_of_freedom_for_tail_reduction=10e8,
+                    degree_of_freedom_for_tail_reduction=10e8,
                     global_location=None,
                     global_scale=None,
                     global_shape=None):
@@ -29,18 +30,20 @@ def compute_context(array_1d,
         skew_t_model (statsmodels.sandbox.distributions.extras.ACSkewT_gen):
         location (float):
         scale (float):
-        df (float):
+        degree_of_freedom (float):
         shape (float):
         fit_fixed_location (float):
         fit_fixed_scale (float):
+        fit_initial_location (float):
+        fit_initial_scale (float):
         n_grid (int):
-        degrees_of_freedom_for_tail_reduction (float):
+        degree_of_freedom_for_tail_reduction (float):
         global_location (float):
         global_scale (float):
         global_shape (float):
     Returns:
         dict: {
-            fit: ndarray; (5, ) (N, Location, Scale, DF, Shape),
+            fit: ndarray; (5, ) (N, Location, Scale, DF, Shape, ),
             grid: ndarray; (n_grid, ),
             pdf: ndarray; (n_grid, ),
             pdf_reference: ndarray; (n_grid, ),
@@ -54,27 +57,31 @@ def compute_context(array_1d,
     if skew_t_model is None:
         skew_t_model = ACSkewT_gen()
 
-    if any((parameter is None for parameter in (
-            location,
-            scale,
-            df,
-            shape, ))):
+    if any((parameter is None
+            for parameter in (
+                location,
+                scale,
+                degree_of_freedom,
+                shape, ))):
 
-        n, location, scale, df, shape = fit_skew_t_pdf(
+        n, location, scale, degree_of_freedom, shape = fit_skew_t_pdf(
             array_1d,
             skew_t_model=skew_t_model,
             fit_fixed_location=fit_fixed_location,
-            fit_fixed_scale=fit_fixed_scale)
+            fit_fixed_scale=fit_fixed_scale,
+            fit_initial_location=fit_initial_location,
+            fit_initial_scale=fit_initial_scale)
     else:
         n = array_1d.size
 
     grid = linspace(array_1d.min(), array_1d.max(), n_grid)
 
-    pdf = skew_t_model.pdf(grid, df, shape, loc=location, scale=scale)
+    pdf = skew_t_model.pdf(
+        grid, degree_of_freedom, shape, loc=location, scale=scale)
 
     pdf_reference = skew_t_model.pdf(
         get_coordinates_for_reflection(grid, pdf),
-        degrees_of_freedom_for_tail_reduction,
+        degree_of_freedom_for_tail_reduction,
         shape,
         loc=location,
         scale=scale)
@@ -82,7 +89,7 @@ def compute_context(array_1d,
     context_indices = (pdf - pdf_reference) / pdf
     context_indices[context_indices < 0] = 0
 
-    penalty = log(df) / sqrt(absolute(shape) * scale)
+    penalty = log(degree_of_freedom) / sqrt(absolute(shape) * scale)
     context_indices = context_indices**penalty
 
     i = argmax(pdf_reference)
@@ -97,7 +104,7 @@ def compute_context(array_1d,
 
         global_pdf_reference = skew_t_model.pdf(
             grid,
-            degrees_of_freedom_for_tail_reduction,
+            degree_of_freedom_for_tail_reduction,
             global_shape,
             loc=global_location,
             scale=global_scale)
@@ -116,21 +123,21 @@ def compute_context(array_1d,
             global_context_indices *= grid < grid[is_intersection][0]
             global_context_indices *= -1
         else:
-            global_context_indices *= grid[is_intersection][1] < grid
+            global_context_indices *= grid[is_intersection][-1] < grid
 
         context_indices = where(
             absolute(context_indices) < absolute(global_context_indices),
             global_context_indices, context_indices)
 
     else:
-        global_pdf_reference = zeros_like(pdf_reference)
+        global_pdf_reference = None
 
     context_indices_like_array = context_indices[[
         argmin(absolute(grid - value)) for value in array_1d
     ]]
 
-    absolute_value_weighted_context_like_array = absolute(
-        array_1d) * context_indices_like_array
+    absolute_value_weighted_context_like_array = context_indices_like_array * absolute(
+        array_1d)
 
     negative_context_summary = absolute_value_weighted_context_like_array[
         absolute_value_weighted_context_like_array < 0].sum()
@@ -148,7 +155,7 @@ def compute_context(array_1d,
             n,
             location,
             scale,
-            df,
+            degree_of_freedom,
             shape, )),
         'grid': grid,
         'pdf': pdf,

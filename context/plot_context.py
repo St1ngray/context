@@ -24,12 +24,14 @@ def plot_context(array_1d,
                  plot_context_indices=True,
                  location=None,
                  scale=None,
-                 df=None,
+                 degree_of_freedom=None,
                  shape=None,
                  fit_fixed_location=None,
                  fit_fixed_scale=None,
+                 fit_initial_location=None,
+                 fit_initial_scale=None,
                  n_grid=3000,
-                 degrees_of_freedom_for_tail_reduction=10e8,
+                 degree_of_freedom_for_tail_reduction=10e8,
                  global_shape=None,
                  global_location=None,
                  global_scale=None,
@@ -47,12 +49,14 @@ def plot_context(array_1d,
         plot_context_indices (bool):
         location (float):
         scale (float):
-        df (float):
+        degree_of_freedom (float):
         shape (float):
         fit_fixed_location (float):
         fit_fixed_scale (float):
+        fit_initial_location (float):
+        fit_initial_scale (float):
         n_grid (int):
-        degrees_of_freedom_for_tail_reduction (float):
+        degree_of_freedom_for_tail_reduction (float):
         global_shape (float):
         global_location (float):
         global_scale (float):
@@ -73,13 +77,15 @@ def plot_context(array_1d,
         array_1d,
         location=location,
         scale=scale,
-        df=df,
+        degree_of_freedom=degree_of_freedom,
         shape=shape,
         fit_fixed_location=fit_fixed_location,
         fit_fixed_scale=fit_fixed_scale,
+        fit_initial_location=fit_initial_location,
+        fit_initial_scale=fit_initial_scale,
         n_grid=n_grid,
-        degrees_of_freedom_for_tail_reduction=
-        degrees_of_freedom_for_tail_reduction,
+        degree_of_freedom_for_tail_reduction=
+        degree_of_freedom_for_tail_reduction,
         global_shape=global_shape,
         global_location=global_location,
         global_scale=global_scale)
@@ -92,11 +98,16 @@ def plot_context(array_1d,
     context_indices = context_dict['context_indices']
     context_summary = context_dict['context_summary']
 
+    if global_pdf_reference is None:
+        global_pdf_reference_max = 0
+    else:
+        global_pdf_reference_max = global_pdf_reference.max()
+
     ax.set_ylim(0,
                 max((
                     pdf.max(),
                     pdf_reference.max(),
-                    global_pdf_reference.max(),
+                    global_pdf_reference_max,
                     absolute(context_indices).max(),
                     1, )) * 1.08)
 
@@ -121,22 +132,17 @@ def plot_context(array_1d,
 
     if plot_fit_and_references:
 
-        plot_fit_and_references_zorder = 3
-        background_line_alpha = 0.8
-        background_line_color = '#EBF6F7'
-
         pdf_backgdound_line_kwargs = {
             'linestyle': '-',
             'linewidth': linewidth * 1.51,
-            'color': background_line_color,
-            'alpha': background_line_alpha,
-            'zorder': plot_fit_and_references_zorder,
+            'color': '#EBF6F7',
+            'alpha': 0.8,
+            'zorder': 3,
         }
-
         pdf_line_kwargs = {
             'linestyle': '-',
             'linewidth': linewidth,
-            'zorder': plot_fit_and_references_zorder,
+            'zorder': 4,
         }
 
         ax.plot(grid, pdf, **pdf_backgdound_line_kwargs)
@@ -189,8 +195,8 @@ def plot_context(array_1d,
     if plot_fit_and_references:
         ax.text(
             (ax_x_min + ax_x_max) / 2,
-            ax_y_max * 1.026,
-            'N={:.0f}   Location={:.2f}   Scale={:.2f}   DF={:.2f}   Shape={:.2f}'.
+            ax_y_max * 1.022,
+            'N={:.0f}   Location={:.2f}   Scale={:.2f}   Degree of Freedom={:.2f}   Shape={:.2f}'.
             format(*fit),
             horizontalalignment='center',
             **FONT_STANDARD)
@@ -200,14 +206,14 @@ def plot_context(array_1d,
             'bottom': True,
         }, style='white')
 
-    swarmplot(x=array_1d, ax=ax_bottom, color='#20D9BA', alpha=0.92)
+    swarmplot(x=array_1d, ax=ax_bottom, color='#20D9BA', alpha=0.8)
     # TODO: enable multiple swarmplots (make sure to dynamically set axes)
     # for annotation_i, annotation_vector in annotation_x_sample.iterrows():
     #     swarmplot(
     #         x=annotation_vector * array_1d,
     #         ax=ax_bottom,
     #         color=color,
-    #         alpha=0.92)
+    #         alpha=0.8)
     decorate_ax(
         ax_bottom, despine_kwargs={
             'left': True,
