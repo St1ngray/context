@@ -95,7 +95,7 @@ def compute_context(array_1d,
     darea__r = r_kl / r_kl.sum()
     i = r_pdf_reference.argmax()
     r_context_indices = concatenate((
-        -1 * cumsum(darea__r[:i][::-1])[::-1],
+        -cumsum(darea__r[:i][::-1])[::-1],
         cumsum(darea__r[i:]), ))
 
     r_context_indices *= absolute(shape) / log(degree_of_freedom)
@@ -126,9 +126,9 @@ def compute_context(array_1d,
         s_context_indices /= scale + global_scale
 
         context_indices = s_context_indices + r_context_indices
+
     else:
-        s_pdf_reference = None
-        s_context_indices = None
+        s_pdf_reference = s_context_indices = None
         context_indices = r_context_indices
 
     context_indices_like_array = context_indices[[
