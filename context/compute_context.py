@@ -1,5 +1,5 @@
-from numpy import (absolute, argmin, array, concatenate, cumsum, finfo,
-                   linspace, log, minimum)
+from numpy import (absolute, array, concatenate, cumsum, finfo, linspace, log,
+                   minimum)
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .fit_skew_t_pdf import fit_skew_t_pdf
@@ -132,7 +132,7 @@ def compute_context(array_1d,
         context_indices = r_context_indices
 
     context_indices_like_array = context_indices[[
-        argmin(absolute(grid - value)) for value in array_1d
+        absolute(grid - value).argmin() for value in array_1d
     ]]
 
     weighted_context_like_array = context_indices_like_array * absolute(
