@@ -32,12 +32,12 @@ def fit_skew_t_pdfs(feature_x_sample,
 
     feature_x_skew_t_pdf_fit_parameter = concat(
         multiprocess(_fit_skew_t_pdfs, ((
-            df,
+            feature_x_sample_,
             fit_fixed_location,
             fit_fixed_scale,
             fit_initial_location,
-            fit_initial_scale, ) for df in split_df(feature_x_sample, n_job)),
-                     n_job))
+            fit_initial_scale,
+        ) for feature_x_sample_ in split_df(feature_x_sample, n_job)), n_job))
 
     if directory_path:
         establish_path(directory_path, 'directory')

@@ -68,8 +68,9 @@ def plot_context(array_1d,
 
     gridspec = GridSpec(100, 1)
 
-    ax = subplot(gridspec[:80, :])
-    ax_bottom = subplot(gridspec[80:, :], sharex=ax)
+    i = 82
+    ax = subplot(gridspec[:i, :])
+    ax_bottom = subplot(gridspec[i:, :], sharex=ax)
 
     context_dict = compute_context(
         array_1d,
@@ -87,19 +88,14 @@ def plot_context(array_1d,
         global_location=global_location,
         global_scale=global_scale)
 
-    fit = context_dict['fit']
     grid = context_dict['grid']
     pdf = context_dict['pdf']
-    r_pdf_reference = context_dict['r_pdf_reference']
-    r_context_indices = context_dict['r_context_indices']
-    s_pdf_reference = context_dict['s_pdf_reference']
     context_indices = context_dict['context_indices']
-    context_summary = context_dict['context_summary']
 
-    ax.set_ylim(-0.08,
+    ax.set_ylim(-0.1,
                 1.008 * max(1, pdf.max(), absolute(context_indices).max()))
 
-    data_color = '#02D9BA'
+    data_color = '#20D9BA'
     plot_distribution(
         array_1d,
         ax=ax,
@@ -121,12 +117,10 @@ def plot_context(array_1d,
 
     if plot_fit_and_references:
         background_line_kwargs = {
-            'linestyle': '-',
             'linewidth': linewidth * 1.51,
             'color': '#EBF6F7',
         }
         line_kwargs = {
-            'linestyle': '-',
             'linewidth': linewidth,
         }
 
@@ -134,6 +128,7 @@ def plot_context(array_1d,
         ax.plot(grid, pdf, zorder=z_order, **background_line_kwargs)
         ax.plot(grid, pdf, color=data_color, zorder=z_order, **line_kwargs)
 
+        r_pdf_reference = context_dict['r_pdf_reference']
         r_color = '#9017E6'
         z_order = 3
         ax.plot(
@@ -145,6 +140,7 @@ def plot_context(array_1d,
             zorder=z_order,
             **line_kwargs)
 
+        s_pdf_reference = context_dict['s_pdf_reference']
         if s_pdf_reference is not None:
             s_color = '#4E40D8'
             z_order = 4
@@ -161,22 +157,8 @@ def plot_context(array_1d,
                 **line_kwargs)
 
     if plot_context_indices:
-        is_positive = 0 <= context_indices
 
         z_order = 2
-        context_indices_line_kwargs = {
-            'linestyle': '-',
-            'linewidth': linewidth,
-            'zorder': z_order,
-        }
-
-        context_indices_color = '#4C221B'
-        positive_context_indices_color = '#FF1968'
-        negative_context_indices_color = '#0088FF'
-
-        r_context_indices_alpha = 0.51
-        s_context_indices_alpha = 0.22
-
         ax.plot(
             grid,
             absolute(context_indices),
@@ -185,40 +167,55 @@ def plot_context(array_1d,
         ax.plot(
             grid,
             absolute(context_indices),
-            color=context_indices_color,
+            color='#4C221B',
             zorder=z_order,
             **line_kwargs)
 
+        r_context_indices = context_dict['r_context_indices']
+
+        context_indices_line_kwargs = {
+            'linewidth': linewidth,
+            'zorder': z_order,
+        }
+
+        positive_context_indices = 0 <= context_indices
+        positive_context_indices_color = '#FF1968'
+        negative_context_indices_color = '#0088FF'
+
+        r_context_indices_alpha = 0.51
+        s_context_indices_alpha = 0.22
+
         ax.fill_between(
-            grid[is_positive],
-            context_indices[is_positive],
-            r_context_indices[is_positive],
+            grid[positive_context_indices],
+            context_indices[positive_context_indices],
+            r_context_indices[positive_context_indices],
             color=positive_context_indices_color,
             alpha=s_context_indices_alpha,
             **context_indices_line_kwargs)
         ax.fill_between(
-            grid[is_positive],
-            r_context_indices[is_positive],
+            grid[positive_context_indices],
+            r_context_indices[positive_context_indices],
             color=positive_context_indices_color,
             alpha=r_context_indices_alpha,
             **context_indices_line_kwargs)
 
         ax.fill_between(
-            grid[~is_positive],
-            -context_indices[~is_positive],
-            absolute(r_context_indices)[~is_positive],
+            grid[~positive_context_indices],
+            -context_indices[~positive_context_indices],
+            absolute(r_context_indices)[~positive_context_indices],
             color=negative_context_indices_color,
             alpha=s_context_indices_alpha,
             **context_indices_line_kwargs)
         ax.fill_between(
-            grid[~is_positive],
-            absolute(r_context_indices)[~is_positive],
+            grid[~positive_context_indices],
+            absolute(r_context_indices)[~positive_context_indices],
             color=negative_context_indices_color,
             alpha=r_context_indices_alpha,
             **context_indices_line_kwargs)
 
         if add_context_summary_to_title:
-            title += ' (Context Summary {:.2f})'.format(context_summary)
+            title += ' (Context Summary {:.2f})'.format(
+                context_dict['context_summary'])
 
     ax_x_min, ax_x_max, ax_y_min, ax_y_max = get_ax_positions(ax, 'ax')
 
@@ -234,7 +231,7 @@ def plot_context(array_1d,
             (ax_x_min + ax_x_max) / 2,
             ax_y_max * 1.022,
             'N={:.0f}   Location={:.2f}   Scale={:.2f}   Degree of Freedom={:.2f}   Shape={:.2f}'.
-            format(*fit),
+            format(*context_dict['fit']),
             horizontalalignment='center',
             **FONT_STANDARD)
 
