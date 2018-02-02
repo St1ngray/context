@@ -6,7 +6,7 @@ from .fit_skew_t_pdf import fit_skew_t_pdf
 from .nd_array.nd_array.get_coordinates_for_reflection import \
     get_coordinates_for_reflection
 
-eps = finfo(float).eps
+EPS = finfo(float).eps
 
 
 def compute_context(array_1d,
@@ -88,7 +88,7 @@ def compute_context(array_1d,
                                   shape,
                                   loc=location,
                                   scale=scale))
-    r_pdf_reference[r_pdf_reference < eps] = eps
+    r_pdf_reference[r_pdf_reference < EPS] = EPS
 
     r_kl = pdf * log(pdf / r_pdf_reference)
 
@@ -113,7 +113,7 @@ def compute_context(array_1d,
                                       shape,
                                       loc=global_location,
                                       scale=scale))
-        s_pdf_reference[s_pdf_reference < eps] = eps
+        s_pdf_reference[s_pdf_reference < EPS] = EPS
 
         s_kl = pdf * log(pdf / s_pdf_reference)
 
