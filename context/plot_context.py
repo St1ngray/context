@@ -146,7 +146,7 @@ def plot_context(array_1d,
             **line_kwargs)
 
         if s_pdf_reference is not None:
-            s_color = '#F8F88A'
+            s_color = '#4E40D8'
             z_order = 4
             ax.plot(
                 grid,
