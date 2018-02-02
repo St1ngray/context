@@ -30,7 +30,7 @@ def plot_context(array_1d,
                  fit_fixed_scale=None,
                  fit_initial_location=None,
                  fit_initial_scale=None,
-                 n_grid=3000,
+                 n_grid=1000,
                  degree_of_freedom_for_tail_reduction=10e8,
                  global_location=None,
                  global_scale=None,
@@ -115,14 +115,14 @@ def plot_context(array_1d,
 
     linewidth = 5.1
 
+    background_line_kwargs = {
+        'linewidth': linewidth * 1.51,
+        'color': '#EBF6F7',
+    }
+    line_kwargs = {
+        'linewidth': linewidth,
+    }
     if plot_fit_and_references:
-        background_line_kwargs = {
-            'linewidth': linewidth * 1.51,
-            'color': '#EBF6F7',
-        }
-        line_kwargs = {
-            'linewidth': linewidth,
-        }
 
         z_order = 5
         ax.plot(grid, pdf, zorder=z_order, **background_line_kwargs)
@@ -182,7 +182,7 @@ def plot_context(array_1d,
         positive_context_indices_color = '#FF1968'
         negative_context_indices_color = '#0088FF'
 
-        r_context_indices_alpha = 0.51
+        r_context_indices_alpha = 0.69
         s_context_indices_alpha = 0.22
 
         ax.fill_between(
