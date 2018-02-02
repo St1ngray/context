@@ -19,7 +19,7 @@ def compute_context(array_1d,
                     fit_fixed_scale=None,
                     fit_initial_location=None,
                     fit_initial_scale=None,
-                    n_grid=1000,
+                    n_grid=3000,
                     degree_of_freedom_for_tail_reduction=10e8,
                     global_location=None,
                     global_scale=None):
