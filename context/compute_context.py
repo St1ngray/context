@@ -1,11 +1,12 @@
-from numpy import absolute, argmax, argmin, array, linspace, log, sqrt, where
+from numpy import (absolute, argmin, array, concatenate, cumsum, finfo,
+                   linspace, log, minimum)
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .fit_skew_t_pdf import fit_skew_t_pdf
 from .nd_array.nd_array.get_coordinates_for_reflection import \
     get_coordinates_for_reflection
-from .nd_array.nd_array.get_intersections_between_2_1d_arrays import \
-    get_intersections_between_2_1d_arrays
+
+eps = finfo(float).eps
 
 
 def compute_context(array_1d,
@@ -21,8 +22,7 @@ def compute_context(array_1d,
                     n_grid=3000,
                     degree_of_freedom_for_tail_reduction=10e8,
                     global_location=None,
-                    global_scale=None,
-                    global_shape=None):
+                    global_scale=None):
     """
     Compute context.
     Arguments:
@@ -40,16 +40,18 @@ def compute_context(array_1d,
         degree_of_freedom_for_tail_reduction (float):
         global_location (float):
         global_scale (float):
-        global_shape (float):
     Returns:
         dict: {
             fit: ndarray; (5, ) (N, Location, Scale, DF, Shape, ),
             grid: ndarray; (n_grid, ),
             pdf: ndarray; (n_grid, ),
-            pdf_reference: ndarray; (n_grid, ),
-            global_pdf_reference: ndarray; (n_grid, ),
+            r_pdf_reference: ndarray; (n_grid, ),
+            r_context_indices: ndarray; (n_grid, ),
+            s_pdf_reference: ndarray; (n_grid, ),
+            s_context_indices: ndarray; (n_grid, ),
             context_indices: ndarray; (n_grid, ),
             context_indices_like_array: ndarray; (n, ),
+            weighted_context_like_array: nd_array; (n, ),
             context_summary: float,
         }
     """
@@ -79,71 +81,68 @@ def compute_context(array_1d,
     pdf = skew_t_model.pdf(
         grid, degree_of_freedom, shape, loc=location, scale=scale)
 
-    pdf_reference = skew_t_model.pdf(
-        get_coordinates_for_reflection(grid, pdf),
-        degree_of_freedom_for_tail_reduction,
-        shape,
-        loc=location,
-        scale=scale)
+    r_pdf_reference = minimum(pdf,
+                              skew_t_model.pdf(
+                                  get_coordinates_for_reflection(grid, pdf),
+                                  degree_of_freedom_for_tail_reduction,
+                                  shape,
+                                  loc=location,
+                                  scale=scale))
+    r_pdf_reference[r_pdf_reference < eps] = eps
 
-    context_indices = (pdf - pdf_reference) / pdf
-    context_indices[context_indices < 0] = 0
+    r_kl = pdf * log(pdf / r_pdf_reference)
 
-    penalty = log(degree_of_freedom) / sqrt(absolute(shape) * scale)
-    context_indices = context_indices**penalty
+    darea__r = r_kl / r_kl.sum()
+    i = r_pdf_reference.argmax()
+    r_context_indices = concatenate((
+        -1 * cumsum(darea__r[:i][::-1])[::-1],
+        cumsum(darea__r[i:]), ))
 
-    i = argmax(pdf_reference)
-    context_indices = ((-1, ) * i + (1, ) * (n_grid - i)) * context_indices
+    r_context_indices *= absolute(shape) / log(degree_of_freedom)
 
     if all(
             parameter is not None
             for parameter in (
                 global_location,
-                global_scale,
-                global_shape, )):
+                global_scale, )):
 
-        global_pdf_reference = skew_t_model.pdf(
-            grid,
-            degree_of_freedom_for_tail_reduction,
-            global_shape,
-            loc=global_location,
-            scale=global_scale)
+        s_pdf_reference = minimum(pdf,
+                                  skew_t_model.pdf(
+                                      grid,
+                                      degree_of_freedom,
+                                      shape,
+                                      loc=global_location,
+                                      scale=scale))
+        s_pdf_reference[s_pdf_reference < eps] = eps
 
-        global_context_indices = (pdf - global_pdf_reference) / pdf
+        s_kl = pdf * log(pdf / s_pdf_reference)
 
-        penalty *= 1 + (scale / global_scale) / (
-            absolute(location - global_location) / global_scale)
+        darea__s = s_kl / s_kl.sum()
+        i = s_pdf_reference.argmax()
+        s_context_indices = concatenate((
+            -cumsum(darea__s[:i][::-1])[::-1],
+            cumsum(darea__s[i:]), ))
 
-        global_context_indices = global_context_indices**penalty
+        s_context_indices /= scale + global_scale
 
-        is_intersection = get_intersections_between_2_1d_arrays(
-            pdf, global_pdf_reference)
-
-        if location < global_location:
-            global_context_indices *= grid < grid[is_intersection][0]
-            global_context_indices *= -1
-        else:
-            global_context_indices *= grid[is_intersection][-1] < grid
-
-        context_indices = where(
-            absolute(context_indices) < absolute(global_context_indices),
-            global_context_indices, context_indices)
-
+        context_indices = s_context_indices + r_context_indices
     else:
-        global_pdf_reference = None
+        s_pdf_reference = None
+        s_context_indices = None
+        context_indices = r_context_indices
 
     context_indices_like_array = context_indices[[
         argmin(absolute(grid - value)) for value in array_1d
     ]]
 
-    absolute_value_weighted_context_like_array = context_indices_like_array * absolute(
+    weighted_context_like_array = context_indices_like_array * absolute(
         array_1d)
 
-    negative_context_summary = absolute_value_weighted_context_like_array[
-        absolute_value_weighted_context_like_array < 0].sum()
+    negative_context_summary = weighted_context_like_array[
+        weighted_context_like_array < 0].sum()
 
-    positive_context_summary = absolute_value_weighted_context_like_array[
-        0 < absolute_value_weighted_context_like_array].sum()
+    positive_context_summary = weighted_context_like_array[
+        0 < weighted_context_like_array].sum()
 
     if absolute(negative_context_summary) < absolute(positive_context_summary):
         context_summary = positive_context_summary
@@ -159,9 +158,12 @@ def compute_context(array_1d,
             shape, )),
         'grid': grid,
         'pdf': pdf,
-        'pdf_reference': pdf_reference,
-        'global_pdf_reference': global_pdf_reference,
+        'r_pdf_reference': r_pdf_reference,
+        'r_context_indices': r_context_indices,
+        's_pdf_reference': s_pdf_reference,
+        's_context_indices': s_context_indices,
         'context_indices': context_indices,
         'context_indices_like_array': context_indices_like_array,
+        'weighted_context_like_array': weighted_context_like_array,
         'context_summary': context_summary,
     }

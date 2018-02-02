@@ -11,14 +11,12 @@ from .support.support.path import establish_path
 
 def make_context_matrix_and_summarize_context(
         feature_x_sample,
-        use_global_reference=False,
         n_job=1,
         feature_x_skew_t_pdf_fit_parameter=None,
         fit_fixed_location=None,
         fit_fixed_scale=None,
         n_grid=3000,
         degree_of_freedom_for_tail_reduction=10e8,
-        global_shape=None,
         global_location=None,
         global_scale=None,
         directory_path=None):
@@ -26,14 +24,12 @@ def make_context_matrix_and_summarize_context(
     Make context matrix and summarize context.
     Arguments:
         feature_x_sample (DataFrame): (n_feature, n_sample, )
-        use_global_reference (bool):
         n_job (int):
         feature_x_skew_t_pdf_fit_parameter (DataFrame):
         fit_fixed_location (float):
         fit_fixed_scale (float):
         n_grid (int):
         degree_of_freedom_for_tail_reduction (float):
-        global_shape (float):
         global_location (float):
         global_scale (float):
         directory_path (str):
@@ -50,8 +46,7 @@ def make_context_matrix_and_summarize_context(
         n_grid,
         degree_of_freedom_for_tail_reduction,
         global_location,
-        global_scale,
-        global_shape, ) for df in split_df(feature_x_sample, n_job)), n_job)
+        global_scale, ) for df in split_df(feature_x_sample, n_job)), n_job)
 
     context__feature_x_sample = concat((r[0] for r in returns))
     feature_context_summary = concat((r[1] for r in returns))
@@ -73,8 +68,7 @@ def make_context_matrix_and_summarize_context(
 def _make_context_matrix_and_summarize_context(
         feature_x_sample, feature_x_skew_t_pdf_fit_parameter,
         fit_fixed_location, fit_fixed_scale, n_grid,
-        degree_of_freedom_for_tail_reduction, global_location, global_scale,
-        global_shape):
+        degree_of_freedom_for_tail_reduction, global_location, global_scale):
     """
     Make context matrix and summarize context.
     Arguments:
@@ -86,7 +80,6 @@ def _make_context_matrix_and_summarize_context(
         degree_of_freedom_for_tail_reduction (float):
         global_location (float):
         global_scale (float):
-        global_shape (float):
     Returns:
         DataFrame: (n_feature, n_sample, )
         Series: (n_feature, )
@@ -139,8 +132,7 @@ def _make_context_matrix_and_summarize_context(
             degree_of_freedom_for_tail_reduction=
             degree_of_freedom_for_tail_reduction,
             global_location=global_location,
-            global_scale=global_scale,
-            global_shape=global_shape)
+            global_scale=global_scale)
 
         context__feature_x_sample.loc[feature_index] = context_dict[
             'context_indices_like_array']
