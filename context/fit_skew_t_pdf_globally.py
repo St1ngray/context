@@ -44,7 +44,8 @@ def fit_skew_t_pdf_globally(feature_x_sample,
             'norm_hist': True,
         },
         decorate_ax_kwargs={
-            'title': 'Global',
+            'title': 'Value',
+            'xlabel': 'Value',
         })
 
     print(
