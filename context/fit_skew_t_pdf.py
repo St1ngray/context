@@ -1,3 +1,4 @@
+from numpy import isnan, nanmean
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 
@@ -26,6 +27,8 @@ def fit_skew_t_pdf(array_1d,
 
     if skew_t_model is None:
         skew_t_model = ACSkewT_gen()
+
+    array_1d[isnan(array_1d)] = nanmean(array_1d)
 
     kwargs = {}
 
