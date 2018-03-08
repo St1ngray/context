@@ -1,7 +1,7 @@
 from os.path import join
 
 from matplotlib.gridspec import GridSpec
-from matplotlib.pyplot import figure, subplot
+from matplotlib.pyplot import figure, gca, subplot
 from numpy import absolute, isnan, nanmean
 from seaborn import swarmplot
 
@@ -19,6 +19,7 @@ def plot_context(array_1d,
                  figure_size=(
                      FIGURE_SIZE[0] * 1.80,
                      FIGURE_SIZE[1], ),
+                 y_max_is_1=False,
                  n_bin=None,
                  plot_fit_and_references=True,
                  plot_context_indices=True,
@@ -34,7 +35,6 @@ def plot_context(array_1d,
                  degree_of_freedom_for_tail_reduction=10e8,
                  global_location=None,
                  global_scale=None,
-                 add_context_summary_to_title=True,
                  xlabel='Value',
                  directory_path=None):
     """
@@ -43,6 +43,7 @@ def plot_context(array_1d,
         array_1d (ndarray): (n, )
         title (str):
         figure_size (iterable):
+        y_max_is_1 (bool):
         n_bin (int):
         plot_fit_and_references (bool):
         plot_context_indices (bool):
@@ -58,7 +59,6 @@ def plot_context(array_1d,
         degree_of_freedom_for_tail_reduction (float):
         global_location (float):
         global_scale (float):
-        add_context_summary_to_title (bool):
         xlabel (str):
         directory_path (str):
     Returns:
@@ -75,9 +75,12 @@ def plot_context(array_1d,
 
     gridspec = GridSpec(100, 1)
 
-    i = 82
-    ax = subplot(gridspec[:i, :])
-    ax_bottom = subplot(gridspec[i:, :], sharex=ax)
+    if array_1d.size < 10000:
+        i = 82
+        ax = subplot(gridspec[:i, :])
+        ax_bottom = subplot(gridspec[i:, :], sharex=ax)
+    else:
+        ax = gca()
 
     context_dict = compute_context(
         array_1d,
@@ -95,12 +98,14 @@ def plot_context(array_1d,
         global_location=global_location,
         global_scale=global_scale)
 
-    grid = context_dict['grid']
     pdf = context_dict['pdf']
     context_indices = context_dict['context_indices']
 
-    ax.set_ylim(-0.1,
-                1.008 * max(1, pdf.max(), absolute(context_indices).max()))
+    if y_max_is_1:
+        y_max = 1
+    else:
+        y_max = max(1, pdf.max(), absolute(context_indices).max())
+    ax.set_ylim(-0.1, 1.008 * y_max)
 
     data_color = '#20D9BA'
     plot_distribution(
@@ -120,6 +125,7 @@ def plot_context(array_1d,
             },
         })
 
+    grid = context_dict['grid']
     linewidth = 5.1
 
     background_line_kwargs = {
@@ -149,6 +155,7 @@ def plot_context(array_1d,
 
         s_pdf_reference = context_dict['s_pdf_reference']
         if s_pdf_reference is not None:
+
             s_color = '#4E40D8'
             z_order = 4
             ax.plot(
@@ -186,12 +193,11 @@ def plot_context(array_1d,
         }
 
         positive_context_indices = 0 <= context_indices
-        positive_context_indices_color = '#FF1968'
-        negative_context_indices_color = '#0088FF'
 
         r_context_indices_alpha = 0.69
         s_context_indices_alpha = 0.22
 
+        positive_context_indices_color = '#FF1968'
         ax.fill_between(
             grid[positive_context_indices],
             context_indices[positive_context_indices],
@@ -206,6 +212,7 @@ def plot_context(array_1d,
             alpha=r_context_indices_alpha,
             **context_indices_line_kwargs)
 
+        negative_context_indices_color = '#0088FF'
         ax.fill_between(
             grid[~positive_context_indices],
             -context_indices[~positive_context_indices],
@@ -220,15 +227,11 @@ def plot_context(array_1d,
             alpha=r_context_indices_alpha,
             **context_indices_line_kwargs)
 
-        if add_context_summary_to_title:
-            title += ' (Context Summary {:.2f})'.format(
-                context_dict['context_summary'])
-
     ax_x_min, ax_x_max, ax_y_min, ax_y_max = get_ax_positions(ax, 'ax')
 
     ax.text(
         (ax_x_min + ax_x_max) / 2,
-        ax_y_max * 1.08,
+        ax_y_max * 1.16,
         title,
         horizontalalignment='center',
         **FONT_LARGEST)
@@ -236,9 +239,19 @@ def plot_context(array_1d,
     if plot_fit_and_references:
         ax.text(
             (ax_x_min + ax_x_max) / 2,
-            ax_y_max * 1.022,
+            ax_y_max * 1.08,
             'N={:.0f}   Location={:.2f}   Scale={:.2f}   Degree of Freedom={:.2f}   Shape={:.2f}'.
             format(*context_dict['fit']),
+            horizontalalignment='center',
+            **FONT_STANDARD)
+
+    if plot_context_indices:
+        ax.text(
+            (ax_x_min + ax_x_max) / 2,
+            ax_y_max * 1.02,
+            'Negative Context Summary={:.2f}   Positive Context Summary={:.2f}'.
+            format(context_dict['negative_context_summary'],
+                   context_dict['positive_context_summary']),
             horizontalalignment='center',
             **FONT_STANDARD)
 
@@ -247,15 +260,20 @@ def plot_context(array_1d,
             'bottom': True,
         }, style='white')
 
-    swarmplot_kwargs = {
-        's': 5.1,
-    }
-    swarmplot(x=array_1d, ax=ax_bottom, color=data_color, **swarmplot_kwargs)
+    if array_1d.size < 10000:
+        swarmplot_kwargs = {
+            's': 5.1,
+        }
+        swarmplot(
+            x=array_1d, ax=ax_bottom, color=data_color, **swarmplot_kwargs)
 
-    decorate_ax(
-        ax_bottom, despine_kwargs={
-            'left': True,
-        }, xlabel=xlabel, yticks=())
+        decorate_ax(
+            ax_bottom,
+            despine_kwargs={
+                'left': True,
+            },
+            xlabel=xlabel,
+            yticks=())
 
     if directory_path:
         save_plot(

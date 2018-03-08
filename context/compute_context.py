@@ -99,16 +99,15 @@ def compute_context(array_1d,
 
     r_kl = pdf * log(pdf / r_pdf_reference)
 
-    darea__r = r_kl / r_kl.sum()
-
     r_pdf_reference_argmax = r_pdf_reference.argmax()
 
+    r_kl_darea = r_kl / r_kl.sum()
     r_context_indices = concatenate((
-        -cumsum(darea__r[:r_pdf_reference_argmax][::-1])[::-1],
-        cumsum(darea__r[r_pdf_reference_argmax:]), ))
+        -cumsum(r_kl_darea[:r_pdf_reference_argmax][::-1])[::-1],
+        cumsum(r_kl_darea[r_pdf_reference_argmax:]), ))
 
-    r_context_indices *= absolute(shape) / log(degree_of_freedom)
-    r_context_indices *= absolute(grid - grid[r_pdf_reference_argmax])
+    r_context_indices *= absolute(grid - grid[r_pdf_reference_argmax]
+                                  ) * absolute(shape) / log(degree_of_freedom)
 
     if all(
             parameter is not None
@@ -127,16 +126,15 @@ def compute_context(array_1d,
 
         s_kl = pdf * log(pdf / s_pdf_reference)
 
-        darea__s = s_kl / s_kl.sum()
-
         s_pdf_reference_argmax = s_pdf_reference.argmax()
 
+        s_kl_darea = s_kl / s_kl.sum()
         s_context_indices = concatenate((
-            -cumsum(darea__s[:s_pdf_reference_argmax][::-1])[::-1],
-            cumsum(darea__s[s_pdf_reference_argmax:]), ))
+            -cumsum(s_kl_darea[:s_pdf_reference_argmax][::-1])[::-1],
+            cumsum(s_kl_darea[s_pdf_reference_argmax:]), ))
 
-        s_context_indices /= scale + global_scale
-        s_context_indices *= absolute(grid - grid[s_pdf_reference_argmax])
+        s_context_indices *= absolute(grid - grid[s_pdf_reference_argmax]) / (
+            scale + global_scale)
 
         context_indices = s_context_indices + r_context_indices
 
@@ -154,11 +152,6 @@ def compute_context(array_1d,
     positive_context_summary = context_indices_like_array[
         0 < context_indices_like_array].sum()
 
-    if absolute(negative_context_summary) < absolute(positive_context_summary):
-        context_summary = positive_context_summary
-    else:
-        context_summary = negative_context_summary
-
     return {
         'fit': array((
             n,
@@ -174,5 +167,6 @@ def compute_context(array_1d,
         's_context_indices': s_context_indices,
         'context_indices': context_indices,
         'context_indices_like_array': context_indices_like_array,
-        'context_summary': context_summary,
+        'negative_context_summary': negative_context_summary,
+        'positive_context_summary': positive_context_summary,
     }

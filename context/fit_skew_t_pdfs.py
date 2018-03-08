@@ -9,7 +9,7 @@ from .support.support.multiprocess import multiprocess
 from .support.support.path import establish_path
 
 
-def fit_skew_t_pdfs(feature_x_sample,
+def fit_skew_t_pdfs(matrix,
                     n_job=1,
                     fit_fixed_location=None,
                     fit_fixed_scale=None,
@@ -19,7 +19,7 @@ def fit_skew_t_pdfs(feature_x_sample,
     """
     Fit skew-t PDFs.
     Arguments:
-        feature_x_sample (DataFrame): (n_feature, n_sample, )
+        matrix (DataFrame): (n_feature, n_sample, )
         n_job (int):
         fit_fixed_location (float):
         fit_fixed_scale (float):
@@ -30,31 +30,30 @@ def fit_skew_t_pdfs(feature_x_sample,
         DataFrame: (n_feature, 5 (N, Location, Scale, DF, Shape, ), )
     """
 
-    feature_x_skew_t_pdf_fit_parameter = concat(
+    skew_t_pdf_fit_parameter = concat(
         multiprocess(_fit_skew_t_pdfs, ((
-            feature_x_sample_,
+            matrix_,
             fit_fixed_location,
             fit_fixed_scale,
             fit_initial_location,
-            fit_initial_scale,
-        ) for feature_x_sample_ in split_df(feature_x_sample, n_job)), n_job))
+            fit_initial_scale, ) for matrix_ in split_df(matrix, n_job)),
+                     n_job))
 
     if directory_path:
         establish_path(directory_path, 'directory')
 
-        feature_x_skew_t_pdf_fit_parameter.to_csv(
-            join(directory_path, 'feature_x_skew_t_pdf_fit_parameter.tsv'),
-            sep='\t')
+        skew_t_pdf_fit_parameter.to_csv(
+            join(directory_path, 'skew_t_pdf_fit_parameter.tsv'), sep='\t')
 
-    return feature_x_skew_t_pdf_fit_parameter
+    return skew_t_pdf_fit_parameter
 
 
-def _fit_skew_t_pdfs(feature_x_sample, fit_fixed_location, fit_fixed_scale,
+def _fit_skew_t_pdfs(matrix, fit_fixed_location, fit_fixed_scale,
                      fit_initial_location, fit_initial_scale):
     """
     Fit skew-t PDFs.
     Arguments:
-        feature_x_sample (DataFrame): (n_feature, n_sample, )
+        matrix (DataFrame): (n_feature, n_sample, )
         fit_fixed_location (float):
         fit_fixed_scale (float):
         fit_initial_location (float):
@@ -65,8 +64,8 @@ def _fit_skew_t_pdfs(feature_x_sample, fit_fixed_location, fit_fixed_scale,
 
     skew_t_model = ACSkewT_gen()
 
-    feature_x_skew_t_pdf_fit_parameter = DataFrame(
-        index=feature_x_sample.index,
+    skew_t_pdf_fit_parameter = DataFrame(
+        index=matrix.index,
         columns=(
             'N',
             'Location',
@@ -74,24 +73,22 @@ def _fit_skew_t_pdfs(feature_x_sample, fit_fixed_location, fit_fixed_scale,
             'Degree of Freedom',
             'Shape', ),
         dtype=float)
-    feature_x_skew_t_pdf_fit_parameter.index.name = 'Feature'
 
-    n_per_log = max(feature_x_sample.shape[0] // 10, 1)
+    n_per_log = max(matrix.shape[0] // 10, 1)
 
     for i, (
-            feature_index,
-            feature_vector, ) in enumerate(feature_x_sample.iterrows()):
+            index,
+            vector, ) in enumerate(matrix.iterrows()):
 
         if i % n_per_log == 0:
-            print('({}/{}) {} ...'.format(i + 1, feature_x_sample.shape[0],
-                                          feature_index))
+            print('({}/{}) {} ...'.format(i + 1, matrix.shape[0], index))
 
-        feature_x_skew_t_pdf_fit_parameter.loc[feature_index] = fit_skew_t_pdf(
-            feature_vector,
+        skew_t_pdf_fit_parameter.loc[index] = fit_skew_t_pdf(
+            vector,
             skew_t_model=skew_t_model,
             fit_fixed_location=fit_fixed_location,
             fit_fixed_scale=fit_fixed_scale,
             fit_initial_location=fit_initial_location,
             fit_initial_scale=fit_initial_scale)
 
-    return feature_x_skew_t_pdf_fit_parameter
+    return skew_t_pdf_fit_parameter
