@@ -19,7 +19,6 @@ def plot_context(array_1d,
                  figure_size=(
                      FIGURE_SIZE[0] * 1.80,
                      FIGURE_SIZE[1], ),
-                 y_max_is_1=False,
                  n_bin=None,
                  plot_fit_and_references=True,
                  plot_context_indices=True,
@@ -35,6 +34,8 @@ def plot_context(array_1d,
                  degree_of_freedom_for_tail_reduction=10e8,
                  global_location=None,
                  global_scale=None,
+                 y_max_is_1=False,
+                 plot_swarm=True,
                  xlabel='Value',
                  directory_path=None):
     """
@@ -43,7 +44,6 @@ def plot_context(array_1d,
         array_1d (ndarray): (n, )
         title (str):
         figure_size (iterable):
-        y_max_is_1 (bool):
         n_bin (int):
         plot_fit_and_references (bool):
         plot_context_indices (bool):
@@ -59,6 +59,8 @@ def plot_context(array_1d,
         degree_of_freedom_for_tail_reduction (float):
         global_location (float):
         global_scale (float):
+        y_max_is_1 (bool):
+        plot_swarm (bool):
         xlabel (str):
         directory_path (str):
     Returns:
@@ -75,7 +77,7 @@ def plot_context(array_1d,
 
     gridspec = GridSpec(100, 1)
 
-    if array_1d.size < 10000:
+    if plot_swarm:
         i = 82
         ax = subplot(gridspec[:i, :])
         ax_bottom = subplot(gridspec[i:, :], sharex=ax)
@@ -257,10 +259,10 @@ def plot_context(array_1d,
 
     decorate_ax(
         ax, despine_kwargs={
-            'bottom': True,
+            'bottom': plot_swarm,
         }, style='white')
 
-    if array_1d.size < 10000:
+    if plot_swarm:
         swarmplot_kwargs = {
             's': 5.1,
         }
