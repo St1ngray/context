@@ -260,7 +260,7 @@ def plot_context(array_1d,
     decorate_ax(
         ax, despine_kwargs={
             'bottom': plot_swarm,
-        }, style='white')
+        })
 
     if plot_swarm:
         swarmplot_kwargs = {
