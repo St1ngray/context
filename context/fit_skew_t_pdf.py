@@ -25,10 +25,15 @@ def fit_skew_t_pdf(array_1d,
         float: shape
     """
 
+    array_1d = array_1d.copy()
+    is_nan = isnan(array_1d)
+    if is_nan.all():
+        raise ValueError('array_1d has only nan.')
+    else:
+        array_1d[is_nan] = nanmean(array_1d)
+
     if skew_t_model is None:
         skew_t_model = ACSkewT_gen()
-
-    array_1d[isnan(array_1d)] = nanmean(array_1d)
 
     kwargs = {}
 
