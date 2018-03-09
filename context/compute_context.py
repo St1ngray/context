@@ -106,8 +106,9 @@ def compute_context(array_1d,
         -cumsum(r_kl_darea[:r_pdf_reference_argmax][::-1])[::-1],
         cumsum(r_kl_darea[r_pdf_reference_argmax:]), ))
 
-    r_context_indices *= absolute(grid - grid[r_pdf_reference_argmax]
-                                  ) * absolute(shape) / log(degree_of_freedom)
+    r_context_indices *= absolute(
+        grid - grid[r_pdf_reference_argmax]
+    )  # * absolute(shape) / log(degree_of_freedom)
 
     if all(
             parameter is not None
