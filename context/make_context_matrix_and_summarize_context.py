@@ -13,12 +13,8 @@ def make_context_matrix_and_summarize_context(
         matrix,
         n_job=1,
         skew_t_pdf_fit_parameter=None,
-        fit_fixed_location=None,
-        fit_fixed_scale=None,
-        fit_initial_location=None,
-        fit_initial_scale=None,
         n_grid=3000,
-        degree_of_freedom_for_tail_reduction=10e8,
+        degree_of_freedom_for_tail_reduction=10e12,
         global_location=None,
         global_scale=None,
         directory_path=None):
@@ -28,10 +24,6 @@ def make_context_matrix_and_summarize_context(
         matrix (DataFrame): (n_feature, n_sample, )
         n_job (int):
         skew_t_pdf_fit_parameter (DataFrame):
-        fit_fixed_location (float):
-        fit_fixed_scale (float):
-        fit_initial_location (float):
-        fit_initial_scale (float):
         n_grid (int):
         degree_of_freedom_for_tail_reduction (float):
         global_location (float):
@@ -45,10 +37,6 @@ def make_context_matrix_and_summarize_context(
     returns = multiprocess(_make_context_matrix_and_summarize_context, ((
         matrix_,
         skew_t_pdf_fit_parameter,
-        fit_fixed_location,
-        fit_fixed_scale,
-        fit_initial_location,
-        fit_initial_scale,
         n_grid,
         degree_of_freedom_for_tail_reduction,
         global_location,
@@ -70,18 +58,13 @@ def make_context_matrix_and_summarize_context(
 
 
 def _make_context_matrix_and_summarize_context(
-        matrix, skew_t_pdf_fit_parameter, fit_fixed_location, fit_fixed_scale,
-        fit_initial_location, fit_initial_scale, n_grid,
+        matrix, skew_t_pdf_fit_parameter, n_grid,
         degree_of_freedom_for_tail_reduction, global_location, global_scale):
     """
     Make context matrix and summarize context.
     Arguments:
         matrix (DataFrame): (n_feature, n_sample, )
         skew_t_pdf_fit_parameter (DataFrame):
-        fit_fixed_location (float):
-        fit_fixed_scale (float):
-        fit_initial_location (float):
-        fit_initial_scale (float):
         n_grid (int):
         degree_of_freedom_for_tail_reduction (float):
         global_location (float):
@@ -131,10 +114,6 @@ def _make_context_matrix_and_summarize_context(
             scale=scale,
             degree_of_freedom=degree_of_freedom,
             shape=shape,
-            fit_fixed_location=fit_fixed_location,
-            fit_fixed_scale=fit_fixed_scale,
-            fit_initial_location=fit_initial_location,
-            fit_initial_scale=fit_initial_scale,
             n_grid=n_grid,
             degree_of_freedom_for_tail_reduction=
             degree_of_freedom_for_tail_reduction,

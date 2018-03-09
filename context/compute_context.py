@@ -51,7 +51,8 @@ def compute_context(array_1d,
             s_context_indices: ndarray; (n_grid, ),
             context_indices: ndarray; (n_grid, ),
             context_indices_like_array: ndarray; (n, ),
-            context_summary: float,
+            negative_context_summary: float,
+            positive_context_summary: float,
         }
     """
 

@@ -9,22 +9,12 @@ from .support.support.multiprocess import multiprocess
 from .support.support.path import establish_path
 
 
-def fit_skew_t_pdfs(matrix,
-                    n_job=1,
-                    fit_fixed_location=None,
-                    fit_fixed_scale=None,
-                    fit_initial_location=None,
-                    fit_initial_scale=None,
-                    directory_path=None):
+def fit_skew_t_pdfs(matrix, n_job=1, directory_path=None):
     """
     Fit skew-t PDFs.
     Arguments:
         matrix (DataFrame): (n_feature, n_sample, )
         n_job (int):
-        fit_fixed_location (float):
-        fit_fixed_scale (float):
-        fit_initial_location (float):
-        fit_initial_scale (float):
         directory_path (str):
     Returns:
         DataFrame: (n_feature, 5 (N, Location, Scale, DF, Shape, ), )
@@ -32,12 +22,7 @@ def fit_skew_t_pdfs(matrix,
 
     skew_t_pdf_fit_parameter = concat(
         multiprocess(_fit_skew_t_pdfs, ((
-            matrix_,
-            fit_fixed_location,
-            fit_fixed_scale,
-            fit_initial_location,
-            fit_initial_scale, ) for matrix_ in split_df(matrix, n_job)),
-                     n_job))
+            matrix_, ) for matrix_ in split_df(matrix, n_job)), n_job))
 
     if directory_path:
         establish_path(directory_path, 'directory')
@@ -48,16 +33,11 @@ def fit_skew_t_pdfs(matrix,
     return skew_t_pdf_fit_parameter
 
 
-def _fit_skew_t_pdfs(matrix, fit_fixed_location, fit_fixed_scale,
-                     fit_initial_location, fit_initial_scale):
+def _fit_skew_t_pdfs(matrix):
     """
     Fit skew-t PDFs.
     Arguments:
         matrix (DataFrame): (n_feature, n_sample, )
-        fit_fixed_location (float):
-        fit_fixed_scale (float):
-        fit_initial_location (float):
-        fit_initial_scale (float):
     Returns:
         DataFrame: (n_feature, 5 (N, Location, Scale, DF, Shape, ), )
     """
@@ -84,11 +64,6 @@ def _fit_skew_t_pdfs(matrix, fit_fixed_location, fit_fixed_scale,
             print('({}/{}) {} ...'.format(i + 1, matrix.shape[0], index))
 
         skew_t_pdf_fit_parameter.loc[index] = fit_skew_t_pdf(
-            vector,
-            skew_t_model=skew_t_model,
-            fit_fixed_location=fit_fixed_location,
-            fit_fixed_scale=fit_fixed_scale,
-            fit_initial_location=fit_initial_location,
-            fit_initial_scale=fit_initial_scale)
+            vector, skew_t_model=skew_t_model)
 
     return skew_t_pdf_fit_parameter
