@@ -1,6 +1,6 @@
 from os.path import join
 
-from pandas import DataFrame, Series, concat
+from pandas import DataFrame, concat
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .compute_context import compute_context
