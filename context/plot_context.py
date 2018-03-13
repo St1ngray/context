@@ -2,10 +2,12 @@ from os.path import join
 
 from matplotlib.gridspec import GridSpec
 from matplotlib.pyplot import figure, gca, subplot
-from numpy import absolute, isnan, nanmean
+from numpy import absolute, histogram, isnan, nanmean
 from seaborn import swarmplot
 
 from .compute_context import compute_context
+from .compute_n_histogram_bin_using_freedman_diaconis import \
+    compute_n_histogram_bin_using_freedman_diaconis
 from .plot.plot.decorate_ax import decorate_ax
 from .plot.plot.get_ax_positions import get_ax_positions
 from .plot.plot.plot_distribution import plot_distribution
@@ -20,7 +22,6 @@ def plot_context(array_1d,
                      FIGURE_SIZE[0] * 1.80,
                      FIGURE_SIZE[1],
                  ),
-                 n_bin=None,
                  plot_fit_and_references=True,
                  plot_context_indices=True,
                  location=None,
@@ -35,7 +36,7 @@ def plot_context(array_1d,
                  degree_of_freedom_for_tail_reduction=10e8,
                  global_location=None,
                  global_scale=None,
-                 rescale=False,
+                 y_max_is_histogram_max=False,
                  plot_swarm=True,
                  xlabel='Value',
                  directory_path=None):
@@ -45,7 +46,6 @@ def plot_context(array_1d,
         array_1d (ndarray): (n, )
         title (str):
         figure_size (iterable):
-        n_bin (int):
         plot_fit_and_references (bool):
         plot_context_indices (bool):
         location (float):
@@ -60,7 +60,7 @@ def plot_context(array_1d,
         degree_of_freedom_for_tail_reduction (float):
         global_location (float):
         global_scale (float):
-        rescale (bool):
+        y_max_is_histogram_max (bool):
         plot_swarm (bool):
         xlabel (str):
         directory_path (str):
@@ -74,12 +74,12 @@ def plot_context(array_1d,
     else:
         array_1d[is_nan] = nanmean(array_1d)
 
+    n_bin = compute_n_histogram_bin_using_freedman_diaconis(array_1d)
+
     figure(figsize=figure_size)
-
     gridspec = GridSpec(100, 1)
-
     if plot_swarm:
-        i = 82
+        i = 80
         ax = subplot(gridspec[:i, :])
         ax_bottom = subplot(gridspec[i:, :], sharex=ax)
     else:
@@ -101,17 +101,15 @@ def plot_context(array_1d,
         global_location=global_location,
         global_scale=global_scale)
 
-    pdf = context_dict['pdf']
-    context_indices = context_dict['context_indices']
-
-    pdf_max = pdf.max()
-    absolute_context_indices_max = absolute(context_indices).max()
-
-    if rescale:
-        ax_y_max = pdf_max
+    histogram_max = histogram(array_1d, bins=n_bin, normed=True)[0].max()
+    pdf_max = context_dict['pdf'].max()
+    context_indices_absolute_max = absolute(
+        context_dict['context_indices']).max()
+    if y_max_is_histogram_max:
+        y_max = max(histogram_max, pdf_max)
     else:
-        ax_y_max = max(pdf_max, absolute_context_indices_max)
-    ax.set_ylim(0, ax_y_max + (0.16 * ax_y_max))
+        y_max = max(histogram_max, pdf_max, context_indices_absolute_max)
+    ax.set_ylim(0, y_max * 1.008)
 
     data_color = '#20D9BA'
     plot_distribution(
@@ -121,136 +119,146 @@ def plot_context(array_1d,
             'bins': n_bin,
             'norm_hist': True,
             'hist_kws': {
+                'zorder': 1,
                 'histtype': 'step',
                 'fill': True,
                 'linewidth': 1.8,
                 'color': '#23191E',
                 'facecolor': data_color,
                 'alpha': 1,
-                'zorder': 1,
             },
         })
 
-    grid = context_dict['grid']
-    linewidth = 5.1
+    linewidth = 3.2
+    background_linewidth = 6.4
+    background_color = '#EBF6F7'
 
-    background_line_kwargs = {
-        'linewidth': linewidth * 1.51,
-        'color': '#EBF6F7',
-    }
-    line_kwargs = {
-        'linewidth': linewidth,
-    }
     if plot_fit_and_references:
 
         z_order = 5
-        ax.plot(grid, pdf, zorder=z_order, **background_line_kwargs)
-        ax.plot(grid, pdf, color=data_color, zorder=z_order, **line_kwargs)
+        ax.plot(
+            context_dict['grid'],
+            context_dict['pdf'],
+            zorder=z_order,
+            linewidth=background_linewidth,
+            color=background_color)
+        ax.plot(
+            context_dict['grid'],
+            context_dict['pdf'],
+            zorder=z_order,
+            linewidth=linewidth,
+            color=data_color)
 
-        r_pdf_reference = context_dict['r_pdf_reference']
-        r_color = '#9017E6'
         z_order = 3
         ax.plot(
-            grid, r_pdf_reference, zorder=z_order, **background_line_kwargs)
-        ax.plot(
-            grid,
-            r_pdf_reference,
-            color=r_color,
+            context_dict['grid'],
+            context_dict['r_pdf_reference'],
             zorder=z_order,
-            **line_kwargs)
+            linewidth=background_linewidth,
+            color=background_color)
+        ax.plot(
+            context_dict['grid'],
+            context_dict['r_pdf_reference'],
+            zorder=z_order,
+            linewidth=linewidth,
+            color='#9017E6')
 
-        s_pdf_reference = context_dict['s_pdf_reference']
-        if s_pdf_reference is not None:
+        if context_dict['s_pdf_reference'] is not None:
 
-            s_color = '#4E40D8'
             z_order = 4
             ax.plot(
-                grid,
-                s_pdf_reference,
+                context_dict['grid'],
+                context_dict['s_pdf_reference'],
                 zorder=z_order,
-                **background_line_kwargs)
+                linewidth=background_linewidth,
+                color=background_color)
             ax.plot(
-                grid,
-                s_pdf_reference,
-                color=s_color,
+                context_dict['grid'],
+                context_dict['s_pdf_reference'],
                 zorder=z_order,
-                **line_kwargs)
+                linewidth=linewidth,
+                color='#4E40D8')
 
     if plot_context_indices:
 
-        y = absolute(context_indices)
-        if rescale:
-            if ax_y_max < absolute_context_indices_max:
-                y /= absolute_context_indices_max
-                y *= ax_y_max
-            else:
-                rescale = False
+        y = absolute(context_dict['context_indices'])
+        if y_max_is_histogram_max and y_max < context_indices_absolute_max:
+            y /= context_indices_absolute_max
+            y *= y_max
 
         z_order = 2
-        ax.plot(grid, y, zorder=z_order, **background_line_kwargs)
-        ax.plot(grid, y, color='#4C221B', zorder=z_order, **line_kwargs)
+        ax.plot(
+            context_dict['grid'],
+            y,
+            zorder=z_order,
+            linewidth=background_linewidth,
+            color=background_color)
+        ax.plot(
+            context_dict['grid'],
+            y,
+            zorder=z_order,
+            linewidth=linewidth,
+            color='#4C221B')
 
         r_context_indices_alpha = 0.69
         s_context_indices_alpha = 0.22
 
-        r_context_indices = context_dict['r_context_indices']
-        positive_context_indices = 0 <= context_indices
+        positive_context_indices = 0 <= context_dict['context_indices']
 
-        y0 = context_indices[positive_context_indices]
-        y1 = r_context_indices[positive_context_indices]
-        if rescale:
+        y0 = context_dict['context_indices'][positive_context_indices]
+        y1 = context_dict['r_context_indices'][positive_context_indices]
+        if y_max_is_histogram_max and y_max < context_indices_absolute_max:
             if y0.size:
-                y0 /= absolute_context_indices_max
-                y0 *= ax_y_max
+                y0 /= context_indices_absolute_max
+                y0 *= y_max
             if y1.size:
-                y1 /= absolute_context_indices_max
-                y1 *= ax_y_max
-
-        context_indices_line_kwargs = {
-            'linewidth': linewidth,
-            'zorder': z_order,
-        }
+                y1 /= context_indices_absolute_max
+                y1 *= y_max
 
         positive_context_indices_color = '#FF1968'
-
         ax.fill_between(
-            grid[positive_context_indices],
+            context_dict['grid'][positive_context_indices],
             y0,
             y1,
+            zorder=z_order,
+            linewidth=linewidth,
             color=positive_context_indices_color,
-            alpha=s_context_indices_alpha,
-            **context_indices_line_kwargs)
+            alpha=s_context_indices_alpha)
         ax.fill_between(
-            grid[positive_context_indices],
+            context_dict['grid'][positive_context_indices],
             y1,
+            zorder=z_order,
+            linewidth=linewidth,
             color=positive_context_indices_color,
-            alpha=r_context_indices_alpha,
-            **context_indices_line_kwargs)
+            alpha=r_context_indices_alpha)
 
-        y0 = -context_indices[~positive_context_indices]
-        y1 = absolute(r_context_indices)[~positive_context_indices]
-        if rescale:
+        y0 = -context_dict['context_indices'][~positive_context_indices]
+        y1 = absolute(
+            context_dict['r_context_indices'])[~positive_context_indices]
+        if y_max_is_histogram_max and y_max < context_indices_absolute_max:
             if y0.size:
-                y0 /= absolute_context_indices_max
-                y0 *= ax_y_max
+                y0 /= context_indices_absolute_max
+                y0 *= y_max
             if y1.size:
-                y1 /= absolute_context_indices_max
-                y1 *= ax_y_max
+                y1 /= context_indices_absolute_max
+                y1 *= y_max
 
         negative_context_indices_color = '#0088FF'
         ax.fill_between(
-            grid[~positive_context_indices],
+            context_dict['grid'][~positive_context_indices],
             y0,
             y1,
+            zorder=z_order,
+            linewidth=linewidth,
             color=negative_context_indices_color,
-            alpha=s_context_indices_alpha,
-            **context_indices_line_kwargs)
+            alpha=s_context_indices_alpha)
         ax.fill_between(
-            grid[~positive_context_indices],
+            context_dict['grid'][~positive_context_indices],
             y1,
+            zorder=z_order,
+            linewidth=linewidth,
             color=negative_context_indices_color,
-            alpha=r_context_indices_alpha,
-            **context_indices_line_kwargs)
+            alpha=r_context_indices_alpha)
 
     ax_x_min, ax_x_max, ax_y_min, ax_y_max = get_ax_positions(ax, 'ax')
 
@@ -286,12 +294,8 @@ def plot_context(array_1d,
         })
 
     if plot_swarm:
-        swarmplot_kwargs = {
-            's': 5.1,
-        }
-        swarmplot(
-            x=array_1d, ax=ax_bottom, color=data_color, **swarmplot_kwargs)
-
+        s = 5.6
+        swarmplot(x=array_1d, ax=ax_bottom, s=s, color=data_color)
         decorate_ax(
             ax_bottom,
             despine_kwargs={
