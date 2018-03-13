@@ -6,7 +6,7 @@ from numpy import absolute, histogram, isnan, nanmean
 from seaborn import swarmplot
 
 from .compute_context import compute_context
-from .compute_n_histogram_bin_using_freedman_diaconis import \
+from .nd_array.nd_array.compute_n_histogram_bin_using_freedman_diaconis import \
     compute_n_histogram_bin_using_freedman_diaconis
 from .plot.plot.decorate_ax import decorate_ax
 from .plot.plot.get_ax_positions import get_ax_positions
