@@ -18,7 +18,8 @@ def plot_context(array_1d,
                  title,
                  figure_size=(
                      FIGURE_SIZE[0] * 1.80,
-                     FIGURE_SIZE[1], ),
+                     FIGURE_SIZE[1],
+                 ),
                  n_bin=None,
                  plot_fit_and_references=True,
                  plot_context_indices=True,
@@ -34,7 +35,7 @@ def plot_context(array_1d,
                  degree_of_freedom_for_tail_reduction=10e8,
                  global_location=None,
                  global_scale=None,
-                 y_max_is_1=False,
+                 rescale=False,
                  plot_swarm=True,
                  xlabel='Value',
                  directory_path=None):
@@ -59,7 +60,7 @@ def plot_context(array_1d,
         degree_of_freedom_for_tail_reduction (float):
         global_location (float):
         global_scale (float):
-        y_max_is_1 (bool):
+        rescale (bool):
         plot_swarm (bool):
         xlabel (str):
         directory_path (str):
@@ -103,11 +104,14 @@ def plot_context(array_1d,
     pdf = context_dict['pdf']
     context_indices = context_dict['context_indices']
 
-    if y_max_is_1:
-        y_max = 1
+    pdf_max = pdf.max()
+    absolute_context_indices_max = absolute(context_indices).max()
+
+    if rescale:
+        ax_y_max = pdf_max
     else:
-        y_max = max(1, pdf.max(), absolute(context_indices).max())
-    ax.set_ylim(-0.1, 1.008 * y_max)
+        ax_y_max = max(pdf_max, absolute_context_indices_max)
+    ax.set_ylim(0, ax_y_max + (0.16 * ax_y_max))
 
     data_color = '#20D9BA'
     plot_distribution(
@@ -174,57 +178,76 @@ def plot_context(array_1d,
 
     if plot_context_indices:
 
+        y = absolute(context_indices)
+        if rescale:
+            if ax_y_max < absolute_context_indices_max:
+                y /= absolute_context_indices_max
+                y *= ax_y_max
+            else:
+                rescale = False
+
         z_order = 2
-        ax.plot(
-            grid,
-            absolute(context_indices),
-            zorder=z_order,
-            **background_line_kwargs)
-        ax.plot(
-            grid,
-            absolute(context_indices),
-            color='#4C221B',
-            zorder=z_order,
-            **line_kwargs)
+        ax.plot(grid, y, zorder=z_order, **background_line_kwargs)
+        ax.plot(grid, y, color='#4C221B', zorder=z_order, **line_kwargs)
+
+        r_context_indices_alpha = 0.69
+        s_context_indices_alpha = 0.22
 
         r_context_indices = context_dict['r_context_indices']
+        positive_context_indices = 0 <= context_indices
+
+        y0 = context_indices[positive_context_indices]
+        y1 = r_context_indices[positive_context_indices]
+        if rescale:
+            if y0.size:
+                y0 /= absolute_context_indices_max
+                y0 *= ax_y_max
+            if y1.size:
+                y1 /= absolute_context_indices_max
+                y1 *= ax_y_max
 
         context_indices_line_kwargs = {
             'linewidth': linewidth,
             'zorder': z_order,
         }
 
-        positive_context_indices = 0 <= context_indices
-
-        r_context_indices_alpha = 0.69
-        s_context_indices_alpha = 0.22
-
         positive_context_indices_color = '#FF1968'
+
         ax.fill_between(
             grid[positive_context_indices],
-            context_indices[positive_context_indices],
-            r_context_indices[positive_context_indices],
+            y0,
+            y1,
             color=positive_context_indices_color,
             alpha=s_context_indices_alpha,
             **context_indices_line_kwargs)
         ax.fill_between(
             grid[positive_context_indices],
-            r_context_indices[positive_context_indices],
+            y1,
             color=positive_context_indices_color,
             alpha=r_context_indices_alpha,
             **context_indices_line_kwargs)
 
+        y0 = -context_indices[~positive_context_indices]
+        y1 = absolute(r_context_indices)[~positive_context_indices]
+        if rescale:
+            if y0.size:
+                y0 /= absolute_context_indices_max
+                y0 *= ax_y_max
+            if y1.size:
+                y1 /= absolute_context_indices_max
+                y1 *= ax_y_max
+
         negative_context_indices_color = '#0088FF'
         ax.fill_between(
             grid[~positive_context_indices],
-            -context_indices[~positive_context_indices],
-            absolute(r_context_indices)[~positive_context_indices],
+            y0,
+            y1,
             color=negative_context_indices_color,
             alpha=s_context_indices_alpha,
             **context_indices_line_kwargs)
         ax.fill_between(
             grid[~positive_context_indices],
-            absolute(r_context_indices)[~positive_context_indices],
+            y1,
             color=negative_context_indices_color,
             alpha=r_context_indices_alpha,
             **context_indices_line_kwargs)
