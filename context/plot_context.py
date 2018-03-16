@@ -36,7 +36,7 @@ def plot_context(array_1d,
                  degree_of_freedom_for_tail_reduction=10e8,
                  global_location=None,
                  global_scale=None,
-                 y_max_is_histogram_max=False,
+                 y_max_is_histogram_max=True,
                  plot_swarm=True,
                  xlabel='Value',
                  directory_path=None):
@@ -291,7 +291,7 @@ def plot_context(array_1d,
     decorate_ax(
         ax, despine_kwargs={
             'bottom': plot_swarm,
-        })
+        }, xlabel=xlabel)
 
     if plot_swarm:
         s = 5.6
