@@ -79,6 +79,7 @@ def select_context_and_normalize_context_matrix_by_row(context_matrix,
 
     if select_context == '-_context':
         context_matrix[0 < context_matrix] = 0
+        context_matrix *= -1
 
     elif select_context == '+_context':
         context_matrix[context_matrix < 0] = 0
