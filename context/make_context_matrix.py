@@ -7,8 +7,8 @@ from .nd_array.nd_array.normalize_2d_array import normalize_2d_array
 
 def make_context_matrix(matrix,
                         n_job=1,
-                        skew_t_fit_parameter_by_row=None,
-                        skew_t_fit_parameter_by_column=None,
+                        skew_t_pdf_fit_parameter_by_row=None,
+                        skew_t_pdf_fit_parameter_by_column=None,
                         n_grid=3000,
                         degree_of_freedom_for_tail_reduction=10e12,
                         global_location=None,
@@ -21,8 +21,8 @@ def make_context_matrix(matrix,
     Arguments:
         matrix (DataFrame): (n_feature, n_sample, )
         n_job (int):
-        skew_t_fit_parameter_by_row (DataFrame):
-        skew_t_fit_parameter_by_column (DataFrame):
+        skew_t_pdf_fit_parameter_by_row (DataFrame):
+        skew_t_pdf_fit_parameter_by_column (DataFrame):
         n_grid (int):
         degree_of_freedom_for_tail_reduction (float):
         global_location (float):
@@ -37,7 +37,7 @@ def make_context_matrix(matrix,
         make_context_matrix_and_summarize_context_by_row(
             matrix,
             n_job=n_job,
-            skew_t_pdf_fit_parameter=skew_t_fit_parameter_by_row,
+            skew_t_pdf_fit_parameter=skew_t_pdf_fit_parameter_by_row,
             n_grid=n_grid,
             degree_of_freedom_for_tail_reduction=
             degree_of_freedom_for_tail_reduction,
@@ -48,7 +48,7 @@ def make_context_matrix(matrix,
         make_context_matrix_and_summarize_context_by_row(
             matrix.T,
             n_job=n_job,
-            skew_t_pdf_fit_parameter=skew_t_fit_parameter_by_column,
+            skew_t_pdf_fit_parameter=skew_t_pdf_fit_parameter_by_column,
             n_grid=n_grid,
             degree_of_freedom_for_tail_reduction=
             degree_of_freedom_for_tail_reduction,
