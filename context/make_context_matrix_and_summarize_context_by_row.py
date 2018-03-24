@@ -9,7 +9,7 @@ from .support.support.multiprocess import multiprocess
 from .support.support.path import establish_path
 
 
-def make_context_matrix_and_summarize_context(
+def make_context_matrix_and_summarize_context_by_row(
         matrix,
         n_job=1,
         skew_t_pdf_fit_parameter=None,
@@ -19,7 +19,7 @@ def make_context_matrix_and_summarize_context(
         global_scale=None,
         directory_path=None):
     """
-    Make context matrix and summarize context.
+    Make context matrix and summarize context by row.
     Arguments:
         matrix (DataFrame): (n_feature, n_sample, )
         n_job (int):
@@ -40,7 +40,8 @@ def make_context_matrix_and_summarize_context(
         n_grid,
         degree_of_freedom_for_tail_reduction,
         global_location,
-        global_scale, ) for matrix_ in split_df(matrix, n_job)), n_job)
+        global_scale,
+    ) for matrix_ in split_df(matrix, n_job)), n_job)
 
     context_matrix = concat((r[0] for r in returns))
     context_summary = concat((r[1] for r in returns))
@@ -84,14 +85,16 @@ def _make_context_matrix_and_summarize_context(
         index=context_matrix.index,
         columns=(
             'Negative Context Summary',
-            'Positive Context Summary', ),
+            'Positive Context Summary',
+        ),
         dtype=float)
 
     n_per_log = max(matrix.shape[0] // 10, 1)
 
     for i, (
             index,
-            vector, ) in enumerate(matrix.iterrows()):
+            vector,
+    ) in enumerate(matrix.iterrows()):
 
         if i % n_per_log == 0:
             print('({}/{}) {} ...'.format(i + 1, matrix.shape[0], index))

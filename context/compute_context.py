@@ -20,7 +20,7 @@ def compute_context(array_1d,
                     fit_initial_location=None,
                     fit_initial_scale=None,
                     n_grid=3000,
-                    degree_of_freedom_for_tail_reduction=10e8,
+                    degree_of_freedom_for_tail_reduction=10e12,
                     global_location=None,
                     global_scale=None):
     """
@@ -67,12 +67,12 @@ def compute_context(array_1d,
         skew_t_model = ACSkewT_gen()
 
     if any(
-            parameter is None
-            for parameter in (
+            parameter is None for parameter in (
                 location,
                 scale,
                 degree_of_freedom,
-                shape, )):
+                shape,
+            )):
 
         n, location, scale, degree_of_freedom, shape = fit_skew_t_pdf(
             array_1d,
@@ -105,17 +105,18 @@ def compute_context(array_1d,
     r_kl_darea = r_kl / r_kl.sum()
     r_context_indices = concatenate((
         -cumsum(r_kl_darea[:r_pdf_reference_argmax][::-1])[::-1],
-        cumsum(r_kl_darea[r_pdf_reference_argmax:]), ))
+        cumsum(r_kl_darea[r_pdf_reference_argmax:]),
+    ))
 
     r_context_indices *= absolute(
         grid - grid[r_pdf_reference_argmax]
     )  # * absolute(shape) / log(degree_of_freedom)
 
     if all(
-            parameter is not None
-            for parameter in (
+            parameter is not None for parameter in (
                 global_location,
-                global_scale, )):
+                global_scale,
+            )):
 
         s_pdf_reference = minimum(pdf,
                                   skew_t_model.pdf(
@@ -133,7 +134,8 @@ def compute_context(array_1d,
         s_kl_darea = s_kl / s_kl.sum()
         s_context_indices = concatenate((
             -cumsum(s_kl_darea[:s_pdf_reference_argmax][::-1])[::-1],
-            cumsum(s_kl_darea[s_pdf_reference_argmax:]), ))
+            cumsum(s_kl_darea[s_pdf_reference_argmax:]),
+        ))
 
         s_context_indices *= absolute(grid - grid[s_pdf_reference_argmax]) / (
             scale + global_scale)
@@ -160,7 +162,8 @@ def compute_context(array_1d,
             location,
             scale,
             degree_of_freedom,
-            shape, )),
+            shape,
+        )),
         'grid': grid,
         'pdf': pdf,
         'r_pdf_reference': r_pdf_reference,
