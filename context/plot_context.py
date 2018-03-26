@@ -1,27 +1,15 @@
 from os.path import join
 
-from matplotlib.gridspec import GridSpec
-from matplotlib.pyplot import figure, gca, subplot
 from numpy import absolute, histogram, isnan, nanmean
-from seaborn import swarmplot
 
 from .compute_context import compute_context
 from .nd_array.nd_array.compute_n_histogram_bin_using_freedman_diaconis import \
     compute_n_histogram_bin_using_freedman_diaconis
-from .plot.plot.decorate_ax import decorate_ax
-from .plot.plot.get_ax_positions import get_ax_positions
-from .plot.plot.plot_distribution import plot_distribution
-from .plot.plot.save_plot import save_plot
-from .plot.plot.style import FIGURE_SIZE, FONT_LARGEST, FONT_STANDARD
 from .support.support.path import clean_name
 
 
 def plot_context(array_1d,
                  title,
-                 figure_size=(
-                     FIGURE_SIZE[0] * 1.80,
-                     FIGURE_SIZE[1],
-                 ),
                  plot_fit_and_references=True,
                  plot_context_indices=True,
                  location=None,
@@ -45,7 +33,6 @@ def plot_context(array_1d,
     Arguments:
         array_1d (ndarray): (n, )
         title (str):
-        figure_size (iterable):
         plot_fit_and_references (bool):
         plot_context_indices (bool):
         location (float):
@@ -76,14 +63,10 @@ def plot_context(array_1d,
 
     n_bin = compute_n_histogram_bin_using_freedman_diaconis(array_1d)
 
-    figure(figsize=figure_size)
-    gridspec = GridSpec(100, 1)
     if plot_swarm:
-        i = 80
-        ax = subplot(gridspec[:i, :])
-        ax_bottom = subplot(gridspec[i:, :], sharex=ax)
+        i = 0.8
     else:
-        ax = gca()
+        i = 1
 
     context_dict = compute_context(
         array_1d,
