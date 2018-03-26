@@ -92,7 +92,6 @@ def plot_context(array_1d,
         y_max = max(histogram_max, pdf_max)
     else:
         y_max = max(histogram_max, pdf_max, context_indices_absolute_max)
-    ax.set_ylim(0, y_max * 1.008)
 
     data_color = '#20D9BA'
     plot_distribution(
