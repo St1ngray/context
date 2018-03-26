@@ -1,17 +1,12 @@
-from os.path import join
-
-from numpy import absolute, histogram, isnan, nanmean
+from numpy import absolute, isnan, nanmean
+from plotly.graph_objs import Histogram, Scatter
 
 from .compute_context import compute_context
-from .nd_array.nd_array.compute_n_histogram_bin_using_freedman_diaconis import \
-    compute_n_histogram_bin_using_freedman_diaconis
-from .support.support.path import clean_name
+from .plot.plot.plot_and_save import plot_and_save
 
 
 def plot_context(array_1d,
                  title,
-                 plot_fit_and_references=True,
-                 plot_context_indices=True,
                  location=None,
                  scale=None,
                  degree_of_freedom=None,
@@ -24,17 +19,14 @@ def plot_context(array_1d,
                  degree_of_freedom_for_tail_reduction=10e12,
                  global_location=None,
                  global_scale=None,
-                 y_max_is_histogram_max=True,
-                 plot_swarm=True,
-                 xlabel='Value',
-                 directory_path=None):
+                 y_max_is_pdf_max=True,
+                 xaxis_title='Value',
+                 html_file_path=None):
     """
     Plot context.
     Arguments:
         array_1d (ndarray): (n, )
         title (str):
-        plot_fit_and_references (bool):
-        plot_context_indices (bool):
         location (float):
         scale (float):
         degree_of_freedom (float):
@@ -47,10 +39,9 @@ def plot_context(array_1d,
         degree_of_freedom_for_tail_reduction (float):
         global_location (float):
         global_scale (float):
-        y_max_is_histogram_max (bool):
-        plot_swarm (bool):
-        xlabel (str):
-        directory_path (str):
+        y_max_is_pdf_max (bool):
+        xaxis_title (str):
+        html_file_path (str):
     Returns:
     """
 
@@ -60,13 +51,6 @@ def plot_context(array_1d,
         raise ValueError('array_1d has only nan.')
     else:
         array_1d[is_nan] = nanmean(array_1d)
-
-    n_bin = compute_n_histogram_bin_using_freedman_diaconis(array_1d)
-
-    if plot_swarm:
-        i = 0.8
-    else:
-        i = 1
 
     context_dict = compute_context(
         array_1d,
@@ -84,209 +68,73 @@ def plot_context(array_1d,
         global_location=global_location,
         global_scale=global_scale)
 
-    histogram_max = histogram(array_1d, bins=n_bin, normed=True)[0].max()
     pdf_max = context_dict['pdf'].max()
     context_indices_absolute_max = absolute(
         context_dict['context_indices']).max()
-    if y_max_is_histogram_max:
-        y_max = max(histogram_max, pdf_max)
+    if y_max_is_pdf_max:
+        y_max = pdf_max
     else:
-        y_max = max(histogram_max, pdf_max, context_indices_absolute_max)
+        y_max = max(pdf_max, context_indices_absolute_max)
 
-    data_color = '#20D9BA'
-    plot_distribution(
-        array_1d,
-        ax=ax,
-        distplot_kwargs={
-            'bins': n_bin,
-            'norm_hist': True,
-            'hist_kws': {
-                'zorder': 1,
-                'histtype': 'step',
-                'fill': True,
-                'linewidth': 1.8,
-                'color': '#23191E',
-                'facecolor': data_color,
-                'alpha': 1,
-            },
-        })
+    data = []
 
-    linewidth = 3.2
-    background_linewidth = 6.4
-    background_color = '#EBF6F7'
+    data.append(
+        Histogram(
+            name='Histogram', x=array_1d, histnorm='probability density'))
+    data.append(
+        Scatter(name='PDF', x=context_dict['grid'], y=context_dict['pdf']))
+    data.append(
+        Scatter(
+            name='Reflection PDF Reference',
+            x=context_dict['grid'],
+            y=context_dict['r_pdf_reference']))
+    if context_dict['s_pdf_reference'] is not None:
+        data.append(
+            Scatter(
+                name='Shift PDF Reference',
+                x=context_dict['grid'],
+                y=context_dict['s_pdf_reference']))
 
-    if plot_fit_and_references:
+    y = absolute(context_dict['context_indices'])
+    if y_max_is_pdf_max and y_max < context_indices_absolute_max:
+        y /= context_indices_absolute_max
+        y *= y_max
+    data.append(Scatter(name='Context Indices', x=context_dict['grid'], y=y))
 
-        z_order = 5
-        ax.plot(
-            context_dict['grid'],
-            context_dict['pdf'],
-            zorder=z_order,
-            linewidth=background_linewidth,
-            color=background_color)
-        ax.plot(
-            context_dict['grid'],
-            context_dict['pdf'],
-            zorder=z_order,
-            linewidth=linewidth,
-            color=data_color)
+    positive_context_indices = 0 <= context_dict['context_indices']
 
-        z_order = 3
-        ax.plot(
-            context_dict['grid'],
-            context_dict['r_pdf_reference'],
-            zorder=z_order,
-            linewidth=background_linewidth,
-            color=background_color)
-        ax.plot(
-            context_dict['grid'],
-            context_dict['r_pdf_reference'],
-            zorder=z_order,
-            linewidth=linewidth,
-            color='#9017E6')
+    x = context_dict['grid'][~positive_context_indices]
+    y0 = -context_dict['context_indices'][~positive_context_indices]
+    y1 = absolute(context_dict['r_context_indices'])[~positive_context_indices]
+    if y_max_is_pdf_max and y_max < context_indices_absolute_max:
+        if y0.size:
+            y0 /= context_indices_absolute_max
+            y0 *= y_max
+        if y1.size:
+            y1 /= context_indices_absolute_max
+            y1 *= y_max
+    data.append(
+        Scatter(
+            name='- Reflection Context Indices', x=x, y=y1, fill='tozeroy'))
+    data.append(Scatter(name='- Context Indices', x=x, y=y0, fill='tonexty'))
 
-        if context_dict['s_pdf_reference'] is not None:
+    x = context_dict['grid'][positive_context_indices]
+    y0 = context_dict['context_indices'][positive_context_indices]
+    y1 = context_dict['r_context_indices'][positive_context_indices]
+    if y_max_is_pdf_max and y_max < context_indices_absolute_max:
+        if y0.size:
+            y0 /= context_indices_absolute_max
+            y0 *= y_max
+        if y1.size:
+            y1 /= context_indices_absolute_max
+            y1 *= y_max
+    data.append(
+        Scatter(
+            name='+ Reflection Context Indices', x=x, y=y1, fill='tozeroy'))
+    data.append(Scatter(name='+ Context Indices', x=x, y=y0, fill='tonexty'))
 
-            z_order = 4
-            ax.plot(
-                context_dict['grid'],
-                context_dict['s_pdf_reference'],
-                zorder=z_order,
-                linewidth=background_linewidth,
-                color=background_color)
-            ax.plot(
-                context_dict['grid'],
-                context_dict['s_pdf_reference'],
-                zorder=z_order,
-                linewidth=linewidth,
-                color='#4E40D8')
+    layout = dict(title=title, xaxis=dict(title=xaxis_title))
 
-    if plot_context_indices:
+    figure = dict(data=data, layout=layout)
 
-        y = absolute(context_dict['context_indices'])
-        if y_max_is_histogram_max and y_max < context_indices_absolute_max:
-            y /= context_indices_absolute_max
-            y *= y_max
-
-        z_order = 2
-        ax.plot(
-            context_dict['grid'],
-            y,
-            zorder=z_order,
-            linewidth=background_linewidth,
-            color=background_color)
-        ax.plot(
-            context_dict['grid'],
-            y,
-            zorder=z_order,
-            linewidth=linewidth,
-            color='#4C221B')
-
-        r_context_indices_alpha = 0.69
-        s_context_indices_alpha = 0.22
-
-        positive_context_indices = 0 <= context_dict['context_indices']
-
-        y0 = context_dict['context_indices'][positive_context_indices]
-        y1 = context_dict['r_context_indices'][positive_context_indices]
-        if y_max_is_histogram_max and y_max < context_indices_absolute_max:
-            if y0.size:
-                y0 /= context_indices_absolute_max
-                y0 *= y_max
-            if y1.size:
-                y1 /= context_indices_absolute_max
-                y1 *= y_max
-
-        positive_context_indices_color = '#FF1968'
-        ax.fill_between(
-            context_dict['grid'][positive_context_indices],
-            y0,
-            y1,
-            zorder=z_order,
-            linewidth=linewidth,
-            color=positive_context_indices_color,
-            alpha=s_context_indices_alpha)
-        ax.fill_between(
-            context_dict['grid'][positive_context_indices],
-            y1,
-            zorder=z_order,
-            linewidth=linewidth,
-            color=positive_context_indices_color,
-            alpha=r_context_indices_alpha)
-
-        y0 = -context_dict['context_indices'][~positive_context_indices]
-        y1 = absolute(
-            context_dict['r_context_indices'])[~positive_context_indices]
-        if y_max_is_histogram_max and y_max < context_indices_absolute_max:
-            if y0.size:
-                y0 /= context_indices_absolute_max
-                y0 *= y_max
-            if y1.size:
-                y1 /= context_indices_absolute_max
-                y1 *= y_max
-
-        negative_context_indices_color = '#0088FF'
-        ax.fill_between(
-            context_dict['grid'][~positive_context_indices],
-            y0,
-            y1,
-            zorder=z_order,
-            linewidth=linewidth,
-            color=negative_context_indices_color,
-            alpha=s_context_indices_alpha)
-        ax.fill_between(
-            context_dict['grid'][~positive_context_indices],
-            y1,
-            zorder=z_order,
-            linewidth=linewidth,
-            color=negative_context_indices_color,
-            alpha=r_context_indices_alpha)
-
-    ax_x_min, ax_x_max, ax_y_min, ax_y_max = get_ax_positions(ax, 'ax')
-
-    ax.text(
-        (ax_x_min + ax_x_max) / 2,
-        ax_y_max * 1.16,
-        title,
-        horizontalalignment='center',
-        **FONT_LARGEST)
-
-    if plot_fit_and_references:
-        ax.text(
-            (ax_x_min + ax_x_max) / 2,
-            ax_y_max * 1.08,
-            'N={:.0f}   Location={:.2f}   Scale={:.2f}   Degree of Freedom={:.2f}   Shape={:.2f}'.
-            format(*context_dict['fit']),
-            horizontalalignment='center',
-            **FONT_STANDARD)
-
-    if plot_context_indices:
-        ax.text(
-            (ax_x_min + ax_x_max) / 2,
-            ax_y_max * 1.02,
-            'Negative Context Summary={:.2f}   Positive Context Summary={:.2f}'.
-            format(context_dict['negative_context_summary'],
-                   context_dict['positive_context_summary']),
-            horizontalalignment='center',
-            **FONT_STANDARD)
-
-    decorate_ax(
-        ax, despine_kwargs={
-            'bottom': plot_swarm,
-        }, xlabel=xlabel)
-
-    if plot_swarm:
-        s = 5.6
-        swarmplot(x=array_1d, ax=ax_bottom, s=s, color=data_color)
-        decorate_ax(
-            ax_bottom,
-            despine_kwargs={
-                'left': True,
-            },
-            xlabel=xlabel,
-            yticks=())
-
-    if directory_path:
-        save_plot(
-            join(directory_path, 'context_plot',
-                 clean_name('{}.png'.format(title))))
+    plot_and_save(figure, html_file_path)
