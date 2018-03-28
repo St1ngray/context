@@ -136,58 +136,47 @@ def plot_context(array_1d,
     y1 = absolute_context_indices[negative_context_indices]
     if y_max_is_pdf_max and y_max < absolute_context_indices_max:
         if y0.size:
-            y0 /= absolute_context_indices_max
-            y0 *= y_max
+            y0 = y0 / absolute_context_indices_max * y_max
         if y1.size:
-            y1 /= absolute_context_indices_max
-            y1 *= y_max
-    figure['data'].append(
-        dict(
-            type='scatter',
-            name='- Shape Context Indices',
-            legendgroup='- Context Indices',
-            x=grid[negative_context_indices],
-            y=y0,
-            fill='tozeroy',
-            line=dict(width=line_width / 5, color='#0088ff')))
+            y1 = y1 / absolute_context_indices_max * y_max
     figure['data'].append(
         dict(
             type='scatter',
             name='- Context Indices',
-            legendgroup='- Context Indices',
             x=grid[negative_context_indices],
             y=y1,
-            fill='tonexty',
+            fill='tozeroy',
             line=dict(width=line_width, color='#0088ff')))
+    figure['data'].append(
+        dict(
+            type='scatter',
+            name='- Shape Context Indices',
+            x=grid[negative_context_indices],
+            y=y0,
+            line=dict(width=line_width, color='#4dacff')))
 
     y0 = absolute_shape_context_indices[~negative_context_indices]
     y1 = absolute_context_indices[~negative_context_indices]
     if y_max_is_pdf_max and y_max < absolute_context_indices_max:
         if y0.size:
-            y0 /= absolute_context_indices_max
-            y0 *= y_max
+            y0 = y0 / absolute_context_indices_max * y_max
         if y1.size:
-            y1 /= absolute_context_indices_max
-            y1 *= y_max
-    figure['data'].append(
-        dict(
-            type='scatter',
-            name='+ Shape Context Indices',
-            legendgroup='+ Context Indices',
-            x=grid[~negative_context_indices],
-            y=y0,
-            fill='tozeroy',
-            line=dict(width=line_width / 5, color='#ff1968')))
+            y1 = y1 / absolute_context_indices_max * y_max
     figure['data'].append(
         dict(
             type='scatter',
             name='+ Context Indices',
-            legendgroup='+ Context Indices',
             x=grid[~negative_context_indices],
             y=y1,
-            fill='tonexty',
-            opacity=0.1,
+            fill='tozeroy',
             line=dict(width=line_width, color='#ff1968')))
+    figure['data'].append(
+        dict(
+            type='scatter',
+            name='+ Shape Context Indices',
+            x=grid[~negative_context_indices],
+            y=y0,
+            line=dict(width=line_width, color='#ff669a')))
 
     figure['layout'].update(title=title, width=1000)
 
