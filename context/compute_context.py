@@ -100,8 +100,8 @@ def compute_context(array_1d,
 
     shape_kl = pdf * log(pdf / shape_pdf_reference)
 
-    shape_pdf_reference_argmax = shape_pdf_reference.argmax()
     shape_kl_darea = shape_kl / shape_kl.sum()
+    shape_pdf_reference_argmax = shape_pdf_reference.argmax()
     shape_context_indices = concatenate(
         (-cumsum(shape_kl_darea[:shape_pdf_reference_argmax][::-1])[::-1],
          cumsum(shape_kl_darea[shape_pdf_reference_argmax:])))
