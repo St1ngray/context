@@ -1,3 +1,5 @@
+from warnings import warn
+
 from numpy import (absolute, array, concatenate, cumsum, finfo, isnan,
                    linspace, log, minimum, nanmean)
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
@@ -42,13 +44,13 @@ def compute_context(array_1d,
         global_scale (float):
     Returns:
         dict: {
-            fit: ndarray; (5, ) (N, Location, Scale, DF, Shape, ),
+            fit: ndarray; (5, ) (N, Location, Scale, DF, Shape),
             grid: ndarray; (n_grid, ),
             pdf: ndarray; (n_grid, ),
-            r_pdf_reference: ndarray; (n_grid, ),
-            r_context_indices: ndarray; (n_grid, ),
-            s_pdf_reference: ndarray; (n_grid, ),
-            s_context_indices: ndarray; (n_grid, ),
+            shape_pdf_reference: ndarray; (n_grid, ),
+            shape_context_indices: ndarray; (n_grid, ),
+            location_pdf_reference: ndarray; (n_grid, ),
+            location_context_indices: ndarray; (n_grid, ),
             context_indices: ndarray; (n_grid, ),
             context_indices_like_array: ndarray; (n, ),
             negative_context_summary: float,
@@ -60,19 +62,16 @@ def compute_context(array_1d,
     is_nan = isnan(array_1d)
     if is_nan.all():
         raise ValueError('array_1d has only nan.')
-    else:
+    elif is_nan.any():
+        warn('Replacing nan with mean ...')
         array_1d[is_nan] = nanmean(array_1d)
 
     if skew_t_model is None:
         skew_t_model = ACSkewT_gen()
 
     if any(
-            parameter is None for parameter in (
-                location,
-                scale,
-                degree_of_freedom,
-                shape,
-            )):
+            parameter is None
+            for parameter in (location, scale, degree_of_freedom, shape)):
 
         n, location, scale, degree_of_freedom, shape = fit_skew_t_pdf(
             array_1d,
@@ -89,62 +88,60 @@ def compute_context(array_1d,
     pdf = skew_t_model.pdf(
         grid, degree_of_freedom, shape, loc=location, scale=scale)
 
-    r_pdf_reference = minimum(pdf,
-                              skew_t_model.pdf(
-                                  get_coordinates_for_reflection(grid, pdf),
-                                  degree_of_freedom_for_tail_reduction,
-                                  shape,
-                                  loc=location,
-                                  scale=scale))
-    r_pdf_reference[r_pdf_reference < EPS] = EPS
+    shape_pdf_reference = minimum(pdf,
+                                  skew_t_model.pdf(
+                                      get_coordinates_for_reflection(
+                                          grid, pdf),
+                                      degree_of_freedom_for_tail_reduction,
+                                      shape,
+                                      loc=location,
+                                      scale=scale))
+    shape_pdf_reference[shape_pdf_reference < EPS] = EPS
 
-    r_kl = pdf * log(pdf / r_pdf_reference)
+    shape_kl = pdf * log(pdf / shape_pdf_reference)
 
-    r_pdf_reference_argmax = r_pdf_reference.argmax()
+    shape_pdf_reference_argmax = shape_pdf_reference.argmax()
+    shape_kl_darea = shape_kl / shape_kl.sum()
+    shape_context_indices = concatenate(
+        (-cumsum(shape_kl_darea[:shape_pdf_reference_argmax][::-1])[::-1],
+         cumsum(shape_kl_darea[shape_pdf_reference_argmax:])))
 
-    r_kl_darea = r_kl / r_kl.sum()
-    r_context_indices = concatenate((
-        -cumsum(r_kl_darea[:r_pdf_reference_argmax][::-1])[::-1],
-        cumsum(r_kl_darea[r_pdf_reference_argmax:]),
-    ))
-
-    r_context_indices *= absolute(
-        grid - grid[r_pdf_reference_argmax]
+    shape_context_indices *= absolute(
+        grid - grid[shape_pdf_reference_argmax]
     )  # * absolute(shape) / log(degree_of_freedom)
 
     if all(
-            parameter is not None for parameter in (
-                global_location,
-                global_scale,
-            )):
+            parameter is not None
+            for parameter in (global_location, global_scale)):
 
-        s_pdf_reference = minimum(pdf,
-                                  skew_t_model.pdf(
-                                      grid,
-                                      degree_of_freedom,
-                                      shape,
-                                      loc=global_location,
-                                      scale=scale))
-        s_pdf_reference[s_pdf_reference < EPS] = EPS
+        location_pdf_reference = minimum(pdf,
+                                         skew_t_model.pdf(
+                                             grid,
+                                             degree_of_freedom,
+                                             shape,
+                                             loc=global_location,
+                                             scale=scale))
+        location_pdf_reference[location_pdf_reference < EPS] = EPS
 
-        s_kl = pdf * log(pdf / s_pdf_reference)
+        location_kl = pdf * log(pdf / location_pdf_reference)
 
-        s_pdf_reference_argmax = s_pdf_reference.argmax()
+        location_pdf_reference_argmax = location_pdf_reference.argmax()
+        location_kl_darea = location_kl / location_kl.sum()
+        location_context_indices = concatenate(
+            (-cumsum(
+                location_kl_darea[:location_pdf_reference_argmax][::-1])[::-1],
+             cumsum(location_kl_darea[location_pdf_reference_argmax:])))
 
-        s_kl_darea = s_kl / s_kl.sum()
-        s_context_indices = concatenate((
-            -cumsum(s_kl_darea[:s_pdf_reference_argmax][::-1])[::-1],
-            cumsum(s_kl_darea[s_pdf_reference_argmax:]),
-        ))
+        location_context_indices *= absolute(
+            grid - grid[location_pdf_reference_argmax]) / (
+                scale + global_scale)
 
-        s_context_indices *= absolute(grid - grid[s_pdf_reference_argmax]) / (
-            scale + global_scale)
-
-        context_indices = s_context_indices + r_context_indices
+        context_indices = location_context_indices + shape_context_indices
 
     else:
-        s_pdf_reference = s_context_indices = None
-        context_indices = r_context_indices
+        location_pdf_reference = None
+        location_context_indices = None
+        context_indices = shape_context_indices
 
     context_indices_like_array = context_indices[[
         absolute(grid - value).argmin() for value in array_1d
@@ -166,10 +163,10 @@ def compute_context(array_1d,
         )),
         'grid': grid,
         'pdf': pdf,
-        'r_pdf_reference': r_pdf_reference,
-        'r_context_indices': r_context_indices,
-        's_pdf_reference': s_pdf_reference,
-        's_context_indices': s_context_indices,
+        'shape_pdf_reference': shape_pdf_reference,
+        'shape_context_indices': shape_context_indices,
+        'location_pdf_reference': location_pdf_reference,
+        'location_context_indices': location_context_indices,
         'context_indices': context_indices,
         'context_indices_like_array': context_indices_like_array,
         'negative_context_summary': negative_context_summary,

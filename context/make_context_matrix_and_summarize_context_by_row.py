@@ -34,14 +34,11 @@ def make_context_matrix_and_summarize_context_by_row(
         DataFrame: (n_feature, 2, )
     """
 
-    returns = multiprocess(_make_context_matrix_and_summarize_context, ((
-        matrix_,
-        skew_t_pdf_fit_parameter,
-        n_grid,
-        degree_of_freedom_for_tail_reduction,
-        global_location,
-        global_scale,
-    ) for matrix_ in split_df(matrix, n_job)), n_job)
+    returns = multiprocess(
+        _make_context_matrix_and_summarize_context,
+        ((matrix_, skew_t_pdf_fit_parameter, n_grid,
+          degree_of_freedom_for_tail_reduction, global_location, global_scale)
+         for matrix_ in split_df(matrix, n_job)), n_job)
 
     context_matrix = concat((r[0] for r in returns))
     context_summary = concat((r[1] for r in returns))
@@ -83,18 +80,12 @@ def _make_context_matrix_and_summarize_context(
 
     context_summary = DataFrame(
         index=context_matrix.index,
-        columns=(
-            'Negative Context Summary',
-            'Positive Context Summary',
-        ),
+        columns=('Negative Context Summary', 'Positive Context Summary'),
         dtype=float)
 
     n_per_log = max(matrix.shape[0] // 10, 1)
 
-    for i, (
-            index,
-            vector,
-    ) in enumerate(matrix.iterrows()):
+    for i, (index, vector) in enumerate(matrix.iterrows()):
 
         if i % n_per_log == 0:
             print('({}/{}) {} ...'.format(i + 1, matrix.shape[0], index))
@@ -103,12 +94,7 @@ def _make_context_matrix_and_summarize_context(
             location = scale = degree_of_freedom = shape = None
         else:
             location, scale, degree_of_freedom, shape = skew_t_pdf_fit_parameter.loc[
-                index, [
-                    'Location',
-                    'Scale',
-                    'Degree of Freedom',
-                    'Shape',
-                ]]
+                index, ['Location', 'Scale', 'Degree of Freedom', 'Shape']]
 
         context_dict = compute_context(
             vector,

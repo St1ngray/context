@@ -17,12 +17,13 @@ def fit_skew_t_pdfs(matrix, n_job=1, directory_path=None):
         n_job (int):
         directory_path (str):
     Returns:
-        DataFrame: (n_feature, 5 (N, Location, Scale, DF, Shape, ), )
+        DataFrame: (n_feature, 5 (N, Location, Scale, DF, Shape), )
     """
 
     skew_t_pdf_fit_parameter = concat(
-        multiprocess(_fit_skew_t_pdfs, ((
-            matrix_, ) for matrix_ in split_df(matrix, n_job)), n_job))
+        multiprocess(_fit_skew_t_pdfs,
+                     ((matrix_, ) for matrix_ in split_df(matrix, n_job)),
+                     n_job))
 
     if directory_path:
         establish_path(directory_path, 'directory')
@@ -39,26 +40,19 @@ def _fit_skew_t_pdfs(matrix):
     Arguments:
         matrix (DataFrame): (n_feature, n_sample, )
     Returns:
-        DataFrame: (n_feature, 5 (N, Location, Scale, DF, Shape, ), )
+        DataFrame: (n_feature, 5 (N, Location, Scale, DF, Shape), )
     """
 
     skew_t_model = ACSkewT_gen()
 
     skew_t_pdf_fit_parameter = DataFrame(
         index=matrix.index,
-        columns=(
-            'N',
-            'Location',
-            'Scale',
-            'Degree of Freedom',
-            'Shape', ),
+        columns=('N', 'Location', 'Scale', 'Degree of Freedom', 'Shape'),
         dtype=float)
 
     n_per_log = max(matrix.shape[0] // 10, 1)
 
-    for i, (
-            index,
-            vector, ) in enumerate(matrix.iterrows()):
+    for i, (index, vector) in enumerate(matrix.iterrows()):
 
         if i % n_per_log == 0:
             print('({}/{}) {} ...'.format(i + 1, matrix.shape[0], index))
