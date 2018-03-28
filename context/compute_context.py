@@ -125,8 +125,8 @@ def compute_context(array_1d,
 
         location_kl = pdf * log(pdf / location_pdf_reference)
 
-        location_pdf_reference_argmax = location_pdf_reference.argmax()
         location_kl_darea = location_kl / location_kl.sum()
+        location_pdf_reference_argmax = location_pdf_reference.argmax()
         location_context_indices = concatenate(
             (-cumsum(
                 location_kl_darea[:location_pdf_reference_argmax][::-1])[::-1],
