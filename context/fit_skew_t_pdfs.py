@@ -51,9 +51,7 @@ def _fit_skew_t_pdfs(matrix):
         dtype=float)
 
     n_per_log = max(matrix.shape[0] // 10, 1)
-
     for i, (index, vector) in enumerate(matrix.iterrows()):
-
         if i % n_per_log == 0:
             print('({}/{}) {} ...'.format(i + 1, matrix.shape[0], index))
 

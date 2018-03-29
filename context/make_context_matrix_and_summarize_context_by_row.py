@@ -84,9 +84,7 @@ def _make_context_matrix_and_summarize_context(
         dtype=float)
 
     n_per_log = max(matrix.shape[0] // 10, 1)
-
     for i, (index, vector) in enumerate(matrix.iterrows()):
-
         if i % n_per_log == 0:
             print('({}/{}) {} ...'.format(i + 1, matrix.shape[0], index))
 
