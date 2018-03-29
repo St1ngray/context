@@ -19,7 +19,7 @@ def make_context_matrix(matrix,
     """
     Make context matrix.
     Arguments:
-        matrix (DataFrame): (n_feature, n_sample, )
+        matrix (DataFrame): (n_feature, n_sample)
         n_job (int):
         skew_t_pdf_fit_parameter_by_row (DataFrame):
         skew_t_pdf_fit_parameter_by_column (DataFrame):
@@ -30,7 +30,7 @@ def make_context_matrix(matrix,
         select_context (str): '-_context' | '+_context'
         directory_path (str):
     Returns:
-        DataFrame: (n_feature, n_sample, )
+        DataFrame: (n_feature, n_sample)
     """
 
     context_matrix_by_row = select_context_and_normalize_context_matrix_by_row(
@@ -71,10 +71,10 @@ def select_context_and_normalize_context_matrix_by_row(context_matrix,
     """
     Select context and normalize context matrix by row.
     Arguments:
-        context_matrix (DataFrame): (n_feature, n_sample, )
+        context_matrix (DataFrame): (n_feature, n_sample)
         select_context (str): '-_context'  | '+_context'
     Returns:
-        DataFrame: (n_feature, n_sample, )
+        DataFrame: (n_feature, n_sample)
     """
 
     if select_context == '-_context':

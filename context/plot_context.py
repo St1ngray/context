@@ -30,8 +30,8 @@ def plot_context(array_1d,
     """
     Plot context.
     Arguments:
-        array_1d (ndarray | Series): (n, )
-        text (iterable): (n, )
+        array_1d (ndarray | Series): (n)
+        text (iterable): (n)
         location (float):
         scale (float):
         degree_of_freedom (float):

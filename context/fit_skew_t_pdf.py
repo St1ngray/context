@@ -13,7 +13,7 @@ def fit_skew_t_pdf(array_1d,
     """
     Fit skew-t PDF.
     Arguments:
-        array_1d (ndarray): (n, )
+        array_1d (ndarray): (n)
         skew_t_model (statsmodels.sandbox.distributions.extras.ACSkewT_gen):
         fit_fixed_location (float):
         fit_fixed_scale (float):

@@ -28,7 +28,7 @@ def compute_context(array_1d,
     """
     Compute context.
     Arguments:
-        array_1d (ndarray): (n, )
+        array_1d (ndarray): (n)
         skew_t_model (statsmodels.sandbox.distributions.extras.ACSkewT_gen):
         location (float):
         scale (float):
@@ -44,15 +44,15 @@ def compute_context(array_1d,
         global_scale (float):
     Returns:
         dict: {
-            fit: ndarray; (5, ) (N, Location, Scale, DF, Shape),
-            grid: ndarray; (n_grid, ),
-            pdf: ndarray; (n_grid, ),
-            shape_pdf_reference: ndarray; (n_grid, ),
-            shape_context_indices: ndarray; (n_grid, ),
-            location_pdf_reference: ndarray; (n_grid, ),
-            location_context_indices: ndarray; (n_grid, ),
-            context_indices: ndarray; (n_grid, ),
-            context_indices_like_array: ndarray; (n, ),
+            fit: ndarray; (5) (N, Location, Scale, DF, Shape),
+            grid: ndarray; (n_grid),
+            pdf: ndarray; (n_grid),
+            shape_pdf_reference: ndarray; (n_grid),
+            shape_context_indices: ndarray; (n_grid),
+            location_pdf_reference: ndarray; (n_grid),
+            location_context_indices: ndarray; (n_grid),
+            context_indices: ndarray; (n_grid),
+            context_indices_like_array: ndarray; (n),
             negative_context_summary: float,
             positive_context_summary: float,
         }
