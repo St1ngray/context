@@ -27,30 +27,6 @@ def plot_context(array_1d,
                  y_max_is_pdf_max=True,
                  line_width=3.2,
                  html_file_path=None):
-    """
-    Plot context.
-    Arguments:
-        array_1d (ndarray | Series): (n)
-        text (iterable): (n)
-        location (float):
-        scale (float):
-        degree_of_freedom (float):
-        shape (float):
-        fit_fixed_location (float):
-        fit_fixed_scale (float):
-        fit_initial_location (float):
-        fit_initial_scale (float):
-        n_grid (int):
-        degree_of_freedom_for_tail_reduction (float):
-        global_location (float):
-        global_scale (float):
-        title (str):
-        xaxis_title (str):
-        y_max_is_pdf_max (bool):
-        line_width (float):
-        html_file_path (str):
-    Returns:
-    """
 
     if isinstance(array_1d, Series):
         if title is None:

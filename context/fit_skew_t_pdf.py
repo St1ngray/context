@@ -10,22 +10,6 @@ def fit_skew_t_pdf(array_1d,
                    fit_fixed_scale=None,
                    fit_initial_location=None,
                    fit_initial_scale=None):
-    """
-    Fit skew-t PDF.
-    Arguments:
-        array_1d (ndarray): (n)
-        skew_t_model (statsmodels.sandbox.distributions.extras.ACSkewT_gen):
-        fit_fixed_location (float):
-        fit_fixed_scale (float):
-        fit_initial_location (float):
-        fit_initial_scale (float):
-    Returns:
-        int: n
-        float: location
-        float: scale
-        float: degree of freedom
-        float: shape
-    """
 
     array_1d = array_1d.copy()
     is_nan = isnan(array_1d)

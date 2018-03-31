@@ -18,21 +18,6 @@ def make_context_matrix_and_summarize_context_by_row(
         global_location=None,
         global_scale=None,
         directory_path=None):
-    """
-    Make context matrix and summarize context by row.
-    Arguments:
-        matrix (DataFrame): (n_feature, n_sample)
-        n_job (int):
-        skew_t_pdf_fit_parameter (DataFrame):
-        n_grid (int):
-        degree_of_freedom_for_tail_reduction (float):
-        global_location (float):
-        global_scale (float):
-        directory_path (str):
-    Returns:
-        DataFrame: (n_feature, n_sample)
-        DataFrame: (n_feature, 2)
-    """
 
     returns = multiprocess(
         _make_context_matrix_and_summarize_context,
@@ -58,19 +43,6 @@ def make_context_matrix_and_summarize_context_by_row(
 def _make_context_matrix_and_summarize_context(
         matrix, skew_t_pdf_fit_parameter, n_grid,
         degree_of_freedom_for_tail_reduction, global_location, global_scale):
-    """
-    Make context matrix and summarize context.
-    Arguments:
-        matrix (DataFrame): (n_feature, n_sample)
-        skew_t_pdf_fit_parameter (DataFrame):
-        n_grid (int):
-        degree_of_freedom_for_tail_reduction (float):
-        global_location (float):
-        global_scale (float):
-    Returns:
-        DataFrame: (n_feature, n_sample)
-        DataFrame: (n_feature, 2)
-    """
 
     skew_t_model = ACSkewT_gen()
 

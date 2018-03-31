@@ -25,38 +25,6 @@ def compute_context(array_1d,
                     degree_of_freedom_for_tail_reduction=10e12,
                     global_location=None,
                     global_scale=None):
-    """
-    Compute context.
-    Arguments:
-        array_1d (ndarray): (n)
-        skew_t_model (statsmodels.sandbox.distributions.extras.ACSkewT_gen):
-        location (float):
-        scale (float):
-        degree_of_freedom (float):
-        shape (float):
-        fit_fixed_location (float):
-        fit_fixed_scale (float):
-        fit_initial_location (float):
-        fit_initial_scale (float):
-        n_grid (int):
-        degree_of_freedom_for_tail_reduction (float):
-        global_location (float):
-        global_scale (float):
-    Returns:
-        dict: {
-            fit: ndarray; (5) (N, Location, Scale, DF, Shape),
-            grid: ndarray; (n_grid),
-            pdf: ndarray; (n_grid),
-            shape_pdf_reference: ndarray; (n_grid),
-            shape_context_indices: ndarray; (n_grid),
-            location_pdf_reference: ndarray; (n_grid),
-            location_context_indices: ndarray; (n_grid),
-            context_indices: ndarray; (n_grid),
-            context_indices_like_array: ndarray; (n),
-            negative_context_summary: float,
-            positive_context_summary: float,
-        }
-    """
 
     array_1d = array_1d.copy()
     is_nan = isnan(array_1d)
@@ -170,5 +138,5 @@ def compute_context(array_1d,
         'context_indices': context_indices,
         'context_indices_like_array': context_indices_like_array,
         'negative_context_summary': negative_context_summary,
-        'positive_context_summary': positive_context_summary,
+        'positive_context_summary': positive_context_summary
     }

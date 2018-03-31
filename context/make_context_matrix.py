@@ -16,22 +16,6 @@ def make_context_matrix(matrix,
                         select_context=None,
                         combination_method='*',
                         directory_path=None):
-    """
-    Make context matrix.
-    Arguments:
-        matrix (DataFrame): (n_feature, n_sample)
-        n_job (int):
-        skew_t_pdf_fit_parameter_by_row (DataFrame):
-        skew_t_pdf_fit_parameter_by_column (DataFrame):
-        n_grid (int):
-        degree_of_freedom_for_tail_reduction (float):
-        global_location (float):
-        global_scale (float):
-        select_context (str): '-_context' | '+_context'
-        directory_path (str):
-    Returns:
-        DataFrame: (n_feature, n_sample)
-    """
 
     context_matrix_by_row = select_context_and_normalize_context_matrix_by_row(
         make_context_matrix_and_summarize_context_by_row(
@@ -68,14 +52,6 @@ def make_context_matrix(matrix,
 
 def select_context_and_normalize_context_matrix_by_row(context_matrix,
                                                        select_context):
-    """
-    Select context and normalize context matrix by row.
-    Arguments:
-        context_matrix (DataFrame): (n_feature, n_sample)
-        select_context (str): '-_context'  | '+_context'
-    Returns:
-        DataFrame: (n_feature, n_sample)
-    """
 
     if select_context == '-_context':
         context_matrix[0 < context_matrix] = 0
