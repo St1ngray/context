@@ -26,6 +26,7 @@ def plot_context(array_1d,
                  xaxis_title='Value',
                  y_max_is_pdf_max=True,
                  line_width=3.2,
+                 plot=True,
                  html_file_path=None):
 
     if isinstance(array_1d, Series):
@@ -111,20 +112,22 @@ def plot_context(array_1d,
                 y=location_pdf_reference,
                 line=dict(width=line_width, color='#4e40d8')))
 
-    negative_context_indices = context_dict['context_indices'] < 0
-    for name, indices, color in (('- Context Indices',
-                                  negative_context_indices, '#0088ff'),
-                                 ('+ Context Indices',
-                                  ~negative_context_indices, '#ff1968')):
+    is_negative = context_dict['context_indices'] < 0
+    for name, indices, color in (('- Context Indices', is_negative, '#0088ff'),
+                                 ('+ Context Indices', ~is_negative,
+                                  '#ff1968')):
         figure['data'].append(
             dict(
                 type='scatter',
                 name=name,
                 x=grid[indices],
                 y=absolute_context_indices[indices],
-                fill='tozeroy',
-                line=dict(width=line_width, color=color)))
+                line=dict(width=line_width, color=color),
+                fill='tozeroy'))
 
     figure['layout'].update(title=title, width=1000)
 
-    plot_and_save(figure, html_file_path)
+    if plot:
+        plot_and_save(figure, html_file_path)
+
+    return figure
