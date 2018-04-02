@@ -86,6 +86,7 @@ def plot_context(array_1d,
     figure['data'].append(
         dict(
             type='scatter',
+            yaxis='y2',
             name='PDF',
             x=grid,
             y=pdf,
@@ -96,6 +97,7 @@ def plot_context(array_1d,
     figure['data'].append(
         dict(
             type='scatter',
+            yaxis='y2',
             name='Shape PDF Reference',
             x=grid,
             y=shape_pdf_reference,
@@ -107,6 +109,7 @@ def plot_context(array_1d,
         figure['data'].append(
             dict(
                 type='scatter',
+                yaxis='y2',
                 name='Location PDF Reference',
                 x=grid,
                 y=location_pdf_reference,
@@ -119,6 +122,7 @@ def plot_context(array_1d,
         figure['data'].append(
             dict(
                 type='scatter',
+                yaxis='y2',
                 name=name,
                 x=grid[indices],
                 y=absolute_context_indices[indices],
