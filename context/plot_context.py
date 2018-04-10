@@ -5,7 +5,6 @@ from pandas import Series
 
 from .compute_context import compute_context
 from .plot.plot.plot_and_save import plot_and_save
-from .plot.plot.plot_distributions import plot_distributions
 
 
 def plot_context(array_1d,
@@ -25,8 +24,6 @@ def plot_context(array_1d,
                  title='Context Plot',
                  xaxis_title='Value',
                  y_max_is_pdf_max=True,
-                 line_width=3.2,
-                 plot=True,
                  html_file_path=None):
 
     if isinstance(array_1d, Series):
@@ -72,54 +69,84 @@ def plot_context(array_1d,
     else:
         y_max = max(pdf_max, absolute_context_indices_max)
 
-    figure = plot_distributions(
-        xs=(array_1d, ),
-        texts=(text, ),
-        names=('Distribution', ),
+    layout = dict(
+        width=800,
+        height=800,
         title=title,
-        xaxis_title=xaxis_title,
-        plot=False)
+        xaxis1=dict(title=xaxis_title, anchor='y1'),
+        yaxis1=dict(
+            domain=(0, 0.16), dtick=1, showticklabels=False, zeroline=False),
+        yaxis2=dict(domain=(0.24, 1), zeroline=False),
+        barmode='overlay',
+        legend=dict(orientation='h'))
+
+    data = []
+
+    data.append(
+        dict(
+            type='histogram',
+            name='Data',
+            legendgroup='Data',
+            yaxis='y2',
+            x=array_1d,
+            marker=dict(color='#20d9ba'),
+            histnorm='probability density',
+            hoverinfo='x+y'))
+
+    data.append(
+        dict(
+            type='scatter',
+            legendgroup='Data',
+            showlegend=False,
+            x=array_1d,
+            y=(0, ) * array_1d.size,
+            text=text,
+            mode='markers',
+            marker=dict(symbol='line-ns-open', color='#20d9ba'),
+            hoverinfo='x+text'))
 
     grid = context_dict['grid']
+    line_width = 3.2
 
     pdf = context_dict['pdf']
-    figure['data'].append(
+    data.append(
         dict(
             type='scatter',
             yaxis='y2',
             name='PDF',
             x=grid,
             y=pdf,
-            line=dict(width=line_width, color='#20d9ba')))
+            line=dict(width=line_width, color='#24e7c0')))
 
     shape_pdf_reference = context_dict['shape_pdf_reference']
     shape_pdf_reference[pdf <= shape_pdf_reference] = None
-    figure['data'].append(
+    data.append(
         dict(
             type='scatter',
             yaxis='y2',
-            name='Shape PDF Reference',
+            name='Shape Reference',
             x=grid,
             y=shape_pdf_reference,
             line=dict(width=line_width, color='#9017e6')))
 
     location_pdf_reference = context_dict['location_pdf_reference']
     if location_pdf_reference is not None:
+        layout['legend'].update(tracegroupgap=3)
+
         location_pdf_reference[pdf <= location_pdf_reference] = None
-        figure['data'].append(
+        data.append(
             dict(
                 type='scatter',
                 yaxis='y2',
-                name='Location PDF Reference',
+                name='Location Reference',
                 x=grid,
                 y=location_pdf_reference,
                 line=dict(width=line_width, color='#4e40d8')))
 
     is_negative = context_dict['context_indices'] < 0
-    for name, indices, color in (('- Context Indices', is_negative, '#0088ff'),
-                                 ('+ Context Indices', ~is_negative,
-                                  '#ff1968')):
-        figure['data'].append(
+    for name, indices, color in (('- Context', is_negative, '#0088ff'),
+                                 ('+ Context', ~is_negative, '#ff1968')):
+        data.append(
             dict(
                 type='scatter',
                 yaxis='y2',
@@ -129,9 +156,4 @@ def plot_context(array_1d,
                 line=dict(width=line_width, color=color),
                 fill='tozeroy'))
 
-    figure['layout'].update(title=title, width=1000)
-
-    if plot:
-        plot_and_save(figure, html_file_path)
-
-    return figure
+    plot_and_save(dict(layout=layout, data=data), html_file_path)
