@@ -1,6 +1,6 @@
 from warnings import warn
 
-from numpy import (absolute, array, concatenate, cumsum, finfo, isnan,
+from numpy import (absolute, asarray, concatenate, cumsum, finfo, isnan,
                    linspace, log, minimum, nanmean)
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
@@ -122,13 +122,7 @@ def compute_context(array_1d,
         0 < context_indices_like_array].sum()
 
     return {
-        'fit': array((
-            n,
-            location,
-            scale,
-            degree_of_freedom,
-            shape,
-        )),
+        'fit': asarray((n, location, scale, degree_of_freedom, shape)),
         'grid': grid,
         'pdf': pdf,
         'shape_pdf_reference': shape_pdf_reference,
