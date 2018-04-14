@@ -34,10 +34,13 @@ def _fit_skew_t_pdfs(matrix):
         columns=('N', 'Location', 'Scale', 'Degree of Freedom', 'Shape'),
         dtype=float)
 
-    n_per_log = max(matrix.shape[0] // 10, 1)
+    n = matrix.shape[0]
+    n_per_log = max(n // 10, 1)
+
     for i, (index, vector) in enumerate(matrix.iterrows()):
+
         if i % n_per_log == 0:
-            print('({}/{}) {} ...'.format(i + 1, matrix.shape[0], index))
+            print('({}/{}) {} ...'.format(i + 1, n, index))
 
         skew_t_pdf_fit_parameter.loc[index] = fit_skew_t_pdf(
             vector, skew_t_model=skew_t_model)
