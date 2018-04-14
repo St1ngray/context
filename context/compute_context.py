@@ -1,12 +1,11 @@
-from warnings import warn
-
-from numpy import (absolute, asarray, concatenate, cumsum, finfo, isnan,
-                   linspace, log, minimum, nanmean)
+from numpy import (absolute, asarray, concatenate, cumsum, finfo, linspace,
+                   log, minimum)
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .fit_skew_t_pdf import fit_skew_t_pdf
 from .nd_array.nd_array.get_coordinates_for_reflection import \
     get_coordinates_for_reflection
+from .process_array_1d_bad_values import process_array_1d_bad_values
 
 EPS = finfo(float).eps
 
@@ -26,13 +25,7 @@ def compute_context(array_1d,
                     global_location=None,
                     global_scale=None):
 
-    array_1d = array_1d.copy()
-    is_nan = isnan(array_1d)
-    if is_nan.all():
-        raise ValueError('array_1d has only nan.')
-    elif is_nan.any():
-        warn('Replacing nan with mean ...')
-        array_1d[is_nan] = nanmean(array_1d)
+    array_1d = process_array_1d_bad_values(array_1d)
 
     if skew_t_model is None:
         skew_t_model = ACSkewT_gen()

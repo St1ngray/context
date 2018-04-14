@@ -1,6 +1,4 @@
-from warnings import warn
-
-from numpy import absolute, isnan, nanmean
+from numpy import absolute
 from pandas import Series
 
 from .compute_context import compute_context
@@ -32,14 +30,6 @@ def plot_context(array_1d,
         if text is None:
             text = array_1d.index
         array_1d = array_1d.values
-
-    array_1d = array_1d.copy()
-    is_nan = isnan(array_1d)
-    if is_nan.all():
-        raise ValueError('array_1d has only nan.')
-    elif is_nan.any():
-        warn('Replacing nan with mean ...')
-        array_1d[is_nan] = nanmean(array_1d)
 
     context_dict = compute_context(
         array_1d,
