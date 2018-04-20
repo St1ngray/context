@@ -56,11 +56,11 @@ def _make_context_matrix_and_summarize_context(
         dtype=float)
 
     n = matrix.shape[0]
-    n_per_log = max(n // 10, 1)
+    n_per_print = max(n // 10, 1)
 
     for i, (index, vector) in enumerate(matrix.iterrows()):
 
-        if i % n_per_log == 0:
+        if i % n_per_print == 0:
             print('({}/{}) {} ...'.format(i + 1, n, index))
 
         if skew_t_pdf_fit_parameter is None:

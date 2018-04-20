@@ -35,11 +35,11 @@ def _fit_skew_t_pdfs(matrix):
         dtype=float)
 
     n = matrix.shape[0]
-    n_per_log = max(n // 10, 1)
+    n_per_print = max(n // 10, 1)
 
     for i, (index, vector) in enumerate(matrix.iterrows()):
 
-        if i % n_per_log == 0:
+        if i % n_per_print == 0:
             print('({}/{}) {} ...'.format(i + 1, n, index))
 
         skew_t_pdf_fit_parameter.loc[index] = fit_skew_t_pdf(
