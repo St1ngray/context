@@ -63,9 +63,9 @@ def plot_context(array_1d,
         width=800,
         height=800,
         title=title,
-        xaxis1=dict(title=xaxis_title, anchor='y1'),
-        yaxis1=dict(
-            domain=(0, 0.16), dtick=1, showticklabels=False, zeroline=False),
+        xaxis=dict(title=xaxis_title, anchor='y'),
+        yaxis=dict(
+            domain=(0, 0.16), dtick=1, zeroline=False, showticklabels=False),
         yaxis2=dict(domain=(0.24, 1), zeroline=False),
         barmode='overlay',
         legend=dict(orientation='h'))
