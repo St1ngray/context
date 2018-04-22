@@ -63,7 +63,7 @@ def plot_context(array_1d,
         width=800,
         height=800,
         title=title,
-        xaxis=dict(title=xaxis_title, anchor='y'),
+        xaxis=dict(anchor='y', title=xaxis_title),
         yaxis=dict(
             domain=(0, 0.16), dtick=1, zeroline=False, showticklabels=False),
         yaxis2=dict(domain=(0.24, 1), zeroline=False),
@@ -74,10 +74,10 @@ def plot_context(array_1d,
 
     data.append(
         dict(
+            yaxis='y2',
             type='histogram',
             name='Data',
             legendgroup='Data',
-            yaxis='y2',
             x=array_1d,
             marker=dict(color='#20d9ba'),
             histnorm='probability density',
@@ -101,8 +101,8 @@ def plot_context(array_1d,
     pdf = context_dict['pdf']
     data.append(
         dict(
-            type='scatter',
             yaxis='y2',
+            type='scatter',
             name='PDF',
             x=grid,
             y=pdf,
@@ -112,8 +112,8 @@ def plot_context(array_1d,
     shape_pdf_reference[pdf <= shape_pdf_reference] = None
     data.append(
         dict(
-            type='scatter',
             yaxis='y2',
+            type='scatter',
             name='Shape Reference',
             x=grid,
             y=shape_pdf_reference,
@@ -126,8 +126,8 @@ def plot_context(array_1d,
         location_pdf_reference[pdf <= location_pdf_reference] = None
         data.append(
             dict(
-                type='scatter',
                 yaxis='y2',
+                type='scatter',
                 name='Location Reference',
                 x=grid,
                 y=location_pdf_reference,
@@ -138,8 +138,8 @@ def plot_context(array_1d,
                                  ('+ Context', ~is_negative, '#ff1968')):
         data.append(
             dict(
-                type='scatter',
                 yaxis='y2',
+                type='scatter',
                 name=name,
                 x=grid[indices],
                 y=absolute_context_indices[indices],
