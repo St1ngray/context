@@ -60,8 +60,8 @@ def plot_context(array_1d,
         y_max = max(pdf_max, absolute_context_indices_max)
 
     layout = dict(
-        width=800,
-        height=800,
+        width=960,
+        height=960,
         title=title,
         xaxis=dict(anchor='y', title=xaxis_title),
         yaxis=dict(
