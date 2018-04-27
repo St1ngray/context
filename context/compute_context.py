@@ -57,12 +57,15 @@ def compute_context(array_1d,
                                       shape,
                                       loc=location,
                                       scale=scale))
+
     shape_pdf_reference[shape_pdf_reference < EPS] = EPS
 
     shape_kl = pdf * log(pdf / shape_pdf_reference)
 
     shape_kl_darea = shape_kl / shape_kl.sum()
+
     shape_pdf_reference_argmax = shape_pdf_reference.argmax()
+
     shape_context_indices = concatenate(
         (-cumsum(shape_kl_darea[:shape_pdf_reference_argmax][::-1])[::-1],
          cumsum(shape_kl_darea[shape_pdf_reference_argmax:])))
@@ -82,12 +85,15 @@ def compute_context(array_1d,
                                              shape,
                                              loc=global_location,
                                              scale=scale))
+
         location_pdf_reference[location_pdf_reference < EPS] = EPS
 
         location_kl = pdf * log(pdf / location_pdf_reference)
 
         location_kl_darea = location_kl / location_kl.sum()
+
         location_pdf_reference_argmax = location_pdf_reference.argmax()
+
         location_context_indices = concatenate(
             (-cumsum(
                 location_kl_darea[:location_pdf_reference_argmax][::-1])[::-1],

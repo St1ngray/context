@@ -26,6 +26,7 @@ def make_context_matrix_and_summarize_context_by_row(
          for matrix_ in split_df(matrix, n_job)), n_job)
 
     context_matrix = concat((r[0] for r in returns))
+
     context_summary = concat((r[1] for r in returns))
 
     if directory_path:
@@ -48,6 +49,7 @@ def _make_context_matrix_and_summarize_context(
 
     context_matrix = DataFrame(
         index=matrix.index, columns=matrix.columns, dtype=float)
+
     context_matrix.index.name = 'Feature'
 
     context_summary = DataFrame(
@@ -65,6 +67,7 @@ def _make_context_matrix_and_summarize_context(
 
         if skew_t_pdf_fit_parameter is None:
             location = scale = degree_of_freedom = shape = None
+
         else:
             location, scale, degree_of_freedom, shape = skew_t_pdf_fit_parameter.loc[
                 index, ['Location', 'Scale', 'Degree of Freedom', 'Shape']]

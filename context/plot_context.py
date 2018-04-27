@@ -25,10 +25,13 @@ def plot_context(array_1d,
                  html_file_path=None):
 
     if isinstance(array_1d, Series):
+
         if title is None:
             title = array_1d.name
+
         if text is None:
             text = array_1d.index
+
         array_1d = array_1d.values
 
     context_dict = compute_context(
@@ -50,18 +53,24 @@ def plot_context(array_1d,
     pdf_max = context_dict['pdf'].max()
 
     absolute_context_indices = absolute(context_dict['context_indices'])
+
     absolute_context_indices_max = absolute_context_indices.max()
 
     if y_max_is_pdf_max:
+
         y_max = pdf_max
+
         if y_max < absolute_context_indices_max:
             absolute_context_indices = absolute_context_indices / absolute_context_indices_max * y_max
+
     else:
         y_max = max(pdf_max, absolute_context_indices_max)
 
+    layout_size = 960
+
     layout = dict(
-        width=960,
-        height=960,
+        width=layout_size,
+        height=layout_size,
         title=title,
         xaxis=dict(anchor='y', title=xaxis_title),
         yaxis=dict(
@@ -96,9 +105,11 @@ def plot_context(array_1d,
             hoverinfo='x+text'))
 
     grid = context_dict['grid']
+
     line_width = 3.2
 
     pdf = context_dict['pdf']
+
     data.append(
         dict(
             yaxis='y2',
@@ -109,7 +120,9 @@ def plot_context(array_1d,
             line=dict(width=line_width, color='#24e7c0')))
 
     shape_pdf_reference = context_dict['shape_pdf_reference']
+
     shape_pdf_reference[pdf <= shape_pdf_reference] = None
+
     data.append(
         dict(
             yaxis='y2',
@@ -120,10 +133,11 @@ def plot_context(array_1d,
             line=dict(width=line_width, color='#9017e6')))
 
     location_pdf_reference = context_dict['location_pdf_reference']
+
     if location_pdf_reference is not None:
-        layout['legend'].update(tracegroupgap=3)
 
         location_pdf_reference[pdf <= location_pdf_reference] = None
+
         data.append(
             dict(
                 yaxis='y2',
@@ -134,6 +148,7 @@ def plot_context(array_1d,
                 line=dict(width=line_width, color='#4e40d8')))
 
     is_negative = context_dict['context_indices'] < 0
+
     for name, indices, color in (('- Context', is_negative, '#0088ff'),
                                  ('+ Context', ~is_negative, '#ff1968')):
         data.append(
