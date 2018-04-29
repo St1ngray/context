@@ -28,6 +28,7 @@ def compute_context(array_1d,
     array_1d = process_array_1d_bad_values(array_1d)
 
     if skew_t_model is None:
+
         skew_t_model = ACSkewT_gen()
 
     if any(
@@ -41,7 +42,9 @@ def compute_context(array_1d,
             fit_fixed_scale=fit_fixed_scale,
             fit_initial_location=fit_initial_location,
             fit_initial_scale=fit_initial_scale)
+
     else:
+
         n = array_1d.size
 
     grid = linspace(array_1d.min(), array_1d.max(), n_grid)
@@ -106,8 +109,11 @@ def compute_context(array_1d,
         context_indices = location_context_indices + shape_context_indices
 
     else:
+
         location_pdf_reference = None
+
         location_context_indices = None
+
         context_indices = shape_context_indices
 
     context_indices_like_array = context_indices[[

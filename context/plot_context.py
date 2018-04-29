@@ -27,9 +27,11 @@ def plot_context(array_1d,
     if isinstance(array_1d, Series):
 
         if title is None:
+
             title = array_1d.name
 
         if text is None:
+
             text = array_1d.index
 
         array_1d = array_1d.values
@@ -61,9 +63,11 @@ def plot_context(array_1d,
         y_max = pdf_max
 
         if y_max < absolute_context_indices_max:
+
             absolute_context_indices = absolute_context_indices / absolute_context_indices_max * y_max
 
     else:
+
         y_max = max(pdf_max, absolute_context_indices_max)
 
     layout_size = 960
@@ -151,6 +155,7 @@ def plot_context(array_1d,
 
     for name, indices, color in (('- Context', is_negative, '#0088ff'),
                                  ('+ Context', ~is_negative, '#ff1968')):
+
         data.append(
             dict(
                 yaxis='y2',

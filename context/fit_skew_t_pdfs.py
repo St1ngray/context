@@ -17,6 +17,7 @@ def fit_skew_t_pdfs(matrix, n_job=1, directory_path=None):
                      n_job))
 
     if directory_path:
+
         establish_path(directory_path, 'directory')
 
         skew_t_pdf_fit_parameter.to_csv(
@@ -35,11 +36,13 @@ def _fit_skew_t_pdfs(matrix):
         dtype=float)
 
     n = matrix.shape[0]
+
     n_per_print = max(n // 10, 1)
 
     for i, (index, vector) in enumerate(matrix.iterrows()):
 
         if i % n_per_print == 0:
+
             print('({}/{}) {} ...'.format(i + 1, n, index))
 
         skew_t_pdf_fit_parameter.loc[index] = fit_skew_t_pdf(

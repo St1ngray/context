@@ -40,12 +40,15 @@ def make_context_matrix(matrix,
             global_scale=global_scale)[0], select_context).T
 
     if combination_method == '*':
+
         context_matrix = context_matrix_by_row * context_matrix_by_column
 
     elif combination_method == '+':
+
         context_matrix = context_matrix_by_row + context_matrix_by_column
 
     else:
+
         raise ValueError(
             'Unknown combination_method: {}.'.format(combination_method))
 

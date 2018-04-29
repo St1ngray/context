@@ -30,6 +30,7 @@ def make_context_matrix_and_summarize_context_by_row(
     context_summary = concat((r[1] for r in returns))
 
     if directory_path:
+
         establish_path(directory_path, 'directory')
 
         context_matrix.to_csv(
@@ -58,17 +59,21 @@ def _make_context_matrix_and_summarize_context(
         dtype=float)
 
     n = matrix.shape[0]
+
     n_per_print = max(n // 10, 1)
 
     for i, (index, vector) in enumerate(matrix.iterrows()):
 
         if i % n_per_print == 0:
+
             print('({}/{}) {} ...'.format(i + 1, n, index))
 
         if skew_t_pdf_fit_parameter is None:
+
             location = scale = degree_of_freedom = shape = None
 
         else:
+
             location, scale, degree_of_freedom, shape = skew_t_pdf_fit_parameter.loc[
                 index, ['Location', 'Scale', 'Degree of Freedom', 'Shape']]
 
