@@ -5,7 +5,7 @@ from .compute_context import compute_context
 from .plot.plot.plot_and_save import plot_and_save
 
 
-def plot_context(array_1d,
+def plot_context(_1d_array,
                  text=None,
                  location=None,
                  scale=None,
@@ -24,20 +24,20 @@ def plot_context(array_1d,
                  y_max_is_pdf_max=True,
                  html_file_path=None):
 
-    if isinstance(array_1d, Series):
+    if isinstance(_1d_array, Series):
 
         if title is None:
 
-            title = array_1d.name
+            title = _1d_array.name
 
         if text is None:
 
-            text = array_1d.index
+            text = _1d_array.index
 
-        array_1d = array_1d.values
+        _1d_array = _1d_array.values
 
     context_dict = compute_context(
-        array_1d,
+        _1d_array,
         location=location,
         scale=scale,
         degree_of_freedom=degree_of_freedom,
@@ -91,7 +91,7 @@ def plot_context(array_1d,
             type='histogram',
             name='Data',
             legendgroup='Data',
-            x=array_1d,
+            x=_1d_array,
             marker=dict(color='#20d9ba'),
             histnorm='probability density',
             hoverinfo='x+y'))
@@ -101,8 +101,8 @@ def plot_context(array_1d,
             type='scatter',
             legendgroup='Data',
             showlegend=False,
-            x=array_1d,
-            y=(0, ) * array_1d.size,
+            x=_1d_array,
+            y=(0, ) * _1d_array.size,
             text=text,
             mode='markers',
             marker=dict(symbol='line-ns-open', color='#20d9ba'),

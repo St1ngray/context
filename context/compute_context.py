@@ -5,7 +5,7 @@ from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 from .fit_skew_t_pdf import fit_skew_t_pdf
 from .nd_array.nd_array.get_coordinates_for_reflection import \
     get_coordinates_for_reflection
-from .process_array_1d_bad_values import process_array_1d_bad_values
+from .process_1d_array_bad_values import process_1d_array_bad_values
 
 EPS = finfo(float).eps
 
@@ -25,7 +25,7 @@ def compute_context(_1d_array,
                     global_location=None,
                     global_scale=None):
 
-    _1d_array = process_array_1d_bad_values(_1d_array)
+    _1d_array = process_1d_array_bad_values(_1d_array)
 
     if skew_t_model is None:
 
