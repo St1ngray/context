@@ -3,14 +3,14 @@ from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 from .process_array_1d_bad_values import process_array_1d_bad_values
 
 
-def fit_skew_t_pdf(array_1d,
+def fit_skew_t_pdf(_1d_array,
                    skew_t_model=None,
                    fit_fixed_location=None,
                    fit_fixed_scale=None,
                    fit_initial_location=None,
                    fit_initial_scale=None):
 
-    array_1d = process_array_1d_bad_values(array_1d)
+    _1d_array = process_array_1d_bad_values(_1d_array)
 
     if skew_t_model is None:
 
@@ -35,6 +35,6 @@ def fit_skew_t_pdf(array_1d,
         kwargs['scale'] = fit_initial_scale
 
     degree_of_freedom, shape, location, scale = skew_t_model.fit(
-        array_1d, **kwargs)
+        _1d_array, **kwargs)
 
-    return array_1d.size, location, scale, degree_of_freedom, shape
+    return _1d_array.size, location, scale, degree_of_freedom, shape

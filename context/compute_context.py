@@ -10,7 +10,7 @@ from .process_array_1d_bad_values import process_array_1d_bad_values
 EPS = finfo(float).eps
 
 
-def compute_context(array_1d,
+def compute_context(_1d_array,
                     skew_t_model=None,
                     location=None,
                     scale=None,
@@ -25,7 +25,7 @@ def compute_context(array_1d,
                     global_location=None,
                     global_scale=None):
 
-    array_1d = process_array_1d_bad_values(array_1d)
+    _1d_array = process_array_1d_bad_values(_1d_array)
 
     if skew_t_model is None:
 
@@ -36,7 +36,7 @@ def compute_context(array_1d,
             for parameter in (location, scale, degree_of_freedom, shape)):
 
         n, location, scale, degree_of_freedom, shape = fit_skew_t_pdf(
-            array_1d,
+            _1d_array,
             skew_t_model=skew_t_model,
             fit_fixed_location=fit_fixed_location,
             fit_fixed_scale=fit_fixed_scale,
@@ -45,9 +45,9 @@ def compute_context(array_1d,
 
     else:
 
-        n = array_1d.size
+        n = _1d_array.size
 
-    grid = linspace(array_1d.min(), array_1d.max(), n_grid)
+    grid = linspace(_1d_array.min(), _1d_array.max(), n_grid)
 
     pdf = skew_t_model.pdf(
         grid, degree_of_freedom, shape, loc=location, scale=scale)
@@ -117,7 +117,7 @@ def compute_context(array_1d,
         context_indices = shape_context_indices
 
     context_indices_like_array = context_indices[[
-        absolute(grid - value).argmin() for value in array_1d
+        absolute(grid - value).argmin() for value in _1d_array
     ]]
 
     negative_context_summary = context_indices_like_array[
