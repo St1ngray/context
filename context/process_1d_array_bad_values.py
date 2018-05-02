@@ -1,22 +1,21 @@
-from warnings import warn
+from numpy import nanmean
 
-from numpy import isnan, nanmean
+from .nd_array.nd_array.check_nd_array_for_bad_value import \
+    check_nd_array_for_bad_value
 
 
 def process_1d_array_bad_values(_1d_array):
 
     _1d_array = _1d_array.copy()
 
-    is_nan = isnan(_1d_array)
+    is_bad_value = check_nd_array_for_bad_value(_1d_array)
 
-    if is_nan.all():
+    if is_bad_value.all():
 
-        raise ValueError('_1d_array has only nan.')
+        raise ValueError('_1d_array has only bad value.')
 
-    elif is_nan.any():
+    elif is_bad_value.any():
 
-        warn('Replacing nan with mean ...')
-
-        _1d_array[is_nan] = nanmean(_1d_array)
+        _1d_array[is_bad_value] = nanmean(_1d_array)
 
     return _1d_array
