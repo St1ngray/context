@@ -83,6 +83,28 @@ def plot_context(_1d_array,
         barmode='overlay',
         legend=dict(orientation='h'))
 
+    annotations = []
+
+    for i, (template, fit_parameter) in enumerate(
+            zip(('N={:.0f}', 'Location={:.2f}', 'Scale={:.2f}', 'DF={:.2f}',
+                 'Shape={:.2f}'), context_dict['fit'])):
+
+        annotations.append(
+            dict(
+                xref='paper',
+                yref='paper',
+                x=(i + 1) / (5 + 1),
+                y=1.051,
+                xanchor='center',
+                text=template.format(fit_parameter),
+                font=dict(color='#ffffff'),
+                bgcolor='#003171',
+                bordercolor='#ebf6f7',
+                borderpad=5.1,
+                showarrow=False))
+
+    layout.update(annotations=annotations)
+
     data = []
 
     data.append(
