@@ -133,6 +133,14 @@ def plot_context(_1d_array,
 
     if plot_rug:
 
+        if text is None:
+
+            text_ = None
+
+        else:
+
+            text_ = text[i]
+
         data.append(
             dict(
                 type='scatter',
@@ -140,7 +148,7 @@ def plot_context(_1d_array,
                 showlegend=False,
                 x=_1d_array,
                 y=(0, ) * _1d_array.size,
-                text=text,
+                text=text_,
                 mode='markers',
                 marker=dict(symbol='line-ns-open', color='#20d9ba'),
                 hoverinfo='x+text'))
