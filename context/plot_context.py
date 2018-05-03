@@ -19,9 +19,10 @@ def plot_context(_1d_array,
                  degree_of_freedom_for_tail_reduction=10e12,
                  global_location=None,
                  global_scale=None,
+                 y_max_is_pdf_max=True,
+                 plot_rug=True,
                  title='Context Plot',
                  xaxis_title='Value',
-                 y_max_is_pdf_max=True,
                  html_file_path=None):
 
     if isinstance(_1d_array, Series):
@@ -72,15 +73,27 @@ def plot_context(_1d_array,
 
     layout_size = 960
 
+    if plot_rug:
+
+        yaxis_max = 0.16
+        yaxis2_min = yaxis_max + 0.08
+
+    else:
+
+        yaxis_max = 0
+        yaxis2_min = 0
+
     layout = dict(
         width=layout_size,
         height=layout_size,
         title=title,
         xaxis=dict(anchor='y', title=xaxis_title),
         yaxis=dict(
-            domain=(0, 0.16), dtick=1, zeroline=False, showticklabels=False),
-        yaxis2=dict(domain=(0.24, 1)),
-        barmode='overlay',
+            domain=(0, yaxis_max),
+            dtick=1,
+            zeroline=False,
+            showticklabels=False),
+        yaxis2=dict(domain=(yaxis2_min, 1)),
         legend=dict(orientation='h'))
 
     annotations = []
@@ -118,7 +131,7 @@ def plot_context(_1d_array,
             histnorm='probability density',
             hoverinfo='x+y'))
 
-    if _1d_array.size < 8000:
+    if plot_rug:
 
         data.append(
             dict(
