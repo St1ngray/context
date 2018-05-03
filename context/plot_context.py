@@ -118,17 +118,19 @@ def plot_context(_1d_array,
             histnorm='probability density',
             hoverinfo='x+y'))
 
-    data.append(
-        dict(
-            type='scatter',
-            legendgroup='Data',
-            showlegend=False,
-            x=_1d_array,
-            y=(0, ) * _1d_array.size,
-            text=text,
-            mode='markers',
-            marker=dict(symbol='line-ns-open', color='#20d9ba'),
-            hoverinfo='x+text'))
+    if _1d_array.size < 8000:
+
+        data.append(
+            dict(
+                type='scatter',
+                legendgroup='Data',
+                showlegend=False,
+                x=_1d_array,
+                y=(0, ) * _1d_array.size,
+                text=text,
+                mode='markers',
+                marker=dict(symbol='line-ns-open', color='#20d9ba'),
+                hoverinfo='x+text'))
 
     grid = context_dict['grid']
 
