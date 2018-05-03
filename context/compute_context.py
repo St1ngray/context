@@ -120,12 +120,6 @@ def compute_context(_1d_array,
         absolute(grid - value).argmin() for value in _1d_array
     ]]
 
-    negative_context_summary = context_indices_like_array[
-        context_indices_like_array < 0].sum()
-
-    positive_context_summary = context_indices_like_array[
-        0 < context_indices_like_array].sum()
-
     return {
         'fit': asarray((n, location, scale, degree_of_freedom, shape)),
         'grid': grid,
@@ -135,7 +129,5 @@ def compute_context(_1d_array,
         'location_pdf_reference': location_pdf_reference,
         'location_context_indices': location_context_indices,
         'context_indices': context_indices,
-        'context_indices_like_array': context_indices_like_array,
-        'negative_context_summary': negative_context_summary,
-        'positive_context_summary': positive_context_summary
+        'context_indices_like_array': context_indices_like_array
     }
