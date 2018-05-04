@@ -27,8 +27,7 @@ def make_2d_context_matrix(matrix,
             degree_of_freedom_for_tail_reduction=
             degree_of_freedom_for_tail_reduction,
             global_location=global_location,
-            global_scale=global_scale,
-            directory_path=join(directory_path, '0')), select_context)
+            global_scale=global_scale), select_context)
 
     _1d_context_matrix_1 = _select_context_and_normalize_1d_context_matrix(
         make_1d_context_matrix(
@@ -39,8 +38,7 @@ def make_2d_context_matrix(matrix,
             degree_of_freedom_for_tail_reduction=
             degree_of_freedom_for_tail_reduction,
             global_location=global_location,
-            global_scale=global_scale,
-            directory_path=join(directory_path, '1')), select_context).T
+            global_scale=global_scale), select_context).T
 
     if combination_method not in ('*', '+'):
 
