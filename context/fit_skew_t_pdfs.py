@@ -4,6 +4,8 @@ from pandas import DataFrame, concat
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .fit_skew_t_pdf import fit_skew_t_pdf
+from .nd_array.nd_array.check_nd_array_for_bad_value import \
+    check_nd_array_for_bad_value
 from .support.support.df import split_df
 from .support.support.multiprocess import multiprocess
 from .support.support.path import establish_path
@@ -39,13 +41,14 @@ def _fit_skew_t_pdfs(matrix):
 
     n_per_print = max(n // 10, 1)
 
-    for i, (index, vector) in enumerate(matrix.iterrows()):
+    for i, (index, _1d_array) in enumerate(matrix.iterrows()):
 
         if i % n_per_print == 0:
 
             print('({}/{}) {} ...'.format(i + 1, n, index))
 
         skew_t_pdf_fit_parameter.loc[index] = fit_skew_t_pdf(
-            vector, skew_t_model=skew_t_model)
+            _1d_array[~check_nd_array_for_bad_value(_1d_array, raise_=False)],
+            skew_t_model=skew_t_model)
 
     return skew_t_pdf_fit_parameter

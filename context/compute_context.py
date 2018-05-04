@@ -1,11 +1,12 @@
-from numpy import (absolute, asarray, concatenate, cumsum, finfo, linspace,
-                   log, minimum)
+from numpy import (absolute, asarray, concatenate, cumsum, finfo, full,
+                   linspace, log, minimum, nan)
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .fit_skew_t_pdf import fit_skew_t_pdf
+from .nd_array.nd_array.check_nd_array_for_bad_value import \
+    check_nd_array_for_bad_value
 from .nd_array.nd_array.get_coordinates_for_reflection import \
     get_coordinates_for_reflection
-from .process_1d_array_bad_values import process_1d_array_bad_values
 
 EPS = finfo(float).eps
 
@@ -25,7 +26,9 @@ def compute_context(_1d_array,
                     global_location=None,
                     global_scale=None):
 
-    _1d_array = process_1d_array_bad_values(_1d_array)
+    is_good = ~check_nd_array_for_bad_value(_1d_array, raise_=False)
+
+    _1d_array_good = _1d_array[is_good]
 
     if skew_t_model is None:
 
@@ -36,7 +39,7 @@ def compute_context(_1d_array,
             for parameter in (location, scale, degree_of_freedom, shape)):
 
         n, location, scale, degree_of_freedom, shape = fit_skew_t_pdf(
-            _1d_array,
+            _1d_array_good,
             skew_t_model=skew_t_model,
             fit_fixed_location=fit_fixed_location,
             fit_fixed_scale=fit_fixed_scale,
@@ -45,9 +48,9 @@ def compute_context(_1d_array,
 
     else:
 
-        n = _1d_array.size
+        n = _1d_array_good.size
 
-    grid = linspace(_1d_array.min(), _1d_array.max(), n_grid)
+    grid = linspace(_1d_array_good.min(), _1d_array_good.max(), n_grid)
 
     pdf = skew_t_model.pdf(
         grid, degree_of_freedom, shape, loc=location, scale=scale)
@@ -116,8 +119,10 @@ def compute_context(_1d_array,
 
         context_indices = shape_context_indices
 
-    context_indices_like_array = context_indices[[
-        absolute(grid - value).argmin() for value in _1d_array
+    context_indices_like_array = full(_1d_array.size, nan)
+
+    context_indices_like_array[is_good] = context_indices[[
+        absolute(grid - value).argmin() for value in _1d_array_good
     ]]
 
     return {

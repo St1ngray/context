@@ -71,8 +71,6 @@ def plot_context(_1d_array,
 
         y_max = max(pdf_max, absolute_context_indices_max)
 
-    layout_size = 960
-
     if plot_rug:
 
         yaxis_max = 0.16
@@ -84,8 +82,8 @@ def plot_context(_1d_array,
         yaxis2_min = 0
 
     layout = dict(
-        width=layout_size,
-        height=layout_size,
+        width=960,
+        height=640,
         title=title,
         xaxis=dict(anchor='y', title=xaxis_title),
         yaxis=dict(

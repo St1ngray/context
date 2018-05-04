@@ -1,7 +1,5 @@
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
-from .process_1d_array_bad_values import process_1d_array_bad_values
-
 
 def fit_skew_t_pdf(_1d_array,
                    skew_t_model=None,
@@ -9,8 +7,6 @@ def fit_skew_t_pdf(_1d_array,
                    fit_fixed_scale=None,
                    fit_initial_location=None,
                    fit_initial_scale=None):
-
-    _1d_array = process_1d_array_bad_values(_1d_array)
 
     if skew_t_model is None:
 
