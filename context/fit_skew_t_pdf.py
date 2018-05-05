@@ -26,9 +26,17 @@ def fit_skew_t_pdf(_1d_array,
 
         kwargs['loc'] = fit_initial_location
 
+    else:
+
+        kwargs['loc'] = _1d_array.mean()
+
     if fit_initial_scale is not None:
 
         kwargs['scale'] = fit_initial_scale
+
+    else:
+
+        kwargs['scale'] = _1d_array.std()
 
     degree_of_freedom, shape, location, scale = skew_t_model.fit(
         _1d_array, **kwargs)
