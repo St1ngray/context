@@ -1,3 +1,4 @@
+from numpy import median
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 
@@ -28,7 +29,7 @@ def fit_skew_t_pdf(_1d_array,
 
     else:
 
-        kwargs['loc'] = _1d_array.mean()
+        kwargs['loc'] = median(_1d_array)
 
     if fit_initial_scale is not None:
 
