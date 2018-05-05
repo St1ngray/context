@@ -3,7 +3,7 @@ from os.path import join
 from pandas import DataFrame
 
 from .make_1d_context_matrix import make_1d_context_matrix
-from .nd_array.nd_array.normalize_2d_array import normalize_2d_array
+from .nd_array.nd_array.normalize_nd_array import normalize_nd_array
 
 
 def make_2d_context_matrix(matrix,
@@ -73,7 +73,7 @@ def _select_context_and_normalize_1d_context_matrix(_1d_context_matrix,
         _1d_context_matrix[_1d_context_matrix < 0] = 0
 
     return DataFrame(
-        normalize_2d_array(
-            _1d_context_matrix.values, '0-1', 1, ignore_bad_value=True),
+        normalize_nd_array(
+            _1d_context_matrix.values, '0-1', 1, raise_for_bad_value=True),
         index=_1d_context_matrix.index,
         columns=_1d_context_matrix.columns)
