@@ -26,9 +26,10 @@ def compute_context(_1d_array,
                     global_location=None,
                     global_scale=None):
 
-    is_good = ~check_nd_array_for_bad_value(_1d_array, raise_=False)
+    is_bad_value = check_nd_array_for_bad_value(
+        _1d_array, raise_for_bad_value=False)
 
-    _1d_array_good = _1d_array[is_good]
+    _1d_array_good = _1d_array[~is_bad_value]
 
     if skew_t_model is None:
 
@@ -121,7 +122,7 @@ def compute_context(_1d_array,
 
     context_indices_like_array = full(_1d_array.size, nan)
 
-    context_indices_like_array[is_good] = context_indices[[
+    context_indices_like_array[~is_bad_value] = context_indices[[
         absolute(grid - value).argmin() for value in _1d_array_good
     ]]
 

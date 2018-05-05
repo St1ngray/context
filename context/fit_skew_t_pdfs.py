@@ -48,7 +48,8 @@ def _fit_skew_t_pdfs(matrix):
             print('({}/{}) {} ...'.format(i + 1, n, index))
 
         skew_t_pdf_fit_parameter.loc[index] = fit_skew_t_pdf(
-            _1d_array[~check_nd_array_for_bad_value(_1d_array, raise_=False)],
+            _1d_array[~check_nd_array_for_bad_value(
+                _1d_array, raise_for_bad_value=False)],
             skew_t_model=skew_t_model)
 
     return skew_t_pdf_fit_parameter
