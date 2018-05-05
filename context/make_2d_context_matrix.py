@@ -53,8 +53,10 @@ def make_2d_context_matrix(matrix,
 
         _2d_context_matrix = _1d_context_matrix_0 + _1d_context_matrix_1
 
-    _2d_context_matrix.to_csv(
-        join(directory_path, '2d_context_matrix.tsv'), sep='\t')
+    if directory_path is not None:
+
+        _2d_context_matrix.to_csv(
+            join(directory_path, '2d_context_matrix.tsv'), sep='\t')
 
     return _2d_context_matrix
 
@@ -62,13 +64,13 @@ def make_2d_context_matrix(matrix,
 def _select_context_and_normalize_1d_context_matrix(_1d_context_matrix,
                                                     select_context):
 
-    if select_context == '-_context':
+    if select_context == 'negative_context':
 
         _1d_context_matrix[0 < _1d_context_matrix] = 0
 
         _1d_context_matrix *= -1
 
-    elif select_context == '+_context':
+    elif select_context == 'positive_context':
 
         _1d_context_matrix[_1d_context_matrix < 0] = 0
 
