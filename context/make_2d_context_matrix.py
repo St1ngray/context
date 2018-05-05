@@ -74,6 +74,6 @@ def _select_context_and_normalize_1d_context_matrix(_1d_context_matrix,
 
     return DataFrame(
         normalize_nd_array(
-            _1d_context_matrix.values, '0-1', 1, raise_for_bad_value=True),
+            _1d_context_matrix.values, '0-1', 1, raise_for_bad_value=False),
         index=_1d_context_matrix.index,
         columns=_1d_context_matrix.columns)
