@@ -23,7 +23,7 @@ def make_1d_context_matrix(matrix,
                      ((matrix_, skew_t_pdf_fit_parameter, n_grid,
                        degree_of_freedom_for_tail_reduction, global_location,
                        global_scale)
-                      for matrix_ in split_df(matrix, n_job)), n_job))
+                      for matrix_ in split_df(matrix, 0, n_job)), n_job))
 
     if directory_path:
 
