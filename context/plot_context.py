@@ -22,7 +22,7 @@ def plot_context(_1d_array,
                  y_max_is_pdf_max=False,
                  plot_rug=True,
                  title='Context Plot',
-                 xaxis_title='Value',
+                 xaxis_title='',
                  html_file_path=None):
 
     if isinstance(_1d_array, Series):
