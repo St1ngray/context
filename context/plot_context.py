@@ -23,7 +23,8 @@ def plot_context(_1d_array,
                  plot_rug=True,
                  title='Context Plot',
                  xaxis_title='',
-                 html_file_path=None):
+                 html_file_path=None,
+                 plotly_file_path=None):
 
     if isinstance(_1d_array, Series):
 
@@ -201,4 +202,5 @@ def plot_context(_1d_array,
                 line=dict(width=line_width, color=color),
                 fill='tozeroy'))
 
-    plot_and_save(dict(layout=layout, data=data), html_file_path)
+    plot_and_save(
+        dict(layout=layout, data=data), html_file_path, plotly_file_path)
