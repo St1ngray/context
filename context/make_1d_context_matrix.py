@@ -25,7 +25,7 @@ def make_1d_context_matrix(matrix,
                        global_scale)
                       for matrix_ in split_df(matrix, 0, n_job)), n_job))
 
-    if directory_path:
+    if directory_path is not None:
 
         establish_path(directory_path, 'directory')
 

@@ -18,7 +18,7 @@ def fit_skew_t_pdfs(matrix, n_job=1, directory_path=None):
                      ((matrix_, ) for matrix_ in split_df(matrix, 0, n_job)),
                      n_job))
 
-    if directory_path:
+    if directory_path is not None:
 
         establish_path(directory_path, 'directory')
 
