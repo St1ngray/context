@@ -1,3 +1,5 @@
+from warnings import warn
+
 from numpy import absolute
 from pandas import Series
 
@@ -19,7 +21,7 @@ def plot_context(_1d_array,
                  degree_of_freedom_for_tail_reduction=10e12,
                  global_location=None,
                  global_scale=None,
-                 y_max_is_pdf_max=False,
+                 y_max_is_pdf_max=True,
                  plot_rug=True,
                  title='Context Plot',
                  xaxis_title='',
@@ -71,6 +73,12 @@ def plot_context(_1d_array,
     else:
 
         y_max = max(pdf_max, absolute_context_indices_max)
+
+    if 10000 < _1d_array.size:
+
+        warn('Set plot_rug to False because 10000 < _1d_array.size.')
+
+        plot_rug = False
 
     if plot_rug:
 
