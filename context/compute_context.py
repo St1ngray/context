@@ -1,5 +1,5 @@
 from numpy import (absolute, asarray, concatenate, cumsum, finfo, full,
-                   linspace, log, minimum, nan)
+                   linspace, log, minimum, nan, ndarray)
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .fit_skew_t_pdf import fit_skew_t_pdf
@@ -27,6 +27,9 @@ def compute_context(_1d_array,
                     global_scale=None,
                     global_degree_of_freedom=None,
                     global_shape=None):
+
+    if not isinstance(_1d_array, ndarray):
+        raise TypeError()
 
     is_bad_value = check_nd_array_for_bad_value(
         _1d_array, raise_for_bad_value=False)

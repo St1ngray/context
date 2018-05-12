@@ -1,3 +1,4 @@
+from numpy import ndarray
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 
@@ -7,6 +8,9 @@ def fit_skew_t_pdf(_1d_array,
                    fit_fixed_scale=None,
                    fit_initial_location=None,
                    fit_initial_scale=None):
+
+    if not isinstance(_1d_array, ndarray):
+        raise TypeError()
 
     if skew_t_model is None:
 
