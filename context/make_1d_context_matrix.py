@@ -16,13 +16,15 @@ def make_1d_context_matrix(matrix,
                            degree_of_freedom_for_tail_reduction=10e12,
                            global_location=None,
                            global_scale=None,
+                           global_degree_of_freedom=None,
+                           global_shape=None,
                            directory_path=None):
 
     _1d_context_matrix = concat(
         multiprocess(_make_1d_context_matrix,
                      ((matrix_, skew_t_pdf_fit_parameter, n_grid,
                        degree_of_freedom_for_tail_reduction, global_location,
-                       global_scale)
+                       global_scale, global_degree_of_freedom, global_shape)
                       for matrix_ in split_df(matrix, 0, n_job)), n_job))
 
     if directory_path is not None:
@@ -37,7 +39,8 @@ def make_1d_context_matrix(matrix,
 
 def _make_1d_context_matrix(matrix, skew_t_pdf_fit_parameter, n_grid,
                             degree_of_freedom_for_tail_reduction,
-                            global_location, global_scale):
+                            global_location, global_scale,
+                            global_degree_of_freedom, global_shape):
 
     skew_t_model = ACSkewT_gen()
 
@@ -74,6 +77,8 @@ def _make_1d_context_matrix(matrix, skew_t_pdf_fit_parameter, n_grid,
             degree_of_freedom_for_tail_reduction=
             degree_of_freedom_for_tail_reduction,
             global_location=global_location,
-            global_scale=global_scale)['context_indices_like_array']
+            global_scale=global_scale,
+            global_degree_of_freedom=global_degree_of_freedom,
+            global_shape=global_shape)['context_indices_like_array']
 
     return _1d_context_matrix

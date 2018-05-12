@@ -24,7 +24,9 @@ def compute_context(_1d_array,
                     n_grid=3000,
                     degree_of_freedom_for_tail_reduction=10e12,
                     global_location=None,
-                    global_scale=None):
+                    global_scale=None,
+                    global_degree_of_freedom=None,
+                    global_shape=None):
 
     is_bad_value = check_nd_array_for_bad_value(
         _1d_array, raise_for_bad_value=False)
@@ -83,15 +85,16 @@ def compute_context(_1d_array,
 
     if all(
             parameter is not None
-            for parameter in (global_location, global_scale)):
+            for parameter in (global_location, global_scale,
+                              global_degree_of_freedom, global_shape)):
 
         location_pdf_reference = minimum(pdf,
                                          skew_t_model.pdf(
                                              grid,
-                                             degree_of_freedom,
-                                             shape,
+                                             global_degree_of_freedom,
+                                             global_shape,
                                              loc=global_location,
-                                             scale=scale))
+                                             scale=global_scale))
 
         location_pdf_reference[location_pdf_reference < EPS] = EPS
 

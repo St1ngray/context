@@ -21,6 +21,8 @@ def plot_context(_1d_array,
                  degree_of_freedom_for_tail_reduction=10e12,
                  global_location=None,
                  global_scale=None,
+                 global_degree_of_freedom=None,
+                 global_shape=None,
                  y_max_is_pdf_max=True,
                  plot_rug=True,
                  title='Context Plot',
@@ -54,7 +56,9 @@ def plot_context(_1d_array,
         degree_of_freedom_for_tail_reduction=
         degree_of_freedom_for_tail_reduction,
         global_location=global_location,
-        global_scale=global_scale)
+        global_scale=global_scale,
+        global_degree_of_freedom=global_degree_of_freedom,
+        global_shape=global_shape)
 
     pdf_max = context_dict['pdf'].max()
 
