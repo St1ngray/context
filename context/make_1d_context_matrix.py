@@ -9,7 +9,7 @@ from .support.support.multiprocess import multiprocess
 from .support.support.path import establish_path
 
 
-def make_1d_context_matrix(matrix,
+def make_1d_context_matrix(df,
                            n_job=1,
                            skew_t_pdf_fit_parameter=None,
                            n_grid=3000,
@@ -22,10 +22,10 @@ def make_1d_context_matrix(matrix,
 
     _1d_context_matrix = concat(
         multiprocess(_make_1d_context_matrix,
-                     ((matrix_, skew_t_pdf_fit_parameter, n_grid,
+                     ((df_, skew_t_pdf_fit_parameter, n_grid,
                        degree_of_freedom_for_tail_reduction, global_location,
                        global_scale, global_degree_of_freedom, global_shape)
-                      for matrix_ in split_df(matrix, 0, n_job)), n_job))
+                      for df_ in split_df(df, 0, n_job)), n_job))
 
     if directory_path is not None:
 
@@ -37,7 +37,7 @@ def make_1d_context_matrix(matrix,
     return _1d_context_matrix
 
 
-def _make_1d_context_matrix(matrix, skew_t_pdf_fit_parameter, n_grid,
+def _make_1d_context_matrix(df, skew_t_pdf_fit_parameter, n_grid,
                             degree_of_freedom_for_tail_reduction,
                             global_location, global_scale,
                             global_degree_of_freedom, global_shape):
@@ -45,13 +45,13 @@ def _make_1d_context_matrix(matrix, skew_t_pdf_fit_parameter, n_grid,
     skew_t_model = ACSkewT_gen()
 
     _1d_context_matrix = DataFrame(
-        index=matrix.index, columns=matrix.columns, dtype=float)
+        index=df.index, columns=df.columns, dtype=float)
 
-    n = matrix.shape[0]
+    n = df.shape[0]
 
     n_per_print = max(n // 10, 1)
 
-    for i, (index, _1d_array) in enumerate(matrix.iterrows()):
+    for i, (index, series) in enumerate(df.iterrows()):
 
         if i % n_per_print == 0:
 
@@ -67,7 +67,7 @@ def _make_1d_context_matrix(matrix, skew_t_pdf_fit_parameter, n_grid,
                 index, ['Location', 'Scale', 'Degree of Freedom', 'Shape']]
 
         _1d_context_matrix.loc[index] = compute_context(
-            _1d_array,
+            series.values,
             skew_t_model=skew_t_model,
             location=location,
             scale=scale,

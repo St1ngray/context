@@ -7,7 +7,7 @@ from .compute_context import compute_context
 from .plot.plot.plot_and_save import plot_and_save
 
 
-def plot_context(_1d_array,
+def plot_context(_1d_array_or_series,
                  text=None,
                  location=None,
                  scale=None,
@@ -30,17 +30,21 @@ def plot_context(_1d_array,
                  html_file_path=None,
                  plotly_file_path=None):
 
-    if isinstance(_1d_array, Series):
+    if isinstance(_1d_array_or_series, Series):
 
         if title is None:
 
-            title = _1d_array.name
+            title = _1d_array_or_series.name
 
         if text is None:
 
-            text = _1d_array.index
+            text = _1d_array_or_series.index
 
-        _1d_array = _1d_array.values
+        _1d_array = _1d_array_or_series.values
+
+    else:
+
+        _1d_array = _1d_array_or_series
 
     context_dict = compute_context(
         _1d_array,

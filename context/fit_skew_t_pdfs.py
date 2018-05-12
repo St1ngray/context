@@ -11,12 +11,11 @@ from .support.support.multiprocess import multiprocess
 from .support.support.path import establish_path
 
 
-def fit_skew_t_pdfs(matrix, n_job=1, directory_path=None):
+def fit_skew_t_pdfs(df, n_job=1, directory_path=None):
 
     skew_t_pdf_fit_parameter = concat(
         multiprocess(_fit_skew_t_pdfs,
-                     ((matrix_, ) for matrix_ in split_df(matrix, 0, n_job)),
-                     n_job))
+                     ((df_, ) for df_ in split_df(df, 0, n_job)), n_job))
 
     if directory_path is not None:
 
@@ -28,24 +27,26 @@ def fit_skew_t_pdfs(matrix, n_job=1, directory_path=None):
     return skew_t_pdf_fit_parameter
 
 
-def _fit_skew_t_pdfs(matrix):
+def _fit_skew_t_pdfs(df):
 
     skew_t_model = ACSkewT_gen()
 
     skew_t_pdf_fit_parameter = DataFrame(
-        index=matrix.index,
+        index=df.index,
         columns=('N', 'Location', 'Scale', 'Degree of Freedom', 'Shape'),
         dtype=float)
 
-    n = matrix.shape[0]
+    n = df.shape[0]
 
     n_per_print = max(n // 10, 1)
 
-    for i, (index, _1d_array) in enumerate(matrix.iterrows()):
+    for i, (index, series) in enumerate(df.iterrows()):
 
         if i % n_per_print == 0:
 
             print('({}/{}) {} ...'.format(i + 1, n, index))
+
+        _1d_array = series.values
 
         skew_t_pdf_fit_parameter.loc[index] = fit_skew_t_pdf(
             _1d_array[~check_nd_array_for_bad_value(
