@@ -13,7 +13,7 @@ from .support.support.path import establish_path
 def make_1d_context_matrix(df,
                            n_job=1,
                            skew_t_pdf_fit_parameter=None,
-                           n_grid=3000,
+                           n_grid=1000,
                            degree_of_freedom_for_tail_reduction=10e12,
                            global_location=None,
                            global_scale=None,
