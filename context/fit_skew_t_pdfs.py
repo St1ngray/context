@@ -1,5 +1,6 @@
 from os.path import join
 
+from numpy import full, nan
 from pandas import DataFrame, concat
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
@@ -31,10 +32,7 @@ def _fit_skew_t_pdfs(df):
 
     skew_t_model = ACSkewT_gen()
 
-    skew_t_pdf_fit_parameter = DataFrame(
-        index=df.index,
-        columns=('N', 'Location', 'Scale', 'Degree of Freedom', 'Shape'),
-        dtype=float)
+    skew_t_pdf_fit_parameter = full((df.shape[0], 5), nan)
 
     n = df.shape[0]
 
@@ -48,9 +46,12 @@ def _fit_skew_t_pdfs(df):
 
         _1d_array = series.values
 
-        skew_t_pdf_fit_parameter.loc[index] = fit_skew_t_pdf(
+        skew_t_pdf_fit_parameter[i] = fit_skew_t_pdf(
             _1d_array[~check_nd_array_for_bad_value(
                 _1d_array, raise_for_bad_value=False)],
             skew_t_model=skew_t_model)
 
-    return skew_t_pdf_fit_parameter
+    return DataFrame(
+        skew_t_pdf_fit_parameter,
+        index=df.index,
+        columns=('N', 'Location', 'Scale', 'Degree of Freedom', 'Shape'))

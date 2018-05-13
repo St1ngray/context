@@ -1,5 +1,6 @@
 from os.path import join
 
+from numpy import full, nan
 from pandas import DataFrame, concat
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
@@ -44,8 +45,7 @@ def _make_1d_context_matrix(df, skew_t_pdf_fit_parameter, n_grid,
 
     skew_t_model = ACSkewT_gen()
 
-    _1d_context_matrix = DataFrame(
-        index=df.index, columns=df.columns, dtype=float)
+    _1d_context_matrix = full(df.shape, nan)
 
     n = df.shape[0]
 
@@ -66,7 +66,7 @@ def _make_1d_context_matrix(df, skew_t_pdf_fit_parameter, n_grid,
             location, scale, degree_of_freedom, shape = skew_t_pdf_fit_parameter.loc[
                 index, ['Location', 'Scale', 'Degree of Freedom', 'Shape']]
 
-        _1d_context_matrix.loc[index] = compute_context(
+        _1d_context_matrix[i] = compute_context(
             series.values,
             skew_t_model=skew_t_model,
             location=location,
@@ -81,4 +81,4 @@ def _make_1d_context_matrix(df, skew_t_pdf_fit_parameter, n_grid,
             global_degree_of_freedom=global_degree_of_freedom,
             global_shape=global_shape)['context_indices_like_array']
 
-    return _1d_context_matrix
+    return DataFrame(_1d_context_matrix, index=df.index, columns=df.columns)

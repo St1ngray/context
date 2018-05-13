@@ -1,5 +1,5 @@
 from numpy import (absolute, asarray, concatenate, cumsum, finfo, full,
-                   linspace, log, minimum, nan, ndarray)
+                   linspace, log, minimum, nan)
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .fit_skew_t_pdf import fit_skew_t_pdf
@@ -27,9 +27,6 @@ def compute_context(_1d_array,
                     global_scale=None,
                     global_degree_of_freedom=None,
                     global_shape=None):
-
-    if not isinstance(_1d_array, ndarray):
-        raise TypeError()
 
     is_bad_value = check_nd_array_for_bad_value(
         _1d_array, raise_for_bad_value=False)
@@ -82,9 +79,9 @@ def compute_context(_1d_array,
         (-cumsum(shape_kl_darea[:shape_pdf_reference_argmax][::-1])[::-1],
          cumsum(shape_kl_darea[shape_pdf_reference_argmax:])))
 
-    shape_context_indices *= absolute(
-        grid - grid[shape_pdf_reference_argmax]
-    )  # * absolute(shape) / log(degree_of_freedom)
+    shape_context_indices *= absolute(grid - grid[shape_pdf_reference_argmax])
+
+    shape_context_indices *= absolute(shape) / log(degree_of_freedom)
 
     if all(
             parameter is not None
@@ -113,8 +110,9 @@ def compute_context(_1d_array,
              cumsum(location_kl_darea[location_pdf_reference_argmax:])))
 
         location_context_indices *= absolute(
-            grid - grid[location_pdf_reference_argmax]) / (
-                scale + global_scale)
+            grid - grid[location_pdf_reference_argmax])
+
+        location_context_indices /= scale + global_scale
 
         context_indices = location_context_indices + shape_context_indices
 

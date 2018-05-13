@@ -82,9 +82,12 @@ def plot_context(_1d_array_or_series,
 
         y_max = max(pdf_max, absolute_context_indices_max)
 
-    if 10000 < _1d_array.size:
+    n_max = 1e6
 
-        warn('Set plot_rug to False because 10000 < _1d_array.size.')
+    if n_max < _1d_array.size:
+
+        warn(
+            'Set plot_rug to False because {} < _1d_array.size.'.format(n_max))
 
         plot_rug = False
 
