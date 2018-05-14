@@ -1,5 +1,3 @@
-from warnings import warn
-
 from numpy import absolute
 from pandas import Series
 
@@ -81,15 +79,6 @@ def plot_context(_1d_array_or_series,
     else:
 
         y_max = max(pdf_max, absolute_context_indices_max)
-
-    n_max = 1e6
-
-    if n_max < _1d_array.size:
-
-        warn(
-            'Set plot_rug to False because {} < _1d_array.size.'.format(n_max))
-
-        plot_rug = False
 
     if plot_rug:
 
