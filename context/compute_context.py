@@ -22,7 +22,7 @@ def compute_context(_1d_array,
                     fit_initial_location=None,
                     fit_initial_scale=None,
                     n_grid=1e3,
-                    degree_of_freedom_for_tail_reduction=1e12,
+                    degree_of_freedom_for_tail_reduction=1e8,
                     global_location=None,
                     global_scale=None,
                     global_degree_of_freedom=None,
@@ -81,7 +81,7 @@ def compute_context(_1d_array,
 
     shape_context_indices *= absolute(grid - grid[shape_pdf_reference_argmax])
 
-    shape_context_indices *= (1 + absolute(shape)) / log(degree_of_freedom)
+    shape_context_indices *= (1 + absolute(shape)) / degree_of_freedom
 
     if all(
             parameter is not None
