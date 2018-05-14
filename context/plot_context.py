@@ -83,11 +83,13 @@ def plot_context(_1d_array_or_series,
     if plot_rug:
 
         yaxis_max = 0.16
+
         yaxis2_min = yaxis_max + 0.08
 
     else:
 
         yaxis_max = 0
+
         yaxis2_min = 0
 
     layout = dict(
