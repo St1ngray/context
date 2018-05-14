@@ -81,7 +81,8 @@ def compute_context(_1d_array,
 
     shape_context_indices *= absolute(grid - grid[shape_pdf_reference_argmax])
 
-    shape_context_indices *= (1 + absolute(shape)) / degree_of_freedom
+    shape_context_indices *= (1 + absolute(shape)) / (
+        scale * log(1 + degree_of_freedom))
 
     if all(
             parameter is not None
