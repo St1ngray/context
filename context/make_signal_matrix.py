@@ -16,4 +16,8 @@ def make_signal_matrix(_1d_context_matrix, select_context):
 
         _1d_context_matrix[_1d_context_matrix < 0] = 0
 
+    elif select_context == 'both':
+
+        raise NotImplementedError()
+
     return _1d_context_matrix
