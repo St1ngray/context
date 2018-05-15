@@ -1,4 +1,4 @@
-def make_signal_matrix(_1d_context_matrix, select_context):
+def make_signal_matrix_from_context_matrix(_1d_context_matrix, select_context):
 
     if select_context not in ('negative', 'positive'):
 
