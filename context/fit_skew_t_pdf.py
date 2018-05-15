@@ -41,4 +41,4 @@ def fit_skew_t_pdf(_1d_array,
     degree_of_freedom, shape, location, scale = skew_t_model.fit(
         _1d_array, **kwargs)
 
-    return _1d_array.size, location, scale, degree_of_freedom, shape
+    return location, scale, degree_of_freedom, shape

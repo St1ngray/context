@@ -32,7 +32,7 @@ def _fit_skew_t_pdfs(df):
 
     skew_t_model = ACSkewT_gen()
 
-    skew_t_pdf_fit_parameter = full((df.shape[0], 5), nan)
+    skew_t_pdf_fit_parameter = full((df.shape[0], 4), nan)
 
     n = df.shape[0]
 
@@ -54,4 +54,4 @@ def _fit_skew_t_pdfs(df):
     return DataFrame(
         skew_t_pdf_fit_parameter,
         index=df.index,
-        columns=('N', 'Location', 'Scale', 'Degree of Freedom', 'Shape'))
+        columns=('Location', 'Scale', 'Degree of Freedom', 'Shape'))
