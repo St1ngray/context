@@ -54,5 +54,4 @@ def _fit_skew_t_pdfs(df):
     return DataFrame(
         skew_t_pdf_fit_parameter,
         index=df.index,
-        columns=('N', 'Location', 'Scale', 'Degree of Freedom', 'Shape',
-                 'Good'))
+        columns=('N', 'Location', 'Scale', 'Degree of Freedom', 'Shape'))
