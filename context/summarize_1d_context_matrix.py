@@ -1,6 +1,6 @@
 def summarize_1d_context_matrix(_1d_context_matrix, select_context):
 
-    if select_context not in ('negative', 'positive', 'absolute'):
+    if select_context not in ('negative', 'positive'):
 
         raise ValueError('Unknown select_context: {}.'.format(select_context))
 
@@ -13,9 +13,5 @@ def summarize_1d_context_matrix(_1d_context_matrix, select_context):
 
         context_summary = _1d_context_matrix[0 < _1d_context_matrix].sum(
             axis=1)
-
-    elif select_context == 'absolute':
-
-        context_summary = _1d_context_matrix.abs().sum(axis=1)
 
     return context_summary
