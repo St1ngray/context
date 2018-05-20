@@ -1,9 +1,5 @@
 def make_signal_matrix_from_context_matrix(_1d_context_matrix, select_context):
 
-    if select_context not in ('negative', 'positive'):
-
-        raise ValueError('Unknown select_context: {}.'.format(select_context))
-
     _1d_context_matrix = _1d_context_matrix.copy()
 
     if select_context == 'negative':
