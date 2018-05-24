@@ -11,19 +11,19 @@ def make_2d_signal_matrix(feature_1d_context_matrix, sample_1d_context_matrix,
     feature_context_summary = summarize_1d_context_matrix(
         feature_1d_context_matrix, select_context)
 
-    selected_features = feature_context_summary.index[
+    feature_selected = feature_context_summary.index[
         0.08 * feature_1d_context_matrix.shape[1] <
         feature_context_summary.abs()]
 
     sample_context_summary = summarize_1d_context_matrix(
         sample_1d_context_matrix, select_context)
 
-    selected_samples = sample_context_summary.index[
+    sample_selected = sample_context_summary.index[
         0.08 * sample_1d_context_matrix.shape[1] <
         sample_context_summary.abs()]
 
     feature_signal_matrix = make_1d_signal_matrix(
-        feature_1d_context_matrix.loc[selected_features, selected_samples],
+        feature_1d_context_matrix.loc[feature_selected, sample_selected],
         select_context)
 
     feature_signal_matrix = DataFrame(
@@ -32,7 +32,7 @@ def make_2d_signal_matrix(feature_1d_context_matrix, sample_1d_context_matrix,
         feature_signal_matrix.index, feature_signal_matrix.columns)
 
     sample_signal_matrix = make_1d_signal_matrix(
-        sample_1d_context_matrix.loc[selected_samples, selected_features],
+        sample_1d_context_matrix.loc[sample_selected, feature_selected],
         select_context)
 
     sample_signal_matrix = DataFrame(
