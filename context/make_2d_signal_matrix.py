@@ -14,7 +14,8 @@ def make_2d_signal_matrix(feature_1d_context_matrix,
                           samples=None,
                           n_top_feature=None,
                           n_top_sample=None,
-                          select_automatically=False,
+                          select_feature_automatically=False,
+                          select_sample_automatically=False,
                           normalization_method='0-1',
                           combining_function=multiply):
 
@@ -24,7 +25,7 @@ def make_2d_signal_matrix(feature_1d_context_matrix,
             feature_1d_context_matrix,
             select_context,
             n_top=n_top_feature,
-            select_automatically=select_automatically)
+            select_automatically=select_feature_automatically)
 
     if samples is None:
 
@@ -32,7 +33,7 @@ def make_2d_signal_matrix(feature_1d_context_matrix,
             sample_1d_context_matrix,
             select_context,
             n_top=n_top_sample,
-            select_automatically=select_automatically)
+            select_automatically=select_sample_automatically)
 
     feature_signal_matrix = _make_1d_signal_matrix(
         feature_1d_context_matrix.loc[features, samples], select_context)

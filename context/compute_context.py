@@ -23,6 +23,7 @@ def compute_context(_1d_array,
                     fit_initial_scale=None,
                     n_grid=1e3,
                     degree_of_freedom_for_tail_reduction=1e8,
+                    multiply_distance_from_location=False,
                     global_location=None,
                     global_scale=None,
                     global_degree_of_freedom=None,
@@ -79,7 +80,10 @@ def compute_context(_1d_array,
         (-cumsum(shape_kl_darea[:shape_pdf_reference_argmax][::-1])[::-1],
          cumsum(shape_kl_darea[shape_pdf_reference_argmax:])))
 
-    shape_context_indices *= absolute(grid - grid[shape_pdf_reference_argmax])
+    if multiply_distance_from_location:
+
+        shape_context_indices *= absolute(
+            grid - grid[shape_pdf_reference_argmax])
 
     shape_context_indices *= (1 + absolute(shape)) / (
         scale * log(1 + degree_of_freedom))
