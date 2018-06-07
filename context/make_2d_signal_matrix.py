@@ -59,6 +59,16 @@ def make_2d_signal_matrix(feature_1d_context_matrix,
                 'Normalizing feature_signal_matrix failed.\nException: {}.\nTry setting normalization_method=None.'.
                 format(exception))
 
+        features_without_signal = feature_signal_matrix.index[
+            feature_signal_matrix.isna().all(axis=1)]
+
+        if len(features_without_signal):
+
+            print('Setting feature signals to 0 for: {} ...'.format(
+                features_without_signal))
+
+            feature_signal_matrix.loc[features_without_signal] = 0
+
         try:
 
             sample_signal_matrix = DataFrame(
@@ -74,5 +84,15 @@ def make_2d_signal_matrix(feature_1d_context_matrix,
             raise ValueError(
                 'Normalizing sample_signal_matrix failed.\nException: {}.\nTry setting normalization_method=None.'.
                 format(exception))
+
+        samples_without_signal = sample_signal_matrix.index[
+            sample_signal_matrix.isna().all(axis=1)]
+
+        if len(samples_without_signal):
+
+            print('Setting sample signals to 0 for: {} ...'.format(
+                samples_without_signal))
+
+            sample_signal_matrix.loc[samples_without_signal] = 0
 
     return combining_function(feature_signal_matrix, sample_signal_matrix.T)
