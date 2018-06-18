@@ -1,4 +1,4 @@
-from numpy import multiply
+from numpy import add
 from pandas import DataFrame
 
 from ._make_1d_signal_matrix import _make_1d_signal_matrix
@@ -16,8 +16,9 @@ def make_2d_signal_matrix(feature_1d_context_matrix,
                           n_top_sample=None,
                           select_feature_automatically=False,
                           select_sample_automatically=False,
-                          normalization_method='0-1',
-                          combining_function=multiply):
+                          feature_normalization_method=None,
+                          sample_normalization_method=None,
+                          combining_function=add):
 
     if features is None:
 
@@ -41,23 +42,15 @@ def make_2d_signal_matrix(feature_1d_context_matrix,
     sample_signal_matrix = _make_1d_signal_matrix(
         sample_1d_context_matrix.loc[samples, features], select_context)
 
-    if normalization_method is not None:
+    if feature_normalization_method is not None:
 
-        try:
-
-            feature_signal_matrix = DataFrame(
-                normalize_nd_array(
-                    feature_signal_matrix.values,
-                    normalization_method,
-                    1,
-                    raise_for_bad_value=False), feature_signal_matrix.index,
-                feature_signal_matrix.columns)
-
-        except ValueError as exception:
-
-            raise ValueError(
-                'Normalizing feature_signal_matrix failed.\nException: {}.\nTry setting normalization_method=None.'.
-                format(exception))
+        feature_signal_matrix = DataFrame(
+            normalize_nd_array(
+                feature_signal_matrix.values,
+                feature_normalization_method,
+                1,
+                raise_for_bad_value=False), feature_signal_matrix.index,
+            feature_signal_matrix.columns)
 
         features_without_signal = feature_signal_matrix.index[
             feature_signal_matrix.isna().all(axis=1)]
@@ -69,21 +62,15 @@ def make_2d_signal_matrix(feature_1d_context_matrix,
 
             feature_signal_matrix.loc[features_without_signal] = 0
 
-        try:
+    if sample_normalization_method is not None:
 
-            sample_signal_matrix = DataFrame(
-                normalize_nd_array(
-                    sample_signal_matrix.values,
-                    normalization_method,
-                    1,
-                    raise_for_bad_value=False), sample_signal_matrix.index,
-                sample_signal_matrix.columns)
-
-        except ValueError as exception:
-
-            raise ValueError(
-                'Normalizing sample_signal_matrix failed.\nException: {}.\nTry setting normalization_method=None.'.
-                format(exception))
+        sample_signal_matrix = DataFrame(
+            normalize_nd_array(
+                sample_signal_matrix.values,
+                sample_normalization_method,
+                1,
+                raise_for_bad_value=False), sample_signal_matrix.index,
+            sample_signal_matrix.columns)
 
         samples_without_signal = sample_signal_matrix.index[
             sample_signal_matrix.isna().all(axis=1)]

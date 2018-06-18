@@ -24,9 +24,8 @@ def _select_elements_by_context_summary(_1d_context_matrix,
 
     else:
 
-        print('\tSelecting elements with non-0 context summary ...')
+        print('Selecting all elements ...')
 
-        elements = absolute_context_summary[
-            absolute_context_summary != 0].index
+        elements = absolute_context_summary.index
 
     return elements
