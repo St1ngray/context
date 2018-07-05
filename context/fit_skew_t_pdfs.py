@@ -16,7 +16,9 @@ def fit_skew_t_pdfs(df, n_job=1, directory_path=None):
 
     skew_t_pdf_fit_parameter = concat(
         multiprocess(_fit_skew_t_pdfs,
-                     ((df_, ) for df_ in split_df(df, 0, n_job)), n_job))
+                     ((df_, )
+                      for df_ in split_df(df, 0, min(df.shape[0], n_job))),
+                     n_job))
 
     if directory_path is not None:
 

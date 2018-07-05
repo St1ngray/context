@@ -59,14 +59,14 @@ def compute_context(_1d_array,
     pdf = skew_t_model.pdf(
         grid, degree_of_freedom, shape, loc=location, scale=scale)
 
-    shape_pdf_reference = minimum(pdf,
-                                  skew_t_model.pdf(
-                                      get_coordinates_for_reflection(
-                                          grid, pdf),
-                                      degree_of_freedom_for_tail_reduction,
-                                      shape,
-                                      loc=location,
-                                      scale=scale))
+    shape_pdf_reference = minimum(
+        pdf,
+        skew_t_model.pdf(
+            get_coordinates_for_reflection(grid, pdf),
+            degree_of_freedom_for_tail_reduction,
+            shape,
+            loc=location,
+            scale=scale))
 
     shape_pdf_reference[shape_pdf_reference < EPS] = EPS
 
@@ -82,8 +82,8 @@ def compute_context(_1d_array,
 
     if multiply_distance_from_location:
 
-        shape_context_indices *= absolute(
-            grid - grid[shape_pdf_reference_argmax])
+        shape_context_indices *= absolute(grid -
+                                          grid[shape_pdf_reference_argmax])
 
     shape_context_indices *= (1 + absolute(shape)) / (
         scale * log(1 + degree_of_freedom))
@@ -93,13 +93,14 @@ def compute_context(_1d_array,
             for parameter in (global_location, global_scale,
                               global_degree_of_freedom, global_shape)):
 
-        location_pdf_reference = minimum(pdf,
-                                         skew_t_model.pdf(
-                                             grid,
-                                             global_degree_of_freedom,
-                                             global_shape,
-                                             loc=global_location,
-                                             scale=global_scale))
+        location_pdf_reference = minimum(
+            pdf,
+            skew_t_model.pdf(
+                grid,
+                global_degree_of_freedom,
+                global_shape,
+                loc=global_location,
+                scale=global_scale))
 
         location_pdf_reference[location_pdf_reference < EPS] = EPS
 

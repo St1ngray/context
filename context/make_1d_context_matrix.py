@@ -28,7 +28,8 @@ def make_1d_context_matrix(df,
                        degree_of_freedom_for_tail_reduction,
                        multiply_distance_from_location, global_location,
                        global_scale, global_degree_of_freedom, global_shape)
-                      for df_ in split_df(df, 0, n_job)), n_job))
+                      for df_ in split_df(df, 0, min(df.shape[0], n_job))),
+                     n_job))
 
     if directory_path is not None:
 
