@@ -47,8 +47,8 @@ def make_2d_signal_matrix(feature_1d_context_matrix,
         feature_signal_matrix = DataFrame(
             normalize_nd_array(
                 feature_signal_matrix.values,
-                feature_normalization_method,
                 1,
+                feature_normalization_method,
                 raise_for_bad_value=False), feature_signal_matrix.index,
             feature_signal_matrix.columns)
 
@@ -67,8 +67,8 @@ def make_2d_signal_matrix(feature_1d_context_matrix,
         sample_signal_matrix = DataFrame(
             normalize_nd_array(
                 sample_signal_matrix.values,
-                sample_normalization_method,
                 1,
+                sample_normalization_method,
                 raise_for_bad_value=False), sample_signal_matrix.index,
             sample_signal_matrix.columns)
 
