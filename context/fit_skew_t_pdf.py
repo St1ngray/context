@@ -1,3 +1,6 @@
+from warnings import warn
+
+from numpy import median
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 
@@ -40,5 +43,12 @@ def fit_skew_t_pdf(_1d_array,
 
     degree_of_freedom, shape, location, scale = skew_t_model.fit(
         _1d_array, **kwargs)
+
+    if 32 < abs(shape):
+
+        warn('Refitting with the median to be the fixed location ...')
+
+        degree_of_freedom, shape, location, scale = skew_t_model.fit(
+            _1d_array, floc=median(_1d_array))
 
     return _1d_array.size, location, scale, degree_of_freedom, shape
