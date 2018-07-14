@@ -1,3 +1,3 @@
 # Context
 
-Library for working with context :ocean:
+Library for context :ocean:
