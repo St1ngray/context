@@ -1,13 +1,17 @@
 from .summarize_1d_context_matrix import summarize_1d_context_matrix
 
 
-def _select_elements_by_context_summary(_1d_context_matrix,
-                                        select_context,
-                                        n_top=None,
-                                        select_automatically=False):
+def _select_elements_by_context_summary(
+        _1d_context_matrix,
+        select_context,
+        n_top=None,
+        select_automatically=False,
+):
 
     absolute_context_summary = summarize_1d_context_matrix(
-        _1d_context_matrix, select_context).abs()
+        _1d_context_matrix,
+        select_context,
+    ).abs()
 
     if n_top is not None:
 

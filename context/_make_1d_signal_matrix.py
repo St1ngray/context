@@ -1,4 +1,7 @@
-def _make_1d_signal_matrix(_1d_context_matrix, select_context):
+def _make_1d_signal_matrix(
+        _1d_context_matrix,
+        select_context,
+):
 
     _1d_signal_matrix = _1d_context_matrix.copy()
 

@@ -4,12 +4,14 @@ from numpy import median
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 
-def fit_skew_t_pdf(_1d_array,
-                   skew_t_model=None,
-                   fit_fixed_location=None,
-                   fit_fixed_scale=None,
-                   fit_initial_location=None,
-                   fit_initial_scale=None):
+def fit_skew_t_pdf(
+        _1d_array,
+        skew_t_model=None,
+        fit_fixed_location=None,
+        fit_fixed_scale=None,
+        fit_initial_location=None,
+        fit_initial_scale=None,
+):
 
     if skew_t_model is None:
 
@@ -42,13 +44,17 @@ def fit_skew_t_pdf(_1d_array,
         kwargs['scale'] = _1d_array.std()
 
     degree_of_freedom, shape, location, scale = skew_t_model.fit(
-        _1d_array, **kwargs)
+        _1d_array,
+        **kwargs,
+    )
 
     if 32 < abs(shape):
 
         warn('Refitting with the median to be the fixed location ...')
 
         degree_of_freedom, shape, location, scale = skew_t_model.fit(
-            _1d_array, floc=median(_1d_array))
+            _1d_array,
+            floc=median(_1d_array),
+        )
 
     return _1d_array.size, location, scale, degree_of_freedom, shape

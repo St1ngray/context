@@ -7,18 +7,20 @@ from ._select_elements_by_context_summary import \
 from .nd_array.nd_array.normalize_nd_array import normalize_nd_array
 
 
-def make_2d_signal_matrix(feature_1d_context_matrix,
-                          sample_1d_context_matrix,
-                          select_context,
-                          features=None,
-                          samples=None,
-                          n_top_feature=None,
-                          n_top_sample=None,
-                          select_feature_automatically=False,
-                          select_sample_automatically=False,
-                          feature_normalization_method=None,
-                          sample_normalization_method=None,
-                          combining_function=add):
+def make_2d_signal_matrix(
+        feature_1d_context_matrix,
+        sample_1d_context_matrix,
+        select_context,
+        features=None,
+        samples=None,
+        n_top_feature=None,
+        n_top_sample=None,
+        select_feature_automatically=False,
+        select_sample_automatically=False,
+        feature_normalization_method=None,
+        sample_normalization_method=None,
+        combining_function=add,
+):
 
     if features is None:
 
@@ -26,7 +28,8 @@ def make_2d_signal_matrix(feature_1d_context_matrix,
             feature_1d_context_matrix,
             select_context,
             n_top=n_top_feature,
-            select_automatically=select_feature_automatically)
+            select_automatically=select_feature_automatically,
+        )
 
     if samples is None:
 
@@ -34,13 +37,18 @@ def make_2d_signal_matrix(feature_1d_context_matrix,
             sample_1d_context_matrix,
             select_context,
             n_top=n_top_sample,
-            select_automatically=select_sample_automatically)
+            select_automatically=select_sample_automatically,
+        )
 
     feature_signal_matrix = _make_1d_signal_matrix(
-        feature_1d_context_matrix.loc[features, samples], select_context)
+        feature_1d_context_matrix.loc[features, samples],
+        select_context,
+    )
 
     sample_signal_matrix = _make_1d_signal_matrix(
-        sample_1d_context_matrix.loc[samples, features], select_context)
+        sample_1d_context_matrix.loc[samples, features],
+        select_context,
+    )
 
     if feature_normalization_method is not None:
 
@@ -49,8 +57,11 @@ def make_2d_signal_matrix(feature_1d_context_matrix,
                 feature_signal_matrix.values,
                 1,
                 feature_normalization_method,
-                raise_for_bad_value=False), feature_signal_matrix.index,
-            feature_signal_matrix.columns)
+                raise_for_bad_value=False,
+            ),
+            feature_signal_matrix.index,
+            feature_signal_matrix.columns,
+        )
 
         features_without_signal = feature_signal_matrix.index[
             feature_signal_matrix.isna().all(axis=1)]
@@ -69,8 +80,11 @@ def make_2d_signal_matrix(feature_1d_context_matrix,
                 sample_signal_matrix.values,
                 1,
                 sample_normalization_method,
-                raise_for_bad_value=False), sample_signal_matrix.index,
-            sample_signal_matrix.columns)
+                raise_for_bad_value=False,
+            ),
+            sample_signal_matrix.index,
+            sample_signal_matrix.columns,
+        )
 
         samples_without_signal = sample_signal_matrix.index[
             sample_signal_matrix.isna().all(axis=1)]
@@ -82,4 +96,7 @@ def make_2d_signal_matrix(feature_1d_context_matrix,
 
             sample_signal_matrix.loc[samples_without_signal] = 0
 
-    return combining_function(feature_signal_matrix, sample_signal_matrix.T)
+    return combining_function(
+        feature_signal_matrix,
+        sample_signal_matrix.T,
+    )
