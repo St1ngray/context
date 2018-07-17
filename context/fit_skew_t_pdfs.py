@@ -1,5 +1,3 @@
-from os.path import join
-
 from numpy import full, nan
 from pandas import DataFrame, concat
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
@@ -40,10 +38,7 @@ def fit_skew_t_pdfs(
         )
 
         skew_t_pdf_fit_parameter.to_csv(
-            join(
-                directory_path,
-                'skew_t_pdf_fit_parameter.tsv',
-            ),
+            '{}/skew_t_pdf_fit_parameter.tsv'.format(directory_path),
             sep='\t',
         )
 

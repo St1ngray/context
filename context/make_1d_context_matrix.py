@@ -1,5 +1,3 @@
-from os.path import join
-
 from numpy import full, nan
 from pandas import DataFrame, concat
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
@@ -56,10 +54,7 @@ def make_1d_context_matrix(
         )
 
         _1d_context_matrix.to_csv(
-            join(
-                directory_path,
-                '1d_context_matrix.tsv',
-            ),
+            '{}/1d_context_matrix.tsv'.format(directory_path),
             sep='\t',
         )
 
