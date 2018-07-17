@@ -8,7 +8,7 @@ from .support.support.multiprocess import multiprocess
 from .support.support.path import establish_path
 
 
-def make_1d_context_matrix(
+def make_context_matrix(
         df,
         n_job=1,
         skew_t_pdf_fit_parameter=None,
@@ -22,9 +22,9 @@ def make_1d_context_matrix(
         directory_path=None,
 ):
 
-    _1d_context_matrix = concat(
+    context_matrix = concat(
         multiprocess(
-            _make_1d_context_matrix,
+            _make_context_matrix,
             ((
                 df_,
                 skew_t_pdf_fit_parameter,
@@ -53,15 +53,15 @@ def make_1d_context_matrix(
             'directory',
         )
 
-        _1d_context_matrix.to_csv(
-            '{}/1d_context_matrix.tsv'.format(directory_path),
+        context_matrix.to_csv(
+            '{}/context_matrix.tsv'.format(directory_path),
             sep='\t',
         )
 
-    return _1d_context_matrix
+    return context_matrix
 
 
-def _make_1d_context_matrix(
+def _make_context_matrix(
         df,
         skew_t_pdf_fit_parameter,
         n_grid,
@@ -75,7 +75,7 @@ def _make_1d_context_matrix(
 
     skew_t_model = ACSkewT_gen()
 
-    _1d_context_matrix = full(
+    context_matrix = full(
         df.shape,
         nan,
     )
@@ -114,7 +114,7 @@ def _make_1d_context_matrix(
                     'Shape',
                 ]]
 
-        _1d_context_matrix[i] = compute_context(
+        context_matrix[i] = compute_context(
             series.values,
             skew_t_model=skew_t_model,
             location=location,
@@ -132,7 +132,7 @@ def _make_1d_context_matrix(
         )['context_indices_like_array']
 
     return DataFrame(
-        _1d_context_matrix,
+        context_matrix,
         index=df.index,
         columns=df.columns,
     )
