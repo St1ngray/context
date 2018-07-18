@@ -30,13 +30,9 @@ def select_elements_by_context(
 
     elif select_automatically:
 
-        print('Selecting elements automatcally ...')
+        print('Selecting elements automatically ...')
 
         elements = element_context_absolute[
             element_context_absolute.std() < element_context_absolute].index
-
-    else:
-
-        elements = element_context_absolute.index
 
     return elements
