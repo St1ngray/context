@@ -35,4 +35,8 @@ def select_elements_by_context(
         elements = element_context_absolute[
             element_context_absolute.std() < element_context_absolute].index
 
+    else:
+
+        elements = element_context_absolute.index
+
     return elements
